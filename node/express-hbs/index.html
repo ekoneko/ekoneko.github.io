@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>express-hbs简介 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="og:type" content="blog">
+<meta name="og:title" content="express-hbs简介">
+<meta name="og:url" content="http://ekoneko.github.io/node/express-hbs/">
+<meta name="og:image">
+<meta name="og:site_name" content="ekoneko.github.io">
+<meta name="og:description" content="express-hbs 是一个handlebars模板引擎.
+
+
+虽然express自带的jade也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ {  } }来实现布局. 我更青睐这种的.
+简介
+说起来 handlebars 似乎是一个很有名气的引擎. 不过之前用前端js基本上只会用模板替换一">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://ekoneko.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-express-hbs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/node/express-hbs/" class="article-date">
+  <time datetime="2014-01-28T00:00:00.000Z" itemprop="datePublished">Jan 28 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/node/">node</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      express-hbs简介
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>express-hbs 是一个handlebars模板引擎.</p>
+<a id="more"></a>
+
+<p>虽然express自带的<code>jade</code>也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ {  } }来实现布局. 我更青睐这种的.</p>
+<h2 id="-">简介</h2>
+<p>说起来 handlebars 似乎是一个很有名气的引擎. 不过之前用前端js基本上只会用模板替换一些标签, 接触到nodejs时就已经有了express,自然一直用的都是jade. handlebars还是第一次用的说. 大体上看 express-hbs 和 jade 概念上比较类似. 都是先定义好一个<code>layout</code>(布局), 然后逐个定义layout中申明的<code>block</code>(块). 关于流程控制是常见的<code>if</code>, <code>else</code> 和 <code>each</code>. <code>hbs.registerHelper</code>可以申明比较高级的用户自定义模板函数.</p>
+<h2 id="-">安装和使用</h2>
+<h3 id="-">安装</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>npm <span class="keyword">install</span> express-hbs
+</pre></td></tr></table></figure>
+
+<h3 id="-">配置</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre>var hbs = require('express-hbs');
+app.engine(‘hbs’, hbs.express3({ 
+    partialsDir: __dirname + ‘/views/partials’
+ }));
+app.<span class="operator"><span class="keyword">set</span>(‘<span class="keyword">view</span> engine’, ‘hbs’);</span>
+app.<span class="operator"><span class="keyword">set</span>(‘views’, __dirname + ‘/views’);</span>
+</pre></td></tr></table></figure>
+
+<h3 id="-">参数</h3>
+<blockquote>
+<p>partialsDir: partials模板路径,如果有多个传递数组否则传递字符串</p>
+<p>blockHelperName: 重写 block 名称</p>
+<p>contentHelperName: 重写 contentFor</p>
+<p>defaultLayout: 默认layout模板的绝对路径</p>
+<p>extname: 模板扩展后缀(默认 .hbs)</p>
+<p>handlebars: 用其他 handlebars 引擎替代express-hbs的依赖</p>
+<p>layoutsDir: layout的模板路径</p>
+<p>templateOptions: template的参数</p>
+</blockquote>
+<h3 id="-">渲染</h3>
+<p>和jade差不多, </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="title">res</span>.render(xxx.hbs, { <span class="typedef"><span class="keyword">data</span> })</span>
+</pre></td></tr></table></figure>
+
+<p>不太一样的是layout的选择需要在调用时指定<code>data.layout</code></p>
+<h2 id="-">语法</h2>
+<h3 id="-">变量替换</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="list">{ { argument }</span> }
+</pre></td></tr></table></figure>
+
+<h3 id="block-">block占位符</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="list">{ { { block “pageScripts” }</span> } }
+</pre></td></tr></table></figure>
+
+<h3 id="block-">block申明</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="list">{ { #contentFor “pageScripts” }</span> }
+CONTENT HERE
+<span class="list">{ { /contentFor }</span> }
+</pre></td></tr></table></figure>
+
+<h3 id="-layout">在模板中申明一个layout</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre><span class="list">{ { !&lt; LAYOUT }</span> }
+</pre></td></tr></table></figure>
+
+<p><em>PS: 注: layout如果以” . ” 开头,则表示相对当前模板路径, 否则表示 layoutsDir 参数的相对路径.</em></p>
+<h3 id="-">结构控制</h3>
+<h4 id="-">循环</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="list">{ { #each data }</span> }
+&lt;p&gt;<span class="list">{ { this }</span> }&lt;/p&gt;  遍历并输出
+<span class="list">{ { /each }</span> }
+</pre></td></tr></table></figure>
+
+<h4 id="-">条件</h4>
+<p><code>if...else</code>的形式, 和each差不多</p>
+<h3 id="-">内建辅助方法</h3>
+<h4 id="-">注册</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+</pre></td><td class="code"><pre>hbs.registerHelper( ‘userFunction’, <span class="function"><span class="keyword">function</span><span class="params">(p1, p2)</span> {</span> 
+
+<span class="keyword">return</span> <span class="keyword">new</span> hbs.SafeString(‘&lt;a href=”‘+p1+’” target=”_blank”&gt;’ + p2 + ‘&lt;/a&gt;);
+
+ });
+</pre></td></tr></table></figure>
+
+<h4 id="-">调用</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>{ { {  userFunction ‘https:<span class="comment">//github.com/ekoneko’ ‘ekoneko’ } } }</span>
+</pre></td></tr></table></figure>
+
+<h2 id="-">其他</h2>
+<h3 id="-hbs-">多个 hbs并存</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre><span class="keyword">var</span> hbs = <span class="keyword">require</span>(‘express-hbs’);
+<span class="keyword">var</span> instance1 = hbs.<span class="keyword">create</span>();
+<span class="keyword">var</span> instance2 = hbs.<span class="keyword">create</span>();
+</pre></td></tr></table></figure>
+
+<p>不同的hbs单例拥有自己的命名空间和缓存. 或许构建大型项目会比较好用吧</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/node/express-hbs/" data-id="ksw5arwt2b92wyp2" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbs express/">hbs express</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/cocos2d/cocos2d-tutorial-0/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          cocos2d-html 学习笔记 1: 官方范例
+        
+      </div>
+    </a>
+  
+  
+    <a href="/test/helloworld/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hello world</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/hbs express/" style="font-size: NaNpx;">hbs express</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 官方范例</a>
+          </li>
+        
+          <li>
+            <a href="/node/express-hbs/">express-hbs简介</a>
+          </li>
+        
+          <li>
+            <a href="/test/helloworld/">hello world</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 eko<br>
+      Powered by <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script type="text/javascript" src="/js/script.js"></script>
+  </div>
+</body>
+</html>

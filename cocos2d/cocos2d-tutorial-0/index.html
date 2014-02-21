@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>cocos2d-html 学习笔记 1: 官方范例 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="og:type" content="blog">
+<meta name="og:title" content="cocos2d-html 学习笔记 1: 官方范例">
+<meta name="og:url" content="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/">
+<meta name="og:image">
+<meta name="og:site_name" content="ekoneko.github.io">
+<meta name="og:description" content="cocos2d-html 学习笔记第一期官方下载包中演示代码的分析
+
+
+最近对这个游戏引擎蛮感兴趣的. 抛开webGL的部分. 从头开始看看2d部分是怎么工作的吧.
+理论部分打算分成三段:
+
+官网的几个实例和教程
+源码的结构和各个类的功能
+找一个具体的开源示例分析
+
+范例1: hello world
+这个范例主要用来介绍 cocos2d-html 的加载方式
+首先创建了一个 document.cc">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternative" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link href="http://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+</head>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><input type="submit" value="&#xF002;" class="search-form-submit"><input type="hidden" name="q" value="site:http://ekoneko.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-cocos2d-tutorial-0" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/cocos2d/cocos2d-tutorial-0/" class="article-date">
+  <time datetime="2014-02-13T00:00:00.000Z" itemprop="datePublished">Feb 13 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      cocos2d-html 学习笔记 1: 官方范例
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>cocos2d-html 学习笔记第一期<br/>官方下载包中演示代码的分析</p>
+<a id="more"></a>
+
+<p>最近对这个游戏引擎蛮感兴趣的. 抛开webGL的部分. 从头开始看看2d部分是怎么工作的吧.</p>
+<p>理论部分打算分成三段:</p>
+<blockquote>
+<p>官网的几个实例和教程</p>
+<p>源码的结构和各个类的功能</p>
+<p>找一个具体的开源示例分析</p>
+</blockquote>
+<h2 id="-1-hello-world">范例1: hello world</h2>
+<p>这个范例主要用来介绍 cocos2d-html 的加载方式</p>
+<p>首先创建了一个 <code>document.ccConfig</code>  来存储全局配置.</p>
+<p>下面的变量<code>c</code>被传递给了<code>document.ccConfig</code>, 除了配置外还有一些自定义初始化的内容.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="code"><pre>    var c = {
+        COCOS2D_DEBUG:<span class="number">2</span>,   <span class="comment"> // 0-关闭 1-基本 2-全部</span>
+        box2d:<span class="constant">false</span>,        
+        chipmunk:<span class="constant">false</span>,
+        showFPS:<span class="constant">true</span>,
+        frameRate:<span class="number">60</span>,
+        loadExtension:<span class="constant">false</span>,
+        renderMode:<span class="number">0</span>,      <span class="comment"> // 选择渲染模式: 0(default), 1(Canvas only), 2(WebGL only)</span>
+        tag:<span class="string">'gameCanvas'</span>,  <span class="comment"> // document里的canvas标签 id</span>
+        engineDir:<span class="string">'../cocos2d/'</span>,
+       <span class="comment"> //SingleEngineFile:'',</span>
+        appFiles:[
+            <span class="string">'src/resource.js'</span>,
+            <span class="string">'src/myApp.js'</span>//<span class="built_in">add</span> your own <span class="built_in">files</span> <span class="operator">in</span> order here
+        ]
+</pre></td></tr></table></figure>
+
+<p><code>engineDir</code> 和 <code>SingleEngineFile</code> 是加载cocos2d的两种方式. 概念上应该分别对应js中, &quot;模块化&quot;和&quot;去模块化&quot;.</p>
+<p>范例中当触发document ready后. 如果是<code>engineDir</code>, 则加载这个目录下<code>jsloader.js</code>文件. 如果是<code>SingleEngineFile</code>, 则直接加载了这个文件.</p>
+<p>根据 cocos2d/jsloader.js 的意思, <code>document.ccConfig</code>是用来决定 <code>engineDir</code>是否额外的加载像 box2d 之类的文件</p>
+<p>cocos2d会自动加载工程根目录下的<code>main.js</code>文件:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+</pre></td><td class="code"><pre><span class="keyword">var</span> cocos2dApp = cc.Application.extend({
+    config:document[<span class="string">'ccConfig'</span>],
+    ctor:<span class="function"><span class="keyword">function</span> <span class="params">(scene)</span> {</span>
+        <span class="keyword">this</span>._super();
+    }
+});
+</pre></td></tr></table></figure>
+
+<p>这里把document.ccConfig加载为了配置文件, 并扩展了构造函数. 按照我认识的框架结构,通常这个main.js应该是不期望被改动的吧.</p>
+<p>cocos2d.js里设置了两个自己的脚本文件:</p>
+<p><code>resource.js</code>定义了一些资源路径</p>
+<p><code>src/myApp.js</code>是app的脚本.</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="code"><pre>var Helloworld = cc.Layer.extend({
+    this._super();
+    // <span class="keyword">...</span>
+});
+
+var HelloWorldScene = cc.Scene.extend({
+    onEnter:<span class="keyword">function</span> () {
+        // <span class="keyword">...</span>
+    };
+});
+</pre></td></tr></table></figure>
+
+<p>创建了主要的图层和场景.</p>
+<p>里面创建了几个精灵和事件绑定,暂略.</p>
+<h2 id="test-cases">Test cases</h2>
+<p>关于代码中&quot;s_xxxx&quot;的变量,是在<code>tests_resources-{html5|jsb}.js</code>中定义的.</p>
+<h3 id="actionmanager">ActionManager</h3>
+<p>ActionManager 主要展示了各种执行与控制动作的方法</p>
+<h4 id="-">创造一个精灵并放置在场景的相应位置:</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>child = cc<span class="preprocessor">.Sprite</span><span class="preprocessor">.create</span>(s_pathGrossini)<span class="comment">;</span>
+child<span class="preprocessor">.setPosition</span>(<span class="number">200</span>, <span class="number">200</span>)<span class="comment">;</span>
+</pre></td></tr></table></figure>
+
+<p>这里的 this 好像是从<code>cc.LayerGradient</code>一路继承下的,先不理会好了.</p>
+<h4 id="-runaction-">运行动作(runAction)的同步异步</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+</pre></td><td class="code"><pre>// <span class="number">1.5</span>s 顺时针旋转<span class="number">90</span>°
+child<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.RotateBy</span><span class="preprocessor">.create</span>(<span class="number">1.5</span>, <span class="number">90</span>))<span class="comment">;</span>
+// 创造一个动作队列
+child<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.Sequence</span><span class="preprocessor">.create</span>(
+    // 延迟<span class="number">1.4</span>s
+    cc<span class="preprocessor">.DelayTime</span><span class="preprocessor">.create</span>(<span class="number">1.4</span>),
+    // <span class="number">1.1</span>s内淡出
+    cc<span class="preprocessor">.FadeOut</span><span class="preprocessor">.create</span>(<span class="number">1.1</span>))
+)<span class="comment">;</span>
+this<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.Sequence</span><span class="preprocessor">.create</span>(
+    // 延迟<span class="number">1.4</span>s
+    cc<span class="preprocessor">.DelayTime</span><span class="preprocessor">.create</span>(<span class="number">1.4</span>),
+    // 进入 onremovethis 的流程
+    cc<span class="preprocessor">.CallFunc</span><span class="preprocessor">.create</span>(this<span class="preprocessor">.onRemoveThis</span>, this))
+)<span class="comment">;</span>
+</pre></td></tr></table></figure>
+
+<p>这里有两个队列(Sequence). 实际上第一个队列<strong>被跳过了</strong>.</p>
+<p><strong><code>runAction</code> 是异步的, 其中的 <code>Sequence</code> 是同步的</strong></p>
+<h4 id="-stopallactions-">中断动作(stopAllActions)</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="code"><pre>// grossini是一个sprite
+grossini<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.Sequence</span><span class="preprocessor">.create</span>(
+    // cc<span class="preprocessor">.p</span>返回的是一个(<span class="number">150</span>, <span class="number">0</span>)的向量
+    cc<span class="preprocessor">.MoveBy</span><span class="preprocessor">.create</span>(<span class="number">1</span>, cc<span class="preprocessor">.p</span>(<span class="number">150</span>, <span class="number">0</span>)),
+    cc<span class="preprocessor">.CallFunc</span><span class="preprocessor">.create</span>(this<span class="preprocessor">.onBugMe</span>, this))
+)<span class="comment">;</span>
+<span class="label">onBugMe:</span>function (node) {
+    node<span class="preprocessor">.stopAllActions</span>()<span class="comment">; // ← 这里中断了之前的动画</span>
+    node<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.ScaleTo</span><span class="preprocessor">.create</span>(<span class="number">2</span>, <span class="number">2</span>))<span class="comment">;</span>
+},
+</pre></td></tr></table></figure>
+
+<p>感觉这个test好像没突出重点, 稍微改动了下</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="code"><pre>grossini<span class="preprocessor">.runAction</span>(cc<span class="preprocessor">.Sequence</span><span class="preprocessor">.create</span>(
+    cc<span class="preprocessor">.MoveBy</span><span class="preprocessor">.create</span>(<span class="number">1</span>, cc<span class="preprocessor">.p</span>(<span class="number">150</span>, <span class="number">0</span>))
+)<span class="comment">;</span>
+setTimeout(function() {
+    // <span class="number">300</span>ms后,运动停止了
+    grossini<span class="preprocessor">.stopAllActions</span>()<span class="comment">;</span>
+}, <span class="number">300</span>)<span class="comment">;</span>
+</pre></td></tr></table></figure>
+
+<h4 id="-actionmanager-">通过ActionManager管理动作</h4>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="code"><pre>var action = cc<span class="preprocessor">.MoveBy</span><span class="preprocessor">.create</span>(<span class="number">1</span>, cc<span class="preprocessor">.p</span>(<span class="number">150</span>, <span class="number">0</span>))<span class="comment">;</span>
+director<span class="preprocessor">.getActionManager</span>()<span class="preprocessor">.addAction</span>(action, grossini, true)<span class="comment">;</span>
+// <span class="number">3</span>s后执行onUnpause
+this<span class="preprocessor">.schedule</span>(this<span class="preprocessor">.onUnpause</span>, <span class="number">3</span>)<span class="comment">;</span>
+<span class="label">onUnpause:</span>function (dt) {
+    this<span class="preprocessor">.unschedule</span>(this<span class="preprocessor">.onUnpause</span>)<span class="comment">;</span>
+    var node = this<span class="preprocessor">.getChildByTag</span>(TAG_GROSSINI)<span class="comment">;</span>
+    director<span class="preprocessor">.getActionManager</span>()<span class="preprocessor">.resumeTarget</span>(node)<span class="comment">;</span>
+},
+</pre></td></tr></table></figure>
+
+<p>director 是 cc.Director 的单例, 似乎是用来控制场景的执行,暂时不去深入了解.</p>
+<p>总之它可以getActionManager()获取<code>ActionManager</code>的对象. 向里面<code>addAction</code>, 并在<code>resumeTarget</code>后执行</p>
+<h4 id="tag">TAG</h4>
+<p>在 Node.appendChild时可以通过第三个参数, 或是 xxx.setTag()的方式给一个对象申明一个唯一标志.</p>
+<p>通过getChildByTag, stopActionByTag可以得到匹配的对象或用之进行相关操作</p>
+<h3 id="action">Action</h3>
+<p>对精灵的基本操作</p>
+<h3 id="box2d">Box2D</h3>
+<h3 id="chipmunk">Chipmunk</h3>
+<p>和Box2D一样也是一个物理引擎, 网上找到的对比文: <a href="http://www.cnblogs.com/jiangshiyong/archive/2012/08/08/2628643.html" target="_blank">link</a></p>
+<h3 id="click-and-move">Click And Move</h3>
+<p>这里定义了事件onTouchesEnded和onMouseUp. 后面会有详细的事件范例</p>
+<h3 id="-clippingnode-">裁剪结点(ClippingNode)</h3>
+<h3 id="-audioengine-">音乐与音效(AudioEngine)</h3>
+<h3 id="-armature-">骨骼动画(Armature)</h3>
+<h3 id="gui">GUI</h3>
+<h3 id="-components-">组件(Components)</h3>
+<h3 id="-scene-">场景(Scene)</h3>
+<h3 id="-">获取当前的语言</h3>
+<h3 id="-drawnode-">描绘(DrawNode)</h3>
+<h3 id="-easeaction-">缓动(EaseAction)</h3>
+<h3 id="-">事件</h3>
+<h3 id="-">特效</h3>
+<p>摇晃(shaky), 波纹(wave), 翻转(flip), 镜面(lens), 涟漪(ripple), 液体(liquid), 扭转(twirl), 以及各种过场效果</p>
+<h3 id="-fileutils-">文件工具(fileUtils)</h3>
+<h3 id="-font-">字体(font)</h3>
+<h3 id="interval">interval</h3>
+<h3 id="-label-">标签(label)</h3>
+<h3 id="-layer-">层(layer)</h3>
+<h3 id="-menu-">菜单(menu)</h3>
+<h3 id="-motionstreak-">拖尾效果(motionstreak)</h3>
+<h3 id="-node-">结点(node)</h3>
+<h3 id="-particle-">粒子效果(particle)</h3>
+<h3 id="-performance-">性能测试(performance)</h3>
+<h3 id="-progressaction-">进度动作(progressAction)</h3>
+<p><a href="http://blog.csdn.net/w337198302/article/details/18380789" target="_blank">http://blog.csdn.net/w337198302/article/details/18380789</a></p>
+<h3 id="-rendertexture-">渲染(RenderTexture)</h3>
+<h3 id="-sprite-">精灵(sprite)</h3>
+<h3 id="-tilemap-">元件地图(tilemap)</h3>
+<p>大部分的测试用例看名字就能想象得到内容. 具体的依赖文档好了.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/" data-id="ij5bs1o6tv5mrhvr" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/node/express-hbs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">express-hbs简介</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/hbs express/" style="font-size: NaNpx;">hbs express</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 官方范例</a>
+          </li>
+        
+          <li>
+            <a href="/node/express-hbs/">express-hbs简介</a>
+          </li>
+        
+          <li>
+            <a href="/test/helloworld/">hello world</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2014 eko<br>
+      Powered by <a href="http://zespia.tw/hexo/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script type="text/javascript" src="/js/script.js"></script>
+  </div>
+</body>
+</html>
