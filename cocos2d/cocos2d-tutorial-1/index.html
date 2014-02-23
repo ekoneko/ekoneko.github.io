@@ -3,14 +3,23 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: hbs express | ekoneko.github.io</title>
+  <title>cocos2d-html 学习笔记 2: 常用类 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="og:type" content="blog">
-<meta name="og:title">
-<meta name="og:url" content="http://ekoneko.github.io/tags/hbs express/">
+<meta name="og:title" content="cocos2d-html 学习笔记 2: 常用类">
+<meta name="og:url" content="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/">
 <meta name="og:image">
 <meta name="og:site_name" content="ekoneko.github.io">
-<meta name="og:description">
+<meta name="og:description" content="官方的test case概括了cocos2d-html5的各种实用类.
+了解了这个就可以基本掌握这个游戏引擎了~
+
+
+Test cases
+基本上是一个case对应cocos2d的一个类.看完这个对于cocos2d封装的主要功能就了解了.
+ActionManager
+ActionManager 对多个动作(action)进行了组织. 可以自由控制动作的播放与暂停.
+Action
+精灵的动作, 各种">
 <meta name="twitter:card" content="summary">
   
     <link rel="alternative" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
@@ -57,16 +66,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-express-hbs" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-cocos2d-tutorial-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/node/express-hbs/" class="article-date">
-  <time datetime="2014-01-28T00:00:00.000Z" itemprop="datePublished">Jan 28 2014</time>
+    <a href="/cocos2d/cocos2d-tutorial-1/" class="article-date">
+  <time datetime="2014-02-23T00:00:00.000Z" itemprop="datePublished">Feb 23 2014</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/node/">node</a>
+    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
   </div>
 
   </div>
@@ -76,8 +83,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/node/express-hbs/">express-hbs简介</a>
+    <h1 class="article-title" itemprop="name">
+      cocos2d-html 学习笔记 2: 常用类
     </h1>
   
 
@@ -85,31 +92,97 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>express-hbs 是一个handlebars模板引擎.</p>
+        <p>官方的test case概括了cocos2d-html5的各种实用类.</p>
+<p>了解了这个就可以基本掌握这个游戏引擎了~</p>
+<a id="more"></a>
 
-        
-          <p class="article-more-link">
-            <a href="/node/express-hbs/#more">Read More</a>
-          </p>
-        
+<h2 id="test-cases">Test cases</h2>
+<p>基本上是一个case对应cocos2d的一个类.看完这个对于cocos2d封装的主要功能就了解了.</p>
+<h3 id="actionmanager">ActionManager</h3>
+<p>ActionManager 对多个动作(action)进行了组织. 可以自由控制动作的播放与暂停.</p>
+<h3 id="action">Action</h3>
+<p>精灵的动作, 各种线性变换的实现</p>
+<h3 id="box2d">Box2D</h3>
+<p>一个2D物理引擎</p>
+<h3 id="chipmunk">Chipmunk</h3>
+<p>和Box2D一样也是一个物理引擎, 网上找到的对比文: <a href="http://www.cnblogs.com/jiangshiyong/archive/2012/08/08/2628643.html" target="_blank">link</a></p>
+<h3 id="click-and-move">Click And Move</h3>
+<p>这是一个简单的demo来实现将屏幕的精灵移动到鼠标指向的位置.</p>
+<p>定义了事件onTouchesEnded和onMouseUp. </p>
+<h3 id="-clippingnode-">裁剪结点(ClippingNode)</h3>
+<p>生成一个遮罩层, 一个精灵被挡住的位置就不显示了.</p>
+<p>第二个示例比较赞,是一个打靶游戏,被打掉的靶子会露出后面的背景,也就是在射击的中心描绘出一个圆形遮罩</p>
+<h3 id="-audioengine-">音乐与音效(AudioEngine)</h3>
+<h3 id="-armature-">骨骼动画(Armature)</h3>
+<h3 id="gui">GUI</h3>
+<h3 id="-components-">组件(Components)</h3>
+<h3 id="-scene-">场景(Scene)</h3>
+<h3 id="-">获取当前的语言</h3>
+<h3 id="-drawnode-">描绘(DrawNode)</h3>
+<h3 id="-easeaction-">缓动(EaseAction)</h3>
+<h3 id="-">事件</h3>
+<p>事件是通过继承时覆盖掉 onMouseUp 之类的方法来实现的</p>
+<h3 id="-">特效</h3>
+<p>摇晃(shaky), 波纹(wave), 翻转(flip), 镜面(lens), 涟漪(ripple), 液体(liquid), 扭转(twirl), 以及各种过场效果</p>
+<h3 id="-fileutils-">文件工具(fileUtils)</h3>
+<p>文件辅助工具,举得例子就是加载了本地的资源文件. cocos2d-html是从其他平台转换过来的东西可能会有读写文件的需求,不过对于web平台似乎没啥用途</p>
+<h3 id="-font-">字体(font)</h3>
+<h3 id="-interval-">计时器(interval)</h3>
+<h3 id="-label-">标签(label)</h3>
+<h3 id="-layer-">层(layer)</h3>
+<h3 id="-menu-">菜单(menu)</h3>
+<h3 id="-motionstreak-">拖尾效果(motionstreak)</h3>
+<p>比如飞行器尾部的火焰</p>
+<h3 id="-node-">结点(node)</h3>
+<p>基本上所有的元素都是<code>node</code>的子类. 所以里面封装了很多公共方法(比如onEnter)</p>
+<p>可参照 <a href="http://blog.csdn.net/jackystudio/article/details/12703741" target="_blank"><a href="http://blog.csdn.net/jackystudio/article/details/12703741">http://blog.csdn.net/jackystudio/article/details/12703741</a></a></p>
+<h3 id="-particle-">粒子效果(particle)</h3>
+<h3 id="-performance-">性能测试(performance)</h3>
+<h3 id="-progressaction-">进度动作(progressAction)</h3>
+<p><a href="http://blog.csdn.net/w337198302/article/details/18380789" target="_blank">http://blog.csdn.net/w337198302/article/details/18380789</a></p>
+<h3 id="-rendertexture-">渲染(RenderTexture)</h3>
+<h3 id="-sprite-">精灵(sprite)</h3>
+<p>创造一个精灵并放置在场景的相应位置:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>child = cc<span class="preprocessor">.Sprite</span><span class="preprocessor">.create</span>(s_pathGrossini)<span class="comment">;</span>
+child<span class="preprocessor">.setPosition</span>(<span class="number">200</span>, <span class="number">200</span>)<span class="comment">;</span>
+</pre></td></tr></table></figure>
+
+<h3 id="-tilemap-">元件地图(tilemap)</h3>
+<p>大部分的测试用例看名字就能想象得到内容. 具体的依赖文档好了.</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/node/express-hbs/" data-id="v4t2s008lo04y200" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="ow1q1zoegkef6itk" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hbs express/">hbs express</a></li></ul>
-
     </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/cocos2d/cocos2d-tutorial-0/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">cocos2d-html 学习笔记 1: 基本结构</div>
+    </a>
+  
+</nav>
+
   
 </article>
 
 
-  
-  
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
 </section>
         
           <aside id="sidebar">
@@ -201,11 +274,13 @@
 <script>
   var disqus_shortname = 'ekoneko';
   
+  var disqus_url = 'http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//go.disqus.com/count.js';
+    dsq.src = '//go.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
