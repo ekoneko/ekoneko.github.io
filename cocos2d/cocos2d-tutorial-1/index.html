@@ -96,52 +96,52 @@ Action
 <p>了解了这个就可以基本掌握这个游戏引擎了~</p>
 <a id="more"></a>
 
-<h2 id="test-cases">Test cases</h2>
+<h2 id="Test_cases">Test cases</h2>
 <p>基本上是一个case对应cocos2d的一个类.看完这个对于cocos2d封装的主要功能就了解了.</p>
-<h3 id="actionmanager">ActionManager</h3>
+<h3 id="ActionManager">ActionManager</h3>
 <p>ActionManager 对多个动作(action)进行了组织. 可以自由控制动作的播放与暂停.</p>
-<h3 id="action">Action</h3>
+<h3 id="Action">Action</h3>
 <p>精灵的动作, 各种线性变换的实现</p>
-<h3 id="box2d">Box2D</h3>
+<h3 id="Box2D">Box2D</h3>
 <p>一个2D物理引擎</p>
-<h3 id="chipmunk">Chipmunk</h3>
+<h3 id="Chipmunk">Chipmunk</h3>
 <p>和Box2D一样也是一个物理引擎, 网上找到的对比文: <a href="http://www.cnblogs.com/jiangshiyong/archive/2012/08/08/2628643.html" target="_blank">link</a></p>
-<h3 id="click-and-move">Click And Move</h3>
+<h3 id="Click_And_Move">Click And Move</h3>
 <p>这是一个简单的demo来实现将屏幕的精灵移动到鼠标指向的位置.</p>
 <p>定义了事件onTouchesEnded和onMouseUp. </p>
-<h3 id="-clippingnode-">裁剪结点(ClippingNode)</h3>
+<h3 id="裁剪结点(ClippingNode)">裁剪结点(ClippingNode)</h3>
 <p>生成一个遮罩层, 一个精灵被挡住的位置就不显示了.</p>
 <p>第二个示例比较赞,是一个打靶游戏,被打掉的靶子会露出后面的背景,也就是在射击的中心描绘出一个圆形遮罩</p>
-<h3 id="-audioengine-">音乐与音效(AudioEngine)</h3>
-<h3 id="-armature-">骨骼动画(Armature)</h3>
-<h3 id="gui">GUI</h3>
-<h3 id="-components-">组件(Components)</h3>
-<h3 id="-scene-">场景(Scene)</h3>
-<h3 id="-">获取当前的语言</h3>
-<h3 id="-drawnode-">描绘(DrawNode)</h3>
-<h3 id="-easeaction-">缓动(EaseAction)</h3>
-<h3 id="-">事件</h3>
+<h3 id="音乐与音效(AudioEngine)">音乐与音效(AudioEngine)</h3>
+<h3 id="骨骼动画(Armature)">骨骼动画(Armature)</h3>
+<h3 id="GUI">GUI</h3>
+<h3 id="组件(Components)">组件(Components)</h3>
+<h3 id="场景(Scene)">场景(Scene)</h3>
+<h3 id="获取当前的语言">获取当前的语言</h3>
+<h3 id="描绘(DrawNode)">描绘(DrawNode)</h3>
+<h3 id="缓动(EaseAction)">缓动(EaseAction)</h3>
+<h3 id="事件">事件</h3>
 <p>事件是通过继承时覆盖掉 onMouseUp 之类的方法来实现的</p>
-<h3 id="-">特效</h3>
+<h3 id="特效">特效</h3>
 <p>摇晃(shaky), 波纹(wave), 翻转(flip), 镜面(lens), 涟漪(ripple), 液体(liquid), 扭转(twirl), 以及各种过场效果</p>
-<h3 id="-fileutils-">文件工具(fileUtils)</h3>
+<h3 id="文件工具(fileUtils)">文件工具(fileUtils)</h3>
 <p>文件辅助工具,举得例子就是加载了本地的资源文件. cocos2d-html是从其他平台转换过来的东西可能会有读写文件的需求,不过对于web平台似乎没啥用途</p>
-<h3 id="-font-">字体(font)</h3>
-<h3 id="-interval-">计时器(interval)</h3>
-<h3 id="-label-">标签(label)</h3>
-<h3 id="-layer-">层(layer)</h3>
-<h3 id="-menu-">菜单(menu)</h3>
-<h3 id="-motionstreak-">拖尾效果(motionstreak)</h3>
+<h3 id="字体(font)">字体(font)</h3>
+<h3 id="计时器(interval)">计时器(interval)</h3>
+<h3 id="标签(label)">标签(label)</h3>
+<h3 id="层(layer)">层(layer)</h3>
+<h3 id="菜单(menu)">菜单(menu)</h3>
+<h3 id="拖尾效果(motionstreak)">拖尾效果(motionstreak)</h3>
 <p>比如飞行器尾部的火焰</p>
-<h3 id="-node-">结点(node)</h3>
+<h3 id="结点(node)">结点(node)</h3>
 <p>基本上所有的元素都是<code>node</code>的子类. 所以里面封装了很多公共方法(比如onEnter)</p>
-<p>可参照 <a href="http://blog.csdn.net/jackystudio/article/details/12703741" target="_blank"><a href="http://blog.csdn.net/jackystudio/article/details/12703741">http://blog.csdn.net/jackystudio/article/details/12703741</a></a></p>
-<h3 id="-particle-">粒子效果(particle)</h3>
-<h3 id="-performance-">性能测试(performance)</h3>
-<h3 id="-progressaction-">进度动作(progressAction)</h3>
+<p>可参照 <a href="http://blog.csdn.net/jackystudio/article/details/12703741" target="_blank">http://blog.csdn.net/jackystudio/article/details/12703741</a></p>
+<h3 id="粒子效果(particle)">粒子效果(particle)</h3>
+<h3 id="性能测试(performance)">性能测试(performance)</h3>
+<h3 id="进度动作(progressAction)">进度动作(progressAction)</h3>
 <p><a href="http://blog.csdn.net/w337198302/article/details/18380789" target="_blank">http://blog.csdn.net/w337198302/article/details/18380789</a></p>
-<h3 id="-rendertexture-">渲染(RenderTexture)</h3>
-<h3 id="-sprite-">精灵(sprite)</h3>
+<h3 id="渲染(RenderTexture)">渲染(RenderTexture)</h3>
+<h3 id="精灵(sprite)">精灵(sprite)</h3>
 <p>创造一个精灵并放置在场景的相应位置:</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre>1
 2
@@ -149,13 +149,13 @@ Action
 child<span class="preprocessor">.setPosition</span>(<span class="number">200</span>, <span class="number">200</span>)<span class="comment">;</span>
 </pre></td></tr></table></figure>
 
-<h3 id="-tilemap-">元件地图(tilemap)</h3>
+<h3 id="元件地图(tilemap)">元件地图(tilemap)</h3>
 <p>大部分的测试用例看名字就能想象得到内容. 具体的依赖文档好了.</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="ow1q1zoegkef6itk" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="a4lpm0dhtudj6dli" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -165,6 +165,15 @@ child<span class="preprocessor">.setPosition</span>(<span class="number">200</sp
   
     
 <nav id="article-nav">
+  
+    <a href="/cocos2d/cocos2d-tutorial-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          cocos2d-html 学习笔记 3: 第一个游戏--潜艇大战
+        
+      </div>
+    </a>
   
   
     <a href="/cocos2d/cocos2d-tutorial-0/" id="article-nav-older" class="article-nav-link-wrap">
@@ -191,7 +200,7 @@ child<span class="preprocessor">.setPosition</span>(<span class="number">200</sp
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -218,7 +227,7 @@ child<span class="preprocessor">.setPosition</span>(<span class="number">200</sp
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04">April 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -228,6 +237,10 @@ child<span class="preprocessor">.setPosition</span>(<span class="number">200</sp
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/cocos2d/cocos2d-tutorial-2/">cocos2d-html 学习笔记 3: 第一个游戏--潜艇大战</a>
+          </li>
         
           <li>
             <a href="/cocos2d/cocos2d-tutorial-1/">cocos2d-html 学习笔记 2: 常用类</a>
