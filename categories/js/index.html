@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: cocos2d | ekoneko.github.io</title>
+  <title>Category: js | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="og:type" content="blog">
 <meta name="og:title">
-<meta name="og:url" content="http://ekoneko.github.io/categories/cocos2d/">
+<meta name="og:url" content="http://ekoneko.github.io/categories/js/">
 <meta name="og:image">
 <meta name="og:site_name" content="ekoneko.github.io">
 <meta name="og:description">
@@ -59,14 +59,14 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-cocos2d-tutorial-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-angular-study-0" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-2/" class="article-date">
-  <time datetime="2014-04-23T00:00:00.000Z" itemprop="datePublished">Apr 23 2014</time>
+    <a href="/js/angular-study-0/" class="article-date">
+  <time datetime="2014-05-01T00:00:00.000Z" itemprop="datePublished">May 1 2014</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
+    <a class="article-category-link" href="/categories/js/">js</a>
   </div>
 
   </div>
@@ -77,7 +77,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-2/">cocos2d-html 学习笔记 3: 第一个游戏--潜艇大战</a>
+      <a class="article-title" href="/js/angular-study-0/">angular 简介</a>
     </h1>
   
 
@@ -85,120 +85,100 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>用cocos2d-html5做的第一个小作品:潜艇大战.</p>
-<p>这复刻于我小学时很喜欢的一个小游戏, 主要开发目的是熟悉cocos2d的工程结构与实践.</p>
+        <p>angular 是 Google 开发的一款 MVVM 前端框架.</p>
+<p>说到MVVM, M是 <code>model</code>, 可理解为数据, V是 <code>view</code>, 可理解为UI层. M to V &amp; V to M, 也就是实现了一种数据与视图之间的关联模式.</p>
+<p>用个例子来说明, 我有一个值是 123 的变量a, 想输出在屏幕(浏览器)上.</p>
+<p>传统的做法</p>
+<p>html</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>    &lt;<span class="keyword">div</span> <span class="property">id</span>=<span class="string">"show"</span>&gt;&lt;/<span class="keyword">div</span>&gt;
+</pre></td></tr></table></figure>
 
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-2/#more">Read More</a>
-          </p>
-        
+<p>js</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>    <span class="reserved">var</span> a = <span class="number">123</span>
+    <span class="built_in">document</span>.getElementById(<span class="string">'show'</span>).innerHTML = a;
+</pre></td></tr></table></figure>
+
+<p>angular.js的做法</p>
+<p>html</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>&lt;html ng-app=<span class="string">"myApp"</span>&gt;
+<span class="keyword">...</span>
+{ { a } }
+</pre></td></tr></table></figure>
+
+<p>js</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+3
+</pre></td><td class="code"><pre>    angular.module(<span class="string">'myApp'</span>, <span class="function"><span class="keyword">function</span><span class="params">(<span class="variable">$scope</span>)</span> {</span>
+        <span class="variable">$scope</span>.a = a;
+    });
+</pre></td></tr></table></figure>
+
+<p>看起来差不多, 而且angular还要初始化. 然后, 我们需要改变a的值为233.</p>
+<p>传统的做法</p>
+<p>js</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+2
+</pre></td><td class="code"><pre>    <span class="literal">a</span> = <span class="number">233</span><span class="comment">;</span>
+    document.getElementById('show').innerHTML = <span class="literal">a</span><span class="comment">;</span>
+</pre></td></tr></table></figure>
+
+<p>通常情况下我们会把数这样的操作封装成一个函数或触发器, 如果需要改变变量的值就通过这个封装来同步修改这个变量a(model)以及dom元素(view)</p>
+<p>angular.js的做法<br>js</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>    <span class="variable">$scope</span>.a = <span class="number">233</span>;
+</pre></td></tr></table></figure>
+
+<p>以上只改变了a(model), dom(view)的改变是angular内部去同步的.</p>
+<p>看起来都只是一两行的代码, 但仔细想想就能感受到MVVM的涵义了:</p>
+<p>让model与view完全分离开, js专注去实现数据的变化. 交互与显示则完全交由HTML或其他模板语言负责.</p>
+<p>Angular 是我所知道的MVVM框架中体积最大的一个(源码20000+代码, 压缩后的体积也有100+kb). 当然也是功能最齐全的一个. 除了上述最核心的数据绑定外,还实现了模板, 路由, 控制器, 服务等功能. 主要是为单页面应用提供便利,当然传统web也无不可.</p>
+<p>默认的浏览器兼容是到 IE9, 但官方给出了IE7,8的兼容性解决方案. 实现起来多加几个字代码即可, 除了不能自定义标签外没啥影响.</p>
+<p>此外 Angular 的配套组件非常多. 值得一提的是Angular-Bootstrap 的 UI组件. 实现了grid啊, dialog啊,tips等等常用的UI组件, 使用起来可以少些很多代码.</p>
+<h2 id="为什么要用_Angular">为什么要用 Angular</h2>
+<p>说了这么多来总结一下 Angular.js 的优点</p>
+<ol>
+<li><p>提供了一套优雅的代码方案, 团队开发中可作为一套编码规范</p>
+</li>
+<li><p>大幅度提高开发效率.</p>
+</li>
+<li><p>代码可读性高.</p>
+</li>
+</ol>
+<p>当然,这些都是相对的. 用Angular写出来的东西是不是高效优雅归根结底还是要看人… Angular作为工具只是提供了一种更加便利的方式</p>
+<h2 id="缺点">缺点</h2>
+<ol>
+<li><p>团队开发成本. 优点再多也要足够说服团队去用才行. 并不是人人都会angular, 学习一个新东西还是有成本的.</p>
+</li>
+<li><p>需要加载一个100kb的类库.</p>
+</li>
+<li><p>Angular 提倡模型-视图分离, 但和其他类库并用时并不一定可以做到这点. 例如 jqueryUI.</p>
+</li>
+<li><p>Angular 写的代码不能用通常的混淆方式进行压缩. 主要是 Angular的服务是依赖注入的方式加载的. 例如之前例子的 </p>
+</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre>1
+</pre></td><td class="code"><pre>    <span class="function"><span class="keyword">function</span><span class="params">($scope)</span></span>
+</pre></td></tr></table></figure>
+
+<p>如果是传统混淆可能会把$scope替换为n来减少长度. 这样会报错的</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/" data-id="5ysae3xogv70najo" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/js/angular-study-0/" data-id="o0szimsq51ei6h8w" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/js/angular-study-0/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-    </footer>
-  </div>
-  
-</article>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/angular javascript/">angular javascript</a></li></ul>
 
-
-  
-    <article id="post-cocos2d-tutorial-1" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-1/" class="article-date">
-  <time datetime="2014-02-23T00:00:00.000Z" itemprop="datePublished">Feb 23 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-1/">cocos2d-html 学习笔记 2: 常用类</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>官方的test case概括了cocos2d-html5的各种实用类.</p>
-<p>了解了这个就可以基本掌握这个游戏引擎了~</p>
-
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-1/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="xtxko1on6ll07o89" class="article-share-link">Share</a>
-      
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-cocos2d-tutorial-0" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-0/" class="article-date">
-  <time datetime="2014-02-13T00:00:00.000Z" itemprop="datePublished">Feb 13 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 基本结构</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>cocos2d-html 学习笔记第一期</p>
-<p>根据官方演示 hello world 来了解一些基本的操作</p>
-
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-0/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/" data-id="ro8por9c5ewjyygm" class="article-share-link">Share</a>
-      
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
     </footer>
   </div>
   
