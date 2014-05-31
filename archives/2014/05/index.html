@@ -59,6 +59,66 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-angular-study-1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/js/angular-study-1/" class="article-date">
+  <time datetime="2014-05-31T00:00:00.000Z" itemprop="datePublished">May 31 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/js/">js</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/js/angular-study-1/">angular 实践</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我尝试着在公司的一个新项目上使用angularjs.</p>
+<p>这是一个内部使用的管理平台. 使用的是一款基于 jqueryui 和 bootstrap 的 adminUI. 理论上这样的项目不太适合 angular:</p>
+<blockquote>
+<p>  jquery 和 angular 理念是违背的, jquery是在dom上的封装, 而angular提倡不在js中操作dom.</p>
+<p>  angular 和 jquery 一部分功能代码是重叠的, 一起加载稍微有点浪费.</p>
+</blockquote>
+<p>但这些缺点对于实际的影响并不是很严重, 比起 MVVM 的特性, 选择 angular 的目的更主要是为了更好的结构化代码, 在teamer写出完全让人抓狂的js前先抑制这种可能性.</p>
+<h3 id="factory_数据封装">factory 数据封装</h3>
+<p>按照公司的传统, 大部分的展示界面都是通过列表来呈现的. 而几乎所有列表数据都有共同之处: 请求 page, size, 搜索条件, 返回 {state: true, data: [{…}, {…}], total: xxx} 格式的 json 对象. 过去只封装了后端的数据接收, 每次构建前端都要自己初始化一个表格,然后一个个重复事件. 代码重复率很高.</p>
+<p>现在用 angular 的服务继承搞定这个问题了. 创建了一个 List 的抽象服务, 所有列表都从 list 上继承了基本的行为. 绝大部分场合下,只需要指定 baseUrl 和 filter(过滤数据), 再配合MVVM即可很轻松的渲染出一个列表.</p>
+<h3 id="ngRoute_路由">ngRoute 路由</h3>
+<p>用 angular 的路由遇到了一点小问题. angular 介绍是构建单页面webapp的, 官方给出的路由方法需要一次性加载全部controller. 这一点有点接受不了, 而我则更希望实现按需加载. 用google到的方案解决了(<a href="http://ify.io/lazy-loading-in-angularjs/" target="_blank">http://ify.io/lazy-loading-in-angularjs/</a>).</p>
+<h3 id="与_jquery_共存">与 jquery 共存</h3>
+<p>既然必须用到jquery, 我也没少用. 利用 jquery 的 Ajax 替代 angular 原生的 http 服务省去了修改php后端处理请求的麻烦(angular原生的请求没办法被php直接从$_GET, $_POST中获取). 而且不晓得 angular 的 http 如何实现全局的处理.(应该用server的继承来搞定吧). 一些restful的事情, 比如当服务器返回301的状态码时让页面跳转是用jquery 的 ajaxsetup 去实现的. jqueryui 的一些组件(比如dialog)会在 body 最外层创建 dom,切换view时会带来不必要的麻烦. 统一在路由切换时干掉了.</p>
+<h2 id="小结">小结</h2>
+<p>总体来看 angular 比当初听到的要简单许多. 学习曲线也很平缓. 虽然用起来遇到了一些各种各样的问题不过社区环境相对比较完善了, 可以很容易的发现问题并解决. 对于不需要兼容IE6, 且js交互比较复杂的项目建议使用.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/js/angular-study-1/" data-id="8gaaoe2826i9pclu" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/js/angular-study-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/angular javascript/">angular javascript</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-angular-study-0" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/js/angular-study-0/" class="article-date">
@@ -172,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/js/angular-study-0/" data-id="o0szimsq51ei6h8w" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/js/angular-study-0/" data-id="vrikynoa876s8l4b" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/js/angular-study-0/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -195,7 +255,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/js/">js</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/js/">js</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -204,7 +264,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/angular javascript/">angular javascript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/angular javascript/">angular javascript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -213,7 +273,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/angular javascript/" style="font-size: NaNpx;">angular javascript</a><a href="/tags/hbs express/" style="font-size: NaNpx;">hbs express</a>
+      <a href="/tags/angular javascript/" style="font-size: 20.00px;">angular javascript</a><a href="/tags/hbs express/" style="font-size: 10.00px;">hbs express</a>
     </div>
   </div>
 
@@ -222,7 +282,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05">May 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04">April 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05">May 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04">April 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -232,6 +292,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/js/angular-study-1/">angular 实践</a>
+          </li>
         
           <li>
             <a href="/js/angular-study-0/">angular 简介</a>
@@ -247,10 +311,6 @@
         
           <li>
             <a href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 基本结构</a>
-          </li>
-        
-          <li>
-            <a href="/node/express-hbs/">express-hbs简介</a>
           </li>
         
       </ul>
