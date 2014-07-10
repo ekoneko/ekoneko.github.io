@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Category: cocos2d | ekoneko.github.io</title>
+  <title>Tag: tinymce | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="og:type" content="blog">
 <meta name="og:title">
-<meta name="og:url" content="http://ekoneko.github.io/categories/cocos2d/">
+<meta name="og:url" content="http://ekoneko.github.io/tags/tinymce/">
 <meta name="og:image">
 <meta name="og:site_name" content="ekoneko.github.io">
 <meta name="og:description">
@@ -59,14 +59,14 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-cocos2d-tutorial-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-tinymce-dev" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-2/" class="article-date">
-  <time datetime="2014-04-23T00:00:00.000Z" itemprop="datePublished">Apr 23 2014</time>
+    <a href="/js/tinymce-dev/" class="article-date">
+  <time datetime="2014-07-09T23:39:06.000Z" itemprop="datePublished">Jul 10 2014</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
+    <a class="article-category-link" href="/categories/js/">js</a>
   </div>
 
   </div>
@@ -77,7 +77,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-2/">cocos2d-html 学习笔记 3: 第一个游戏--潜艇大战</a>
+      <a class="article-title" href="/js/tinymce-dev/">tinymce 定制笔记</a>
     </h1>
   
 
@@ -85,120 +85,40 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>用cocos2d-html5做的第一个小作品:潜艇大战.</p>
-<p>这复刻于我小学时很喜欢的一个小游戏, 主要开发目的是熟悉cocos2d的工程结构与实践.</p>
+        <p>最近因为各方面的需求重新折腾了一段时间编辑器.最后还是在最熟悉的 tinymce 上做了定制.</p>
+<p>demo 见: <a href="ekoneko.github.io/tinymce" target="_blank">ekoneko.github.io/tinymce</a></p>
+<h3 id="style">style</h3>
+<p>之前和别人讨论编辑器,tinymce 被吐槽最多的就是…太丑了. 其实编辑器的好看与否主要还是图标之类的样式. 虽然有点自夸之嫌,不过个人觉得稍微调整了一点点样式, demo 中的样式就完爆官方默认样式了. 我所做的事情只有两件:</p>
+<blockquote>
+<p>   把 icon 缩小了一些</p>
+<p>  去掉渐变把背景变成了纯色</p>
+</blockquote>
+<p>此外做了一个非插件的功能, demo 的例子如果出现滚动条, toolbar 会自动固定在浏览器顶部. 类似于 google drive 的效果. 也很简单啦, js 监听下 scroll 而已.</p>
+<h3 id="problem">problem</h3>
+<p>插件方面的开发都已经轻车熟路. 这次遇到的最大问题是 tinymce 加载上问题.</p>
+<p>tinymce 自己实现了一套自动加载的机制. 对于普通使用是正常的, 但当动态加载时,许多判断会出问题.</p>
+<p>比如说找不到 baseurl, 不过可以手动指定</p>
+<pre><code>tinymce.baseURL = <span class="string">'/libraries/tinymce'</span>;
+</code></pre><p>tinymce 会根据引入的 js 的 script 标签是 tinymce.js 还是 tinymce.min.js 去判断加载 plugin.js 还是 plugin.min.js . 动态加载时这里的判断会失效默认加载了 plugin.js, 这在真实项目中是不期望的. 解决方案也类似</p>
+<pre><code>tinymce.suffix = <span class="string">'.min'</span>;
+</code></pre><p>===</p>
+<p>另外补充一个 tinymce 的基本配置项的查询</p>
+<p><a href="https://gist.github.com/ekoneko/fdba6f69c86308d9421b" target="_blank">https://gist.github.com/ekoneko/fdba6f69c86308d9421b</a></p>
+<h3 id="why_choose">why choose</h3>
+<p>相对的 tinymce 挺臃肿的, 个人更加偏好轻量一些的编辑器. 之所以使用它主要的原因还是因为目的上是需要一个编辑器去完成某些东西, 而不是去寻找一个最好用的编辑器.</p>
+<p>在比较稳定的编辑器中个人最熟的就是 tinymce 了吧, WordPress 在用,以及之前公司的项目也在用. 个人也有在 tinymce 上做过蛮多插件开发以及针对3.x 进行 debug 之类的事情.</p>
+<p>要说 tinymce 的优点, 有官方团队维护保持基本的稳定性. 定制性很强, 我的所有改动完全没有去修改 tinymce 本身的任何代码.完全是在加载器中挂载的. 包括 skin 啦, theme 以及插件的调整.</p>
 
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-2/#more">Read More</a>
-          </p>
-        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/" data-id="3iogs9y3lk19igoy" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/js/tinymce-dev/" data-id="m8vdghf77t0m2eao" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/js/tinymce-dev/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-    </footer>
-  </div>
-  
-</article>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tinymce/">tinymce</a></li></ul>
 
-
-  
-    <article id="post-cocos2d-tutorial-1" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-1/" class="article-date">
-  <time datetime="2014-02-23T00:00:00.000Z" itemprop="datePublished">Feb 23 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-1/">cocos2d-html 学习笔记 2: 常用类</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>官方的test case概括了cocos2d-html5的各种实用类.</p>
-<p>了解了这个就可以基本掌握这个游戏引擎了~</p>
-
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-1/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="u7o98a9rrx4pi67f" class="article-share-link">Share</a>
-      
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-cocos2d-tutorial-0" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/cocos2d/cocos2d-tutorial-0/" class="article-date">
-  <time datetime="2014-02-13T00:00:00.000Z" itemprop="datePublished">Feb 13 2014</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/cocos2d/">cocos2d</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 基本结构</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>cocos2d-html 学习笔记第一期</p>
-<p>根据官方演示 hello world 来了解一些基本的操作</p>
-
-        
-          <p class="article-more-link">
-            <a href="/cocos2d/cocos2d-tutorial-0/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/" data-id="dv5hosq2oybqxw28" class="article-share-link">Share</a>
-      
-        <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
     </footer>
   </div>
   

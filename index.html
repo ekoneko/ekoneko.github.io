@@ -59,6 +59,73 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-tinymce-dev" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/js/tinymce-dev/" class="article-date">
+  <time datetime="2014-07-09T23:39:06.000Z" itemprop="datePublished">Jul 10 2014</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/js/">js</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/js/tinymce-dev/">tinymce 定制笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近因为各方面的需求重新折腾了一段时间编辑器.最后还是在最熟悉的 tinymce 上做了定制.</p>
+<p>demo 见: <a href="ekoneko.github.io/tinymce" target="_blank">ekoneko.github.io/tinymce</a></p>
+<h3 id="style">style</h3>
+<p>之前和别人讨论编辑器,tinymce 被吐槽最多的就是…太丑了. 其实编辑器的好看与否主要还是图标之类的样式. 虽然有点自夸之嫌,不过个人觉得稍微调整了一点点样式, demo 中的样式就完爆官方默认样式了. 我所做的事情只有两件:</p>
+<blockquote>
+<p>   把 icon 缩小了一些</p>
+<p>  去掉渐变把背景变成了纯色</p>
+</blockquote>
+<p>此外做了一个非插件的功能, demo 的例子如果出现滚动条, toolbar 会自动固定在浏览器顶部. 类似于 google drive 的效果. 也很简单啦, js 监听下 scroll 而已.</p>
+<h3 id="problem">problem</h3>
+<p>插件方面的开发都已经轻车熟路. 这次遇到的最大问题是 tinymce 加载上问题.</p>
+<p>tinymce 自己实现了一套自动加载的机制. 对于普通使用是正常的, 但当动态加载时,许多判断会出问题.</p>
+<p>比如说找不到 baseurl, 不过可以手动指定</p>
+<pre><code>tinymce.baseURL = <span class="string">'/libraries/tinymce'</span>;
+</code></pre><p>tinymce 会根据引入的 js 的 script 标签是 tinymce.js 还是 tinymce.min.js 去判断加载 plugin.js 还是 plugin.min.js . 动态加载时这里的判断会失效默认加载了 plugin.js, 这在真实项目中是不期望的. 解决方案也类似</p>
+<pre><code>tinymce.suffix = <span class="string">'.min'</span>;
+</code></pre><p>===</p>
+<p>另外补充一个 tinymce 的基本配置项的查询</p>
+<p><a href="https://gist.github.com/ekoneko/fdba6f69c86308d9421b" target="_blank">https://gist.github.com/ekoneko/fdba6f69c86308d9421b</a></p>
+<h3 id="why_choose">why choose</h3>
+<p>相对的 tinymce 挺臃肿的, 个人更加偏好轻量一些的编辑器. 之所以使用它主要的原因还是因为目的上是需要一个编辑器去完成某些东西, 而不是去寻找一个最好用的编辑器.</p>
+<p>在比较稳定的编辑器中个人最熟的就是 tinymce 了吧, WordPress 在用,以及之前公司的项目也在用. 个人也有在 tinymce 上做过蛮多插件开发以及针对3.x 进行 debug 之类的事情.</p>
+<p>要说 tinymce 的优点, 有官方团队维护保持基本的稳定性. 定制性很强, 我的所有改动完全没有去修改 tinymce 本身的任何代码.完全是在加载器中挂载的. 包括 skin 啦, theme 以及插件的调整.</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/js/tinymce-dev/" data-id="m8vdghf77t0m2eao" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/js/tinymce-dev/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/tinymce/">tinymce</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-angular-study-1" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/js/angular-study-1/" class="article-date">
@@ -105,7 +172,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/js/angular-study-1/" data-id="f1g94s80osbytye5" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/js/angular-study-1/" data-id="uvxedcj1z9w64m3t" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/js/angular-study-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -232,7 +299,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/js/angular-study-0/" data-id="vlmirqdzzt95m076" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/js/angular-study-0/" data-id="sgh38dxpjbb06ywq" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/js/angular-study-0/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -283,7 +350,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/" data-id="dgnhpot72btczh14" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/" data-id="3iogs9y3lk19igoy" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-2/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -332,7 +399,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="p4ek6omkrnh0e6eu" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/" data-id="u7o98a9rrx4pi67f" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-1/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -381,7 +448,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/" data-id="tne6shuvjku3l51p" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/" data-id="dv5hosq2oybqxw28" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/cocos2d/cocos2d-tutorial-0/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -429,7 +496,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/node/express-hbs/" data-id="kwyvu0clel940jxn" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/node/express-hbs/" data-id="4sodijjyfo2ingnh" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -479,7 +546,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/test/helloworld/" data-id="b4zs285z6x91mjdx" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/test/helloworld/" data-id="it8gczcbwibij3sm" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/test/helloworld/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -500,7 +567,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/js/">js</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/cocos2d/">cocos2d</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/js/">js</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/node/">node</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/test/">test</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -509,7 +576,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/angular javascript/">angular javascript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/angular javascript/">angular javascript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hbs express/">hbs express</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tinymce/">tinymce</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -518,7 +585,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/angular javascript/" style="font-size: 20.00px;">angular javascript</a><a href="/tags/hbs express/" style="font-size: 10.00px;">hbs express</a>
+      <a href="/tags/angular javascript/" style="font-size: 20.00px;">angular javascript</a><a href="/tags/hbs express/" style="font-size: 10.00px;">hbs express</a><a href="/tags/tinymce/" style="font-size: 10.00px;">tinymce</a>
     </div>
   </div>
 
@@ -527,7 +594,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05">May 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04">April 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/07">July 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05">May 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/04">April 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/02">February 2014</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/01">January 2014</a><span class="archive-list-count">2</span></li></ul>
     </div>
   </div>
 
@@ -537,6 +604,10 @@
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/js/tinymce-dev/">tinymce 定制笔记</a>
+          </li>
         
           <li>
             <a href="/js/angular-study-1/">angular 实践</a>
@@ -552,10 +623,6 @@
         
           <li>
             <a href="/cocos2d/cocos2d-tutorial-1/">cocos2d-html 学习笔记 2: 常用类</a>
-          </li>
-        
-          <li>
-            <a href="/cocos2d/cocos2d-tutorial-0/">cocos2d-html 学习笔记 1: 基本结构</a>
           </li>
         
       </ul>
