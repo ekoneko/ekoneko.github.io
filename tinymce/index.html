@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>tinymce demo</title>
+</head>
+<link rel="stylesheet" type="text/css" href="./code/style.css" />
+<style type="text/css">
+    .editor-container {
+        margin-top: 40px;
+    }
+</style>
+<body>
+    <div class="editor-container">
+        <input class="editor-text editor-title" type="text" name="title" placeholder="标题" />
+        <textarea id="editor" name="content" class="editor-editor">
+            <p>拖拽/粘贴上传图片: <a href="https://github.com/ekoneko/tinymce-html5image">https://github.com/ekoneko/tinymce-html5image</a></p>
+            <p>颜文字: <a href="https://github.com/ekoneko/tinymce-html5image">https://github.com/ekoneko/tinymce-yentext</a></p>
+            <p>如何加载: <a href="/tinymce/code/editor.js">/tinymce/code/editor.js</a></p>
+        </textarea>
+    </div>
+</body>
+<script src="./bower_components/jquery/dist/jquery.min.js"></script>
+<script src="./bower_components/tinymce/tinymce.jquery.min.js"></script>
+<script src="./code/editor.js"></script>
+
+<script>
+    $(function () {
+        $('#editor').editor('editor');
+    });
+</script>

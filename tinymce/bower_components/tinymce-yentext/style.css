@@ -1,0 +1,19 @@
+.tinymce-yen-box {
+    width: 330px;
+    padding: 7px 0;
+    max-height: 160px!important;
+    overflow-y: auto;
+    background: #fff; 
+    
+}
+
+.tinymce-yen-item {
+    display: inline-block;
+    min-width: 96px;
+    line-height: 30px;
+    text-align: center;
+    margin: 2px;
+    border: 1px solid #e3e3e3;
+    overflow: hidden;
+    cursor: pointer;
+}

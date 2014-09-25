@@ -1,0 +1,22 @@
+{
+  "name": "tinymce-demo",
+  "version": "1.0.0",
+  "authors": [
+    "ekoneko"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "tinymce": "https://github.com/tinymce/tinymce-dist.git#~4.0.28",
+    "jquery": "~2.1.1",
+    "tinymce-html5image": "https://github.com/ekoneko/tinymce-html5image.git",
+    "tinymce-yentext": "https://github.com/ekoneko/tinymce-yentext.git"
+  }
+}

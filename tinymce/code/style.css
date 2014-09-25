@@ -1,0 +1,41 @@
+.editor-container {
+    
+}
+.editor-container .editor-text,
+.editor-container .editor-editor {
+    width: 80%;
+    padding: 3px;
+    margin: 20px auto 0;
+    outline: none;
+    display: block;
+    background: #fff;
+}
+
+.editor-container .editor-text {
+    border: none;
+    border-bottom: 1px solid #e3e3e3;
+}
+.editor-container .editor-text:-webkit-autofill {
+    color: #fff!important;
+    background: #fff!important;
+    -webkit-box-shadow: 0 0 0px 1000px white inset!important;
+}
+.editor-container .editor-title {
+    padding-top: 8px;
+    padding-bottom: 6px;
+    font-size: 24px;
+}
+.editor-container .editor-editor {
+    resize: none;
+    border: 1px solid#e3e3e3;
+    min-height: 1000px;
+}
+.editor-container .ontop .mce-toolbar-grp {
+    position: fixed;
+    top: 0;
+    border-left: 1px solid #ccc;
+}
+
+.editor-container .ontop .mce-edit-area {
+    margin-top: 40px!important;
+}
