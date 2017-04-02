@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
 
-  <title>A front blog</title>
+  <title>ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
-<meta property="og:title" content="A front blog">
+<meta property="og:title" content="ekoneko.github.io">
 <meta property="og:url" content="http://ekoneko.github.io/blog/index.html">
-<meta property="og:site_name" content="A front blog">
+<meta property="og:site_name" content="ekoneko.github.io">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="A front blog">
+<meta name="twitter:title" content="ekoneko.github.io">
 
-    <link rel="alternate" href="/atom.xml" title="A front blog" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
 
 
     <link rel="icon" href="/favicon.png">
@@ -33,7 +33,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/blog/" id="logo">A front blog</a>
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
       </h1>
 
     </div>
@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
 
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
 
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -60,6 +60,71 @@
 </header>
       <div class="outer">
         <section id="main">
+
+    <article id="post-performance-engineering-with-react" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/react/performance-engineering-with-react/" class="article-date">
+  <time datetime="2017-03-28T15:22:07.000Z" itemprop="datePublished">2017-03-28</time>
+</a>
+
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/react/">react</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+
+
+      <header class="article-header">
+
+
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+    </h1>
+
+
+      </header>
+
+    <div class="article-entry" itemprop="articleBody">
+
+        <p>这是 React 性能工程系列的第一部分, 第二部分见<a href="http://benchling.engineering/deep-dive-react-perf-debugging/">深入了解 React 性能调试</a></p>
+<p>本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!</p>
+<p>然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问题上的一点经验.</p>
+<p>本文中, 我将介绍 react 性能分析的基本工具, 一些导致性能瓶颈的常见问题, 调试上的一些关键点.</p>
+<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
+<p>使用 React 可以不做额外工作下立即一些性能优化.</p>
+<p>因为 React 托管了所有 DOM 操作, 多数情况下 DOM 的解析与布局问题都可以被避免. 屏幕背后, React 维护了一套虚拟DOM 的机制, 使文档在最小的改变下让文档变回被期待的样子.</p>
+<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks">强制同步布局</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">someNode.style.left = parseInt(someNode.style.left) + 10 + &quot;px&quot;;</div></pre></td></tr></table></figure>
+<p>我们声明了 <code>&lt;SomeComponent style={ {left: this.state.left} } /&gt;</code>, 然后通过更新 state 而非读取 DOM 的方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">this.setState(&#123;left: this.state.left + 10&#125;).</div></pre></td></tr></table></figure>
+<p>这些性能优化点并不局限于 React, 建议在做其他事情前先解决此类问题.</p>
+<p>简单的 React 应用这些就足够, 在复杂的应用中, 虚拟 DOM 的对比可能成为昂贵的开销. 幸运的是 React 提供了一些性能检测工具来发现并防范问题.</p>
+<h2 id="调试带来的性能问题"><a href="#调试带来的性能问题" class="headerlink" title="调试带来的性能问题"></a>调试带来的性能问题</h2><p>小心, 一些调试本身就会带来间接成本. 不要在开发环境下调试.</p>
+<h3 id="ELEMENTS-窗口"><a href="#ELEMENTS-窗口" class="headerlink" title="ELEMENTS 窗口"></a>ELEMENTS 窗口</h3><p>(Chrome dev tools 上的) Elements 面板可以方便直观的看到什么元素被重新渲染了, 当属性变化或一个DOM 节点 被更新/新增/替换时会有一个闪烁的效果. 但是这种检测本身会影响到性能, 如果要准确计算 FPS 时, 请切换到 Consoles 面板.</p>
+<h3 id="PROPTYPES"><a href="#PROPTYPES" class="headerlink" title="PROPTYPES"></a>PROPTYPES</h3><p>React 开发中, <a href="PropType validation">PropType 校验</a> 发生在组件被渲染时.利用 Chrome dev tools 上的Profiler面板可以观察到 React 组件花费了大量时间在校验(validate)的方法上</p>
+<p>虽然开发工具的警告在调试阶段很有用, 但是生产环境下缺造成了额外的开销. 有时我会切换到生产模式来忽略这个延迟</p>
+
+          <p class="article-more-link">
+            <a href="/blog/react/performance-engineering-with-react/#more">Read More</a>
+          </p>
+
+
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj10gwxmh0005cjm4zx2jsnb5" class="article-share-link">Partager</a>
+
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
+
+
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+
+</article>
+
+
 
     <article id="post-our-best-practices-for-writing-react-components" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -89,16 +154,15 @@
 
         <p>原文 Url: <a href="https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8">https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8</a></p>
 <hr>
-<p>从我开始学习 React 时, 就在不同的教程上就能看到不同的组件创建方法. 虽然 React 框架逐渐成熟, 似乎并没有一套正确的组件书写规范.</p>
-<p>在 <a href="https://musefind.com/">MuseFind</a> 的一年, 我们写了大量的 React 组件, 最终提炼出了一个我们用起来很开心的方法.</p>
-<p>本文就是我们建议的React 组件书写最佳实践, 希望无论是初学者还是经验丰富的人都能从中受益.</p>
+<p>自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.</p>
+<p>在 <a href="https://musefind.com/">MuseFind</a> 的一年, 我们写了大量的 React 组件, 最终, 总结出了一个我们用起来很开心的方法. 希望无论是初学者还是经验丰富的人都能从中获得帮助.</p>
 <p>开始之前有几点需要注意:</p>
 <ol>
 <li>我们用 ES6 / ES7语法</li>
-<li>如果你不晓得表意(presentational)组件与容器(container)组件的区别, 建议先看<a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.kuvqndiqq">这篇</a> (译注: <a href="https://segmentfault.com/a/1190000007788858">中文翻译</a>)</li>
+<li>如果你不晓得展示(presentational)组件与容器(container)组件的区别, 建议先看<a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.kuvqndiqq">这篇</a> (译注: <a href="https://segmentfault.com/a/1190000007788858">中文翻译</a>)</li>
 <li>如果有建议或疑问请去原文评论</li>
 </ol>
-<h2 id="基于-Class-的组件"><a href="#基于-Class-的组件" class="headerlink" title="基于 Class 的组件"></a>基于 Class 的组件</h2><p>基于 Class 的组件是有状态或包含了一些方法. 我们会尽可能谨慎的去使用这种方式, 但其使用场景是无可取代的.</p>
+<h2 id="基于-Class-的组件"><a href="#基于-Class-的组件" class="headerlink" title="基于 Class 的组件"></a>基于 Class 的组件</h2><p>基于 Class 的组件是有状态或包含了一些方法的组件. 建议尽可能谨慎的去使用这种方式, 但其使用场景却是无可取代的.</p>
 <p>让我们从头开始构建一个组件:</p>
 <h3 id="引入-CSS"><a href="#引入-CSS" class="headerlink" title="引入 CSS"></a>引入 CSS</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
@@ -106,7 +170,7 @@ import {observer} from &apos;mobx-react&apos;
 import ExpandableForm from &apos;./ExpandableForm&apos;
 import &apos;./styles/ProfileContainer.css&apos;
 </code></pre><p>我喜欢<a href="https://medium.freecodecamp.com/a-5-minute-intro-to-styled-components-41f40eb7cd55">在js中关联css</a>. [b]在每个组件中引入 css样式[/b]</p>
-<p>在依赖引用与本地引用之间, 我们习惯保留一个空行</p>
+<p>在依赖引用与本地引用之间, 建议保留一个空行</p>
 <h3 id="初始化-state"><a href="#初始化-state" class="headerlink" title="初始化 state"></a>初始化 state</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
 
@@ -115,8 +179,8 @@ import &apos;./styles/ProfileContainer.css&apos;
 
 export default class ProfileContainer extends Component {
   state = { expanded: false }
-</code></pre><p>也可以使用在 constructor 函数中声明的旧方法, 但是推荐这种更简洁的方法.</p>
-<p>同时我们也提议直接导出 class</p>
+</code></pre><p>也可以使用在 constructor 函数中声明, 但是推荐这种更简洁的方法.</p>
+<p>同时建议直接导出 class</p>
 <h3 id="propTypes-与-defaultProps"><a href="#propTypes-与-defaultProps" class="headerlink" title="propTypes 与 defaultProps"></a>propTypes 与 defaultProps</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
 
@@ -137,7 +201,7 @@ export default class ProfileContainer extends Component {
     },
     title: &apos;Your Name&apos;
   }
-</code></pre><p>propTypes 与 defaultProps 是静态属性, 应尽可能在组件顶端声明. 他们应该像文档一样并可以第一时间被其他开发者看到.</p>
+</code></pre><p>propTypes 与 defaultProps 是静态属性, 应尽可能在组件顶端声明. 他们应该承担文档的职责并可以第一时间被其他开发者看到.</p>
 <p>[b]所有组件都应该有 propTypes[/b]</p>
 <h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
@@ -174,7 +238,7 @@ export default class ProfileContainer extends Component {
     this.setState({ expanded: !this.state.expanded })
   }
 </code></pre><p>对于 class 类型的组件, 必须确保方法被调用时 <code>this</code> 指向正确的对象. 这里经常在调用时被写成 <code>this.handleSubmit.bind</code></p>
-<p>我们认为用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
+<p>但用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
 
           <p class="article-more-link">
             <a href="/blog/react/our-best-practices-for-writing-react-components/#more">Read More</a>
@@ -183,9 +247,9 @@ export default class ProfileContainer extends Component {
 
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj0p0p5zf000a12m443pwlxga" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj10gwxma0001cjm4c5iwfkwa" class="article-share-link">Partager</a>
 
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
 
 
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -233,9 +297,9 @@ export default class ProfileContainer extends Component {
 
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj0p0p5yr000012m4g82vpx67" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj10gwxm60000cjm44rn4637a" class="article-share-link">Partager</a>
 
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
 
 
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li></ul>
@@ -282,9 +346,9 @@ export default class ProfileContainer extends Component {
 
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj0p0p5yv000112m4ni1hyd5i" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj10gwxmg0004cjm4ebh3x0go" class="article-share-link">Partager</a>
 
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
 
 
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
@@ -303,7 +367,7 @@ export default class ProfileContainer extends Component {
 
 
   <div class="widget-wrap">
-    <h3 class="widget-title">Categorieën</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li></ul>
     </div>
@@ -313,7 +377,7 @@ export default class ProfileContainer extends Component {
 
 
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
@@ -323,16 +387,16 @@ export default class ProfileContainer extends Component {
 
 
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 10px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
 
 
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
@@ -342,9 +406,13 @@ export default class ProfileContainer extends Component {
 
 
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+          </li>
 
           <li>
             <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
@@ -371,7 +439,7 @@ export default class ProfileContainer extends Component {
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

@@ -3,32 +3,32 @@
 <head>
   <meta charset="utf-8">
   
-  <title>[译]react组件书写最佳实践 | A front blog</title>
+  <title>[译]react组件书写最佳实践 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="原文 Url: https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8
 
-从我开始学习 React 时, 就在不同的教程上就能看到不同的组件创建方法. 虽然 React 框架逐渐成熟, 似乎并没有一套正确的组件书写规范.
-在 MuseFind 的一年, 我们写了大量的">
+自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.
+在 MuseFind 的一年, 我们">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[译]react组件书写最佳实践">
 <meta property="og:url" content="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/index.html">
-<meta property="og:site_name" content="A front blog">
+<meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="原文 Url: https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8
 
-从我开始学习 React 时, 就在不同的教程上就能看到不同的组件创建方法. 虽然 React 框架逐渐成熟, 似乎并没有一套正确的组件书写规范.
-在 MuseFind 的一年, 我们写了大量的">
+自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.
+在 MuseFind 的一年, 我们">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*4zdSbYcOXTVchgSJqtk0Ig.png">
 <meta property="og:image" content="https://cdn-images-1.medium.com/max/800/1*IVFlMaSGKqHISJueTC26sw.png">
-<meta property="og:updated_time" content="2017-03-25T08:45:25.000Z">
+<meta property="og:updated_time" content="2017-04-02T06:47:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]react组件书写最佳实践">
 <meta name="twitter:description" content="原文 Url: https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8
 
-从我开始学习 React 时, 就在不同的教程上就能看到不同的组件创建方法. 虽然 React 框架逐渐成熟, 似乎并没有一套正确的组件书写规范.
-在 MuseFind 的一年, 我们写了大量的">
+自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.
+在 MuseFind 的一年, 我们">
 <meta name="twitter:image" content="https://cdn-images-1.medium.com/max/800/1*4zdSbYcOXTVchgSJqtk0Ig.png">
   
-    <link rel="alternate" href="/atom.xml" title="A front blog" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -49,7 +49,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/blog/" id="logo">A front blog</a>
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
       </h1>
       
     </div>
@@ -103,16 +103,15 @@
       
         <p>原文 Url: <a href="https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8" target="_blank" rel="external">https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8</a></p>
 <hr>
-<p>从我开始学习 React 时, 就在不同的教程上就能看到不同的组件创建方法. 虽然 React 框架逐渐成熟, 似乎并没有一套正确的组件书写规范.</p>
-<p>在 <a href="https://musefind.com/" target="_blank" rel="external">MuseFind</a> 的一年, 我们写了大量的 React 组件, 最终提炼出了一个我们用起来很开心的方法.</p>
-<p>本文就是我们建议的React 组件书写最佳实践, 希望无论是初学者还是经验丰富的人都能从中受益.</p>
+<p>自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.</p>
+<p>在 <a href="https://musefind.com/" target="_blank" rel="external">MuseFind</a> 的一年, 我们写了大量的 React 组件, 最终, 总结出了一个我们用起来很开心的方法. 希望无论是初学者还是经验丰富的人都能从中获得帮助.</p>
 <p>开始之前有几点需要注意:</p>
 <ol>
 <li>我们用 ES6 / ES7语法</li>
-<li>如果你不晓得表意(presentational)组件与容器(container)组件的区别, 建议先看<a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.kuvqndiqq" target="_blank" rel="external">这篇</a> (译注: <a href="https://segmentfault.com/a/1190000007788858" target="_blank" rel="external">中文翻译</a>)</li>
+<li>如果你不晓得展示(presentational)组件与容器(container)组件的区别, 建议先看<a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.kuvqndiqq" target="_blank" rel="external">这篇</a> (译注: <a href="https://segmentfault.com/a/1190000007788858" target="_blank" rel="external">中文翻译</a>)</li>
 <li>如果有建议或疑问请去原文评论</li>
 </ol>
-<h2 id="基于-Class-的组件"><a href="#基于-Class-的组件" class="headerlink" title="基于 Class 的组件"></a>基于 Class 的组件</h2><p>基于 Class 的组件是有状态或包含了一些方法. 我们会尽可能谨慎的去使用这种方式, 但其使用场景是无可取代的.</p>
+<h2 id="基于-Class-的组件"><a href="#基于-Class-的组件" class="headerlink" title="基于 Class 的组件"></a>基于 Class 的组件</h2><p>基于 Class 的组件是有状态或包含了一些方法的组件. 建议尽可能谨慎的去使用这种方式, 但其使用场景却是无可取代的.</p>
 <p>让我们从头开始构建一个组件:</p>
 <h3 id="引入-CSS"><a href="#引入-CSS" class="headerlink" title="引入 CSS"></a>引入 CSS</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
@@ -120,7 +119,7 @@ import {observer} from &apos;mobx-react&apos;
 import ExpandableForm from &apos;./ExpandableForm&apos;
 import &apos;./styles/ProfileContainer.css&apos;
 </code></pre><p>我喜欢<a href="https://medium.freecodecamp.com/a-5-minute-intro-to-styled-components-41f40eb7cd55" target="_blank" rel="external">在js中关联css</a>. [b]在每个组件中引入 css样式[/b]</p>
-<p>在依赖引用与本地引用之间, 我们习惯保留一个空行</p>
+<p>在依赖引用与本地引用之间, 建议保留一个空行</p>
 <h3 id="初始化-state"><a href="#初始化-state" class="headerlink" title="初始化 state"></a>初始化 state</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
 
@@ -129,8 +128,8 @@ import &apos;./styles/ProfileContainer.css&apos;
 
 export default class ProfileContainer extends Component {
   state = { expanded: false }
-</code></pre><p>也可以使用在 constructor 函数中声明的旧方法, 但是推荐这种更简洁的方法.</p>
-<p>同时我们也提议直接导出 class</p>
+</code></pre><p>也可以使用在 constructor 函数中声明, 但是推荐这种更简洁的方法.</p>
+<p>同时建议直接导出 class</p>
 <h3 id="propTypes-与-defaultProps"><a href="#propTypes-与-defaultProps" class="headerlink" title="propTypes 与 defaultProps"></a>propTypes 与 defaultProps</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
 
@@ -151,7 +150,7 @@ export default class ProfileContainer extends Component {
     },
     title: &apos;Your Name&apos;
   }
-</code></pre><p>propTypes 与 defaultProps 是静态属性, 应尽可能在组件顶端声明. 他们应该像文档一样并可以第一时间被其他开发者看到.</p>
+</code></pre><p>propTypes 与 defaultProps 是静态属性, 应尽可能在组件顶端声明. 他们应该承担文档的职责并可以第一时间被其他开发者看到.</p>
 <p>[b]所有组件都应该有 propTypes[/b]</p>
 <h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><pre><code>import React, {Component} from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
@@ -188,13 +187,14 @@ export default class ProfileContainer extends Component {
     this.setState({ expanded: !this.state.expanded })
   }
 </code></pre><p>对于 class 类型的组件, 必须确保方法被调用时 <code>this</code> 指向正确的对象. 这里经常在调用时被写成 <code>this.handleSubmit.bind</code></p>
-<p>我们认为用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
+<p>但用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
+<a id="more"></a>
 <h3 id="向-setState-传递函数"><a href="#向-setState-传递函数" class="headerlink" title="向 setState 传递函数"></a>向 setState 传递函数</h3><p>在上面的例子里, 我们写了</p>
 <pre><code>this.setState({ expanded: !this.state.expanded })
 </code></pre><p>这里有一个关于setState不得不说的秘密 — 他是异步的. React 处于性能考虑会异步批量更新 state, 调用 setState 后 state 不会立即变化.</p>
 <p>这意味着你不能立即拿到改变后 state 的值. 这里有一个解决办法: 向 setState 传递一个第一个参数为 prevState 的函数</p>
 <pre><code>this.setState(prevState =&gt; ({ expanded: !prevState.expanded }))
-</code></pre><h3 id="props-解构"><a href="#props-解构" class="headerlink" title="props 解构"></a>props 解构</h3><pre><code>// 上述代码省略
+</code></pre><h3 id="props-解构"><a href="#props-解构" class="headerlink" title="props 解构"></a>props 解构</h3><pre><code>// 以上代码省略
 
 render() {
   const {
@@ -218,12 +218,12 @@ render() {
   )
 }
 </code></pre><p>需要解构多个 props 的话, 每一个 prop 应该占一行</p>
-<p>(译注: 关于组件末尾的 <code>/&gt;</code>前个人偏好加一个换行, 可以更加直观的找到一个组件结尾的地方)</p>
-<h3 id="Decorator-修饰器"><a href="#Decorator-修饰器" class="headerlink" title="Decorator(修饰器)"></a>Decorator(修饰器)</h3><pre><code>@observer
+<p>(译注: 关于解构 / 对象/ 数组的最后一个元素, 建议后面保留逗号, 这一行为在 es6中是被允许的, 并且会在 babel 编译后可以支持 IE8 等浏览器, 保留逗号再日后修改时, 可以不去影响上一行的东西, 利于代码合并与审查<br>  另外组件末尾的 <code>/&gt;</code>前个人偏好加一个换行, 可以更加直观的找到一个组件结尾的地方)</p>
+<h3 id="Decorator-装饰器"><a href="#Decorator-装饰器" class="headerlink" title="Decorator(装饰器)"></a>Decorator(装饰器)</h3><pre><code>@observer
 export default class ProfileContainer extends Component {
-</code></pre><p>如果使用 mbox 之类的东西, 可以用这种方式修饰你的组件.  — 和将组件放入一个函数的作用</p>
-<p><a href="http://javascript.info/tutorial/decorators" target="_blank" rel="external">修饰器</a> (译注: <a href="http://es6.ruanyifeng.com/#docs/decorator" target="_blank" rel="external">修饰器的中文介绍</a>)更加灵活易读. 在我们的项目中, 我们广泛的使用了修饰器和 mobx 以及我们自己的 (mbox_modules)[<a href="https://github.com/musefind/mobx-models" target="_blank" rel="external">https://github.com/musefind/mobx-models</a>]</p>
-<p>如果你不想用修饰器, 可以写成下面这种方式</p>
+</code></pre><p>如果使用 mbox 之类的东西, 可以用这种方式装饰你的组件.</p>
+<p><a href="http://javascript.info/tutorial/decorators" target="_blank" rel="external">装饰器</a> (译注: <a href="http://es6.ruanyifeng.com/#docs/decorator" target="_blank" rel="external">中文介绍</a>)更加灵活易读. 在我们的项目中, 有大量使用装饰器, mobx 及我们自己的 (mbox模块)[<a href="https://github.com/musefind/mobx-models" target="_blank" rel="external">https://github.com/musefind/mobx-models</a>]</p>
+<p>如果你不想用装饰器, 可以写成下面这种方式</p>
 <pre><code>class ProfileContainer extends Component {
   // Component code
 }
@@ -237,12 +237,12 @@ export default observer(ProfileContainer)
   onChange={this.handleChange}
   placeholder=&quot;Your Name&quot;/&gt;
 </code></pre><p>否则, 每一次父组件渲染都会生成一个新的函数传递给 input.</p>
-<p>如果 input 是一个 react 组件,  这将自动触发重新渲染</p>
+<p>如果 input 是一个 react 组件,  这将导致无论其他 props 有无改变都会触发重新渲染.</p>
 <p>一致性(Reconciliation) 是 React 中开销最高的一环, 不要让这一步更加复杂. 另外, 传递一个方法也更利于阅读, 调试和改动.</p>
 <p>以下是我们完整的组件 (<a href="https://gist.github.com/scottdomes/70e436951dfeeb82dfdd4aa6d2541dce#file-classcomponent-js" target="_blank" rel="external">gist</a>)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line">import React, &#123;Component&#125; from &apos;react&apos;</div><div class="line">import &#123;observer&#125; from &apos;mobx-react&apos;</div><div class="line">// Separate local imports from dependencies</div><div class="line">import ExpandableForm from &apos;./ExpandableForm&apos;</div><div class="line">import &apos;./styles/ProfileContainer.css&apos;</div><div class="line"></div><div class="line">// Use decorators if needed</div><div class="line">@observer</div><div class="line">export default class ProfileContainer extends Component &#123;</div><div class="line">  state = &#123; expanded: false &#125;</div><div class="line">  // Initialize state here (ES7) or in a constructor method (ES6)</div><div class="line"></div><div class="line">  // Declare propTypes as static properties as early as possible</div><div class="line">  static propTypes = &#123;</div><div class="line">    model: React.PropTypes.object.isRequired,</div><div class="line">    title: React.PropTypes.string</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // Default props below propTypes</div><div class="line">  static defaultProps = &#123;</div><div class="line">    model: &#123;</div><div class="line">      id: 0</div><div class="line">    &#125;,</div><div class="line">    title: &apos;Your Name&apos;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  // Use fat arrow functions for methods to preserve context (this will thus be the component instance)</div><div class="line">  handleSubmit = (e) =&gt; &#123;</div><div class="line">    e.preventDefault()</div><div class="line">    this.props.model.save()</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  handleNameChange = (e) =&gt; &#123;</div><div class="line">    this.props.model.name = e.target.value</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  handleExpand = (e) =&gt; &#123;</div><div class="line">    e.preventDefault()</div><div class="line">    this.setState(prevState =&gt; (&#123; expanded: !prevState.expanded &#125;))</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  render() &#123;</div><div class="line">    // Destructure props for readability</div><div class="line">    const &#123;</div><div class="line">      model,</div><div class="line">      title</div><div class="line">    &#125; = this.props</div><div class="line">    return (</div><div class="line">      &lt;ExpandableForm</div><div class="line">        onSubmit=&#123;this.handleSubmit&#125;</div><div class="line">        expanded=&#123;this.state.expanded&#125;</div><div class="line">        onExpand=&#123;this.handleExpand&#125;&gt;</div><div class="line">        // Newline props if there are more than two</div><div class="line">        &lt;div&gt;</div><div class="line">          &lt;h1&gt;&#123;title&#125;&lt;/h1&gt;</div><div class="line">          &lt;input</div><div class="line">            type=&quot;text&quot;</div><div class="line">            value=&#123;model.name&#125;</div><div class="line">            // onChange=&#123;(e) =&gt; &#123; model.name = e.target.value &#125;&#125;</div><div class="line">            // Avoid creating new closures in the render method- use methods like below</div><div class="line">            onChange=&#123;this.handleNameChange&#125;</div><div class="line">            placeholder=&quot;Your Name&quot;/&gt;</div><div class="line">        &lt;/div&gt;</div><div class="line">      &lt;/ExpandableForm&gt;</div><div class="line">    )</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <h2 id="基于函数的组件"><a href="#基于函数的组件" class="headerlink" title="基于函数的组件"></a>基于函数的组件</h2><p>没有状态和方法的组件是更易理解纯组件. (译注: 个人认为”没有方法”这一限制条件是多余的) 纯组件.</p>
-<p>应该尽可能使用纯组件.</p>
+<p>应该尽可能的使用纯组件.</p>
 <h3 id="propTypes"><a href="#propTypes" class="headerlink" title="propTypes"></a>propTypes</h3><pre><code>import React from &apos;react&apos;
 import {observer} from &apos;mobx-react&apos;
 
@@ -274,31 +274,31 @@ function ExpandableForm(props) {
     &lt;/form&gt;
   )
 }
-</code></pre><p>我们的组件是函数式的, 通过参数传递 props, 可以扩展成像这样:</p>
+</code></pre><p>函数式的组件通过参数传递 props, 可以扩展成像这样:</p>
 <pre><code>function ExpandableForm({ onExpand, expanded = false, children, onSubmit }) {
-</code></pre><p>注意, 这里也可以把 defaultProps在函数声明前定义. 如果参数里的 expanded不存在, 我们设为 false.(这个例子有点牵强, undefined 的布尔值也是 false, 但在某些会造成 <code>Cannot read &lt;property&gt; of undefined</code> 异常的情况下十分有用)</p>
+</code></pre><p>注意, 这里也可以把 defaultProps在函数声明前定义. 如果参数 expanded不存在, 则设为 false.(这个例子有点牵强, undefined 的布尔值也是 false, 但是在某些会造成 <code>Cannot read &lt;property&gt; of undefined</code> 异常的情况下就很有用了)</p>
 <p>避免以下的 ES6语法</p>
 <pre><code>const ExpandableForm = ({ onExpand, expanded, children }) =&gt; {
 </code></pre><p>看起来很高端, 但是这个函数实际上是匿名的. 这对 babel 编译没有影响, 但如果内部有错误在控制台中看到的错误来源会是 <code>&lt;&lt;anonymous&gt;&gt;</code>, 非常不利于调试.</p>
 <p>匿名函数在 Jest 中也会造成问题, 我们推荐使用 function 替代 const</p>
-<h3 id="包裹-Wrapping"><a href="#包裹-Wrapping" class="headerlink" title="包裹(Wrapping)"></a>包裹(Wrapping)</h3><p>鉴于不能用修饰器修饰一个函数, 这里只简单的对函数进行了一次包裹</p>
+<h3 id="包裹-Wrapping"><a href="#包裹-Wrapping" class="headerlink" title="包裹(Wrapping)"></a>包裹(Wrapping)</h3><p>鉴于不能用装饰器装饰一个函数, 这里只简单的对函数进行了一次包裹</p>
 <pre><code>export default observer(ExpandableForm)
 </code></pre><p>完整的代码如下 <a href="https://gist.github.com/scottdomes/19d4ade69b1a3978730b104558fb5308#file-functionalcomponent-js" target="_blank" rel="external">gist</a></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">import React from &apos;react&apos;</div><div class="line">import &#123;observer&#125; from &apos;mobx-react&apos;</div><div class="line">// Separate local imports from dependencies</div><div class="line">import &apos;./styles/Form.css&apos;</div><div class="line"></div><div class="line">// Declare propTypes here, before the component (taking advantage of JS function hoisting)</div><div class="line">// You want these to be as visible as possible</div><div class="line">ExpandableForm.propTypes = &#123;</div><div class="line">  onSubmit: React.PropTypes.func.isRequired,</div><div class="line">  expanded: React.PropTypes.bool,</div><div class="line">  onExpand: React.PropTypes.func.isRequired</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Destructure props like so, and use default arguments as a way of setting defaultProps</div><div class="line">function ExpandableForm(&#123; onExpand, expanded = false, children, onSubmit &#125;) &#123;</div><div class="line">  const formStyle = expanded ? &#123; height: &apos;auto&apos; &#125; : &#123; height: 0 &#125;</div><div class="line">  return (</div><div class="line">    &lt;form style=&#123;formStyle&#125; onSubmit=&#123;onSubmit&#125;&gt;</div><div class="line">      &#123;children&#125;</div><div class="line">      &lt;button onClick=&#123;onExpand&#125;&gt;Expand&lt;/button&gt;</div><div class="line">    &lt;/form&gt;</div><div class="line">  )</div><div class="line">&#125;</div><div class="line"></div><div class="line">// Wrap the component instead of decorating it</div><div class="line">export default observer(ExpandableForm)</div></pre></td></tr></table></figure>
 <h2 id="jsx-条件"><a href="#jsx-条件" class="headerlink" title="jsx 条件"></a>jsx 条件</h2><p>应该尽可能避免以下这种写法:</p>
 <p><img src="https://cdn-images-1.medium.com/max/800/1*4zdSbYcOXTVchgSJqtk0Ig.png"></p>
-<p>嵌套三元不是一个好主意.</p>
+<p>嵌套三元运算符不是一个好主意.</p>
 <p>有一些类库可以解决这个问题(<a href="https://github.com/AlexGilleran/jsx-control-statements" target="_blank" rel="external">JSX-Control Statements</a>). 如果不想引入一个新依赖, 我们还可以写成这样:</p>
 <p><img src="https://cdn-images-1.medium.com/max/800/1*IVFlMaSGKqHISJueTC26sw.png"></p>
 <p>用花括号包裹一个 <a href="http://stackoverflow.com/questions/8228281/what-is-the-function-construct-in-javascript" target="_blank" rel="external">IIFE</a>, 并把 if 条件语句写在其中, 返回想要渲染的内容. 像这样的 IIFE 可以优化性能, 但往往并不见得比牺牲掉的可读性更划算.</p>
-<p>许多评论(译注: 当然是原文的评论)更倾向于将条件的逻辑放入一个子组件中. 这种说法是正确的, 尽可能的细分组件总是好的, 但 IIFE 也不失为一种退一步的方法.</p>
+<p>许多评论(译注: 当然是原文的评论)更倾向于将条件的逻辑放入一个子组件中. 这种说法是正确的, 尽可能的拆分组件总是好的, 但 IIFE 也不失为退一步的方法.</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/blog/react/our-best-practices-for-writing-react-components/" data-id="cj0p0dpbt0003jfm4b1n50wnm" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj10gwxma0001cjm4c5iwfkwa" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -308,6 +308,15 @@ function ExpandableForm(props) {
   
     
 <nav id="article-nav">
+  
+    <a href="/blog/react/performance-engineering-with-react/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          React 性能工程
+        
+      </div>
+    </a>
   
   
     <a href="/blog/node/express-hbs/" id="article-nav-older" class="article-nav-link-wrap">
@@ -354,7 +363,7 @@ function ExpandableForm(props) {
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 10px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
@@ -374,6 +383,10 @@ function ExpandableForm(props) {
     <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+          </li>
         
           <li>
             <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
@@ -416,7 +429,7 @@ function ExpandableForm(props) {
 <script>
   var disqus_shortname = 'ekoneko';
   
-  var disqus_url = 'http://ekoneko.github.io/blog/blog/react/our-best-practices-for-writing-react-components/';
+  var disqus_url = 'http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/';
   
   (function(){
     var dsq = document.createElement('script');

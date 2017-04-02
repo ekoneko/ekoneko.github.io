@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>React 性能工程 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
+本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
+然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React 性能工程">
+<meta property="og:url" content="http://ekoneko.github.io/blog/react/performance-engineering-with-react/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
+本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
+然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
+<meta property="og:image" content="http://benchling.engineering/content/images/2016/02/Screen-Shot-2016-01-25-at-5-36-59-PM.png">
+<meta property="og:updated_time" content="2017-04-02T09:10:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="React 性能工程">
+<meta name="twitter:description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
+本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
+然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
+<meta name="twitter:image" content="http://benchling.engineering/content/images/2016/02/Screen-Shot-2016-01-25-at-5-36-59-PM.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-performance-engineering-with-react" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/react/performance-engineering-with-react/" class="article-date">
+  <time datetime="2017-03-28T15:22:07.000Z" itemprop="datePublished">2017-03-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/react/">react</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      React 性能工程
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这是 React 性能工程系列的第一部分, 第二部分见<a href="http://benchling.engineering/deep-dive-react-perf-debugging/" target="_blank" rel="external">深入了解 React 性能调试</a></p>
+<p>本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!</p>
+<p>然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问题上的一点经验.</p>
+<p>本文中, 我将介绍 react 性能分析的基本工具, 一些导致性能瓶颈的常见问题, 调试上的一些关键点.</p>
+<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
+<p>使用 React 可以不做额外工作下立即一些性能优化.</p>
+<p>因为 React 托管了所有 DOM 操作, 多数情况下 DOM 的解析与布局问题都可以被避免. 屏幕背后, React 维护了一套虚拟DOM 的机制, 使文档在最小的改变下让文档变回被期待的样子.</p>
+<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks" target="_blank" rel="external">强制同步布局</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">someNode.style.left = parseInt(someNode.style.left) + 10 + &quot;px&quot;;</div></pre></td></tr></table></figure>
+<p>我们声明了 <code>&lt;SomeComponent style={ {left: this.state.left} } /&gt;</code>, 然后通过更新 state 而非读取 DOM 的方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">this.setState(&#123;left: this.state.left + 10&#125;).</div></pre></td></tr></table></figure>
+<p>这些性能优化点并不局限于 React, 建议在做其他事情前先解决此类问题.</p>
+<p>简单的 React 应用这些就足够, 在复杂的应用中, 虚拟 DOM 的对比可能成为昂贵的开销. 幸运的是 React 提供了一些性能检测工具来发现并防范问题.</p>
+<h2 id="调试带来的性能问题"><a href="#调试带来的性能问题" class="headerlink" title="调试带来的性能问题"></a>调试带来的性能问题</h2><p>小心, 一些调试本身就会带来间接成本. 不要在开发环境下调试.</p>
+<h3 id="ELEMENTS-窗口"><a href="#ELEMENTS-窗口" class="headerlink" title="ELEMENTS 窗口"></a>ELEMENTS 窗口</h3><p>(Chrome dev tools 上的) Elements 面板可以方便直观的看到什么元素被重新渲染了, 当属性变化或一个DOM 节点 被更新/新增/替换时会有一个闪烁的效果. 但是这种检测本身会影响到性能, 如果要准确计算 FPS 时, 请切换到 Consoles 面板.</p>
+<h3 id="PROPTYPES"><a href="#PROPTYPES" class="headerlink" title="PROPTYPES"></a>PROPTYPES</h3><p>React 开发中, <a href="PropType validation">PropType 校验</a> 发生在组件被渲染时.利用 Chrome dev tools 上的Profiler面板可以观察到 React 组件花费了大量时间在校验(validate)的方法上</p>
+<p>虽然开发工具的警告在调试阶段很有用, 但是生产环境下缺造成了额外的开销. 有时我会切换到生产模式来忽略这个延迟</p>
+<a id="more"></a>
+<h2 id="通过-React-性能控件检测性能问题"><a href="#通过-React-性能控件检测性能问题" class="headerlink" title="通过 React 性能控件检测性能问题"></a>通过 React 性能控件检测性能问题</h2><p>在深入通常修复的方法前, 有一个重要的原则: 只花时间优化真的测试出有性能影响的问题. 构建中只应该在关键的性能瓶颈上投入时间.</p>
+<p>检测性能瓶颈还可以用之前说的调试工具. 但通常会比较麻烦, 因为基于 react 的代码通常会耗时的方法通常会分散在不同地方.(e.g: 一个对比完的 render 运行很快, 但可能对应的 vdom 对比却很慢) 很难找到真正造成性能瓶颈的代码是什么.</p>
+<p> 幸运的是 React 包中本身就包含了一些可以在非生产环境使用的性能工具(<a href="https://facebook.github.io/react/docs/perf.html" target="_blank" rel="external">doc</a>) 可以在 &lt;=0.13版本中通过 <code>react/addons</code> 找到 <code>React.addons.Perf</code>, 或是0.14之后的版本找到 <code>react-addons-perf</code></p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>在 console 执行 <code>Perf.start()</code> 就可以使用 <code>Perf</code> 记录之后操作的性能. 然后调用<code>Perf.stop()</code>. 然后可以调用以下的方法之一进行性能观测.</p>
+<h3 id="PERF-PRINTWASTED"><a href="#PERF-PRINTWASTED" class="headerlink" title="PERF.PRINTWASTED()"></a>PERF.PRINTWASTED()</h3><p><code>Perf.printWasted()</code> 大多数场合都很好用. 这个方法会告诉你渲染树结构花费的时间, VDOM 的对比不包含改变 DOM 的开销. 这里列出的组件可以尝试用 <code>PureRenderMixin</code> 或是之前提到的其他技术优化.</p>
+<p><img src="http://benchling.engineering/content/images/2016/02/Screen-Shot-2016-01-25-at-5-36-59-PM.png"></p>
+<h3 id="PERF-PRINTINCLUSIVE-PERF-PRINTEXCLUSIVE"><a href="#PERF-PRINTINCLUSIVE-PERF-PRINTEXCLUSIVE" class="headerlink" title="PERF.PRINTINCLUSIVE() / PERF.PRINTEXCLUSIVE()"></a>PERF.PRINTINCLUSIVE() / PERF.PRINTEXCLUSIVE()</h3><p><code>Perf.printInclusive()</code> 和 <code>Perf.printExclusive()</code> 会打印出组件渲染的次数. 这对方法我不是太经常使用. 渲染的性能瓶颈解决方法通常是”不渲染” 或 “更快的渲染”. 总之这对方法可以突出组件在计算生命周期上的开销. 通常解决了<code>Perf.printWasted()</code>问题之后可以进一步优化这里的开销. Chrome DevTool Profiles 面板会更直接的看到每个函数的开销.</p>
+<h3 id="PERF-PRINTDOM"><a href="#PERF-PRINTDOM" class="headerlink" title="PERF.PRINTDOM()"></a>PERF.PRINTDOM()</h3><p><code>Perf.printDOM()</code> 会打印出渲染 React 树后所有的 DOM 操作. 通常这里的输出都很长很难理解/浏览.(比如会列出所有属性变化或新插入的 DOM 元素)</p>
+<p>我偶尔会用这个方法寻找怪异且高开销的浏览器渲染</p>
+<h2 id="用-ShouldComponentUpdate-阻止渲染"><a href="#用-ShouldComponentUpdate-阻止渲染" class="headerlink" title="用 ShouldComponentUpdate 阻止渲染"></a>用 ShouldComponentUpdate 阻止渲染</h2><p>React 维护了一套虚拟 DOM 以解决高昂的 DOM 操作成本, 但有时维护虚拟 DOM 也会有很高的成本. 想象一个大规模复杂的渲染树, 当更新了其中一个节点的 props 时, react 需要遍历所有的子节点进行对比. 好在 React 提供了一个优化机制: <code>[shouldComponentUpdate](https://facebook.github.io/react/docs/component-specs.html#updating-shouldcomponentupdate)</code>. 当这个方法返回 false , 组件将不再进行重新渲染. 我们只需知道何时/如何返回 false</p>
+<p>最简单的做法是让你的组件保持”纯(pure)” – 组件的渲染只依赖 props 和 state(也就是DOM,cookie 之类的变化不会影响到组件). “pure rendering” 技术经常被人提起, 但是做起来却并不简单. 需要将外部的状态隔离在一小部分组件中并保持剩余组件 pure. (译注: 参考这篇<a href="https://segmentfault.com/a/1190000007788858" target="_blank" rel="external">容器组件与展示组件</a>)</p>
+<p>做到这点后, 可以让组件继承 <code>[React.PureComponent](https://facebook.github.io/react/docs/react-api.html#react.purecomponent)</code>  其中用到了一种被称为”<a href="https://facebook.github.io/react/docs/shallow-compare.html" target="_blank" rel="external">浅比较</a>“的技术.</p>
+<p>(译注: 上一段原作者采用的是<code>(PureRenderMixin)[https://facebook.github.io/react/docs/pure-render-mixin.html]</code>的方式, 我替换成了新版 React建议的 <code>PureComponent</code>)</p>
+<p>纯组件中如果 props/state 没有改变, 组件就不会重渲染. 为了让这种模式下组件行为正确要确保如下两点:</p>
+<ol>
+<li><p><code>render</code>只依赖 props 和 state, 没有来自外部的 state</p>
+</li>
+<li><p>props 和 state 是不可变的.浅比较只是简单对比 props 和 state 对象是否相同. 可以利用 <code>Object.assign</code> 或 <code>_.extend</code>复制对象的内容, 也可以使用<code>[ImmutableJS](https://facebook.github.io/immutable-js/)</code></p>
+</li>
+</ol>
+<h3 id="一个小误解"><a href="#一个小误解" class="headerlink" title="一个小误解"></a>一个小误解</h3><p>你可能误认为一旦用了纯组件就会提升性能. 实际上这会阻止子组件 prop 的类型校验. 在开发模式下看起来会快很多, 但生产环境本身就会跳过类型校验</p>
+<h3 id="一个大误解"><a href="#一个大误解" class="headerlink" title="一个大误解"></a>一个大误解</h3><p>即使严格遵守了纯组件的规范, 也不会立即从中获益. 如前所述 React 只是做了浅比较. 很多场合下prop 的变化都不是一个浅比较能处理的.</p>
+<p>想快速实现一个深比较, 可以使用 <code>_.isEqual</code>. 它会先进行一次浅比较, 在遍历对比具体的每一项.</p>
+<p>你也可以自己去写 <code>shouldComponentUpdate</code> 来满足个性化需要, 但是我们只在简单的地方会用到. 这个地方没维护好的话可能导致组件行为异常.</p>
+<h2 id="浅比较的性能优化"><a href="#浅比较的性能优化" class="headerlink" title="浅比较的性能优化"></a>浅比较的性能优化</h2><p>通常使用以下最佳实践可以阻止创建对象的开销, 大部分情况下这对渲染性能有好处</p>
+<h3 id="bind-与-行内匿名函数"><a href="#bind-与-行内匿名函数" class="headerlink" title=".bind 与 行内匿名函数"></a>.bind 与 行内匿名函数</h3><p><code>Function.bind</code> 虽然方便给组件暴露上下文, 但每一个.bind 都会创建一个新函数.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&gt; console.log.bind(null, &apos;hi&apos;) === console.log.bind(null, &apos;hi&apos;)</div><div class="line">false</div><div class="line">&gt; function()&#123;console.log(‘hi&apos;);&#125; === function()&#123;console.log(‘hi&apos;);&#125;</div><div class="line">false</div><div class="line"></div><div class="line">// 每次都会是个新函数</div><div class="line">render() &#123;</div><div class="line">  return &lt;MyComponent onClick=&#123;() =&gt; this.setState(...)&#125; /&gt;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这样每次 render 时, props 都会发生改变</p>
+<p>可以通过 eslint 的 <code>react/jsx-no-bind</code>规则禁止使用.bind</p>
+<p>简单的方法是在子组件中创建一个函数来传递需要的参数, 比如</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const TodoItem = React.createClass(&#123;</div><div class="line">  deleteItem() &#123;</div><div class="line">    this.props.deleteItem(this.props.index);</div><div class="line">  &#125;,</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>这种暴露自己方法给子组件并被调用传回参数的行为看起来比较奇怪. 为适应更复杂的场景, 通常我们会实现一个 <code>IntermediateBinder</code> 进行上下文绑定. 以 id 参数举例, 将 id 作为一个参数绑定成它自己的一个方法, 并传给子组件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">const React = require(&apos;react/addons&apos;);</div><div class="line"></div><div class="line">const IntermediateBinder = React.createClass(&#123;</div><div class="line">  displayName: &apos;IntermediateBinder&apos;,</div><div class="line">  propTypes: &#123;</div><div class="line">    boundArg: React.PropTypes.any.isRequired,</div><div class="line">    children: React.PropTypes.func.isRequired,</div><div class="line">  &#125;,</div><div class="line">  _rebindFns(props, bindAll) &#123;</div><div class="line">    const newFns = &#123;&#125;;</div><div class="line">    for (const name in props) &#123;</div><div class="line">      const value = props[name];</div><div class="line">      if (name !== &apos;boundArg&apos; &amp;&amp; name !== &apos;children&apos;) &#123;</div><div class="line">        if (bindAll || value !== this.props[name]) &#123;</div><div class="line">          newFns[name] = value.bind(null, props.boundArg);</div><div class="line">        &#125; else &#123;</div><div class="line">          newFns[name] = this._boundFns[name];</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    this._boundFns = newFns;</div><div class="line">  &#125;,</div><div class="line">  componentWillMount() &#123;</div><div class="line">    this._rebindFns(this.props, true);</div><div class="line">  &#125;,</div><div class="line">  componentWillReceiveProps(nextProps) &#123;</div><div class="line">    this._rebindFns(nextProps, this.props.boundArg !== nextProps.boundArg);</div><div class="line">  &#125;,</div><div class="line">  render() &#123;</div><div class="line">    return this.props.children(this._boundFns);</div><div class="line">  &#125;,</div><div class="line">&#125;);</div><div class="line"></div><div class="line">module.exports = IntermediateBinder;</div></pre></td></tr></table></figure>
+<p>然后被这样调用:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;IntermediateBinder</div><div class="line">  deleteItem=&#123;this.deleteItem&#125;</div><div class="line">  boundArg=&#123;item.id&#125;&gt;</div><div class="line">  &#123;(boundProps) =&gt; &lt;TodoItem deleteItem=&#123;boundProps.deleteItem&#125; /&gt;&#125;</div><div class="line">&lt;/IntermediateBinder&gt;</div></pre></td></tr></table></figure>
+<p>(我们讨论过另一种可能是自定义一个 bind 函数, 这个函数会存储元数据, 并自身实现一个方法检测函数是否真的改变. 但这种做法不太符合我们口味)</p>
+<h3 id="数组-对象-构造"><a href="#数组-对象-构造" class="headerlink" title="数组 / 对象 构造"></a>数组 / 对象 构造</h3><p>一个很容易理解但通常容易被忽视的地方, 数组类型的值会破坏纯组件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; [&apos;important&apos;, &apos;starred&apos;] === [&apos;important&apos;, &apos;starred&apos;]</div><div class="line">false</div></pre></td></tr></table></figure>
+<p>如果一个对象不会再变化, 可以存储在一个常量或组件的静态变量中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const TAGS = [&apos;important&apos;, &apos;starred&apos;];</div></pre></td></tr></table></figure>
+<h3 id="子组件"><a href="#子组件" class="headerlink" title="子组件"></a>子组件</h3><p>定义组件与子组件内容边界有利于性能优化 – 封装良好的组件接口便于日后性能更新. 可以通过重构中间状态的组件来抽离出纯组件.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  &lt;ComplexForm props=&#123;this.props.complexFormProps&#125; /&gt;</div><div class="line">  &lt;ul&gt;</div><div class="line">    &lt;li prop=&#123;this.props.items[0]&#125;&gt;item A&lt;/li&gt;</div><div class="line">    ...1000 items...</div><div class="line">  &lt;/ul&gt;</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure>
+<p>这个例子中 complexFormProps 和 items 来自相同的 store, 在 ComplexForm中输入会改变 complexFormProps 的值. 每一次 complexFormProps 的改变都会带来整个 <code>&lt;ul&gt;</code>的重新渲染. 对每个 li 进行 diff 比较的成本十分昂贵. 将 <ul>封装成一个子组件, 这样只有 <code>this.props.items</code> 变化才会更新</ul></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  &lt;ComplexForm props=&#123;this.props.complexFormProps&#125; /&gt;</div><div class="line">  &lt;CustomList items=&#123;this.props.items&#125; /&gt;</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure>
+<h3 id="缓存计算开销"><a href="#缓存计算开销" class="headerlink" title="缓存计算开销"></a>缓存计算开销</h3><p>这看起来违背了”单一 state 源”的规则. 但 props 计算开销是昂贵的, 可以在组件中做缓存. 代替直接的做法, 在 render 函数中进行 <code>doExpensiveComputation(this.prop.someProp)</code>, 记录渲染的结果, 并在下一次当 prop 没变时直接输出缓存.</p>
+<h3 id="linkState"><a href="#linkState" class="headerlink" title="linkState"></a>linkState</h3><p>译注: linkState 在 React15+ 已经不再推荐(<a href="https://facebook.github.io/react/docs/two-way-binding-helpers.html" target="_blank" rel="external">https://facebook.github.io/react/docs/two-way-binding-helpers.html</a>). 所以这段不翻了.</p>
+<h3 id="编译优化"><a href="#编译优化" class="headerlink" title="编译优化"></a>编译优化</h3><p>译注: 这段是说新版本 babel 的一些优化, 但是同样有点 out date…</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj10gwxmh0005cjm4zx2jsnb5" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/react/our-best-practices-for-writing-react-components/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">[译]react组件书写最佳实践</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Catégories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Mot-clés</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Articles récents</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+          </li>
+        
+          <li>
+            <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
+          </li>
+        
+          <li>
+            <a href="/blog/node/express-hbs/">express-hbs简介</a>
+          </li>
+        
+          <li>
+            <a href="/blog/test/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 ekoneko<br>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/react/performance-engineering-with-react/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>
