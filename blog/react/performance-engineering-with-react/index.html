@@ -3,22 +3,22 @@
 <head>
   <meta charset="utf-8">
   
-  <title>React 性能工程 | ekoneko.github.io</title>
+  <title>[译]React 性能工程 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
 本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
 然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
 <meta property="og:type" content="article">
-<meta property="og:title" content="React 性能工程">
+<meta property="og:title" content="[译]React 性能工程">
 <meta property="og:url" content="http://ekoneko.github.io/blog/react/performance-engineering-with-react/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
 本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
 然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
 <meta property="og:image" content="http://benchling.engineering/content/images/2016/02/Screen-Shot-2016-01-25-at-5-36-59-PM.png">
-<meta property="og:updated_time" content="2017-04-02T09:10:46.000Z">
+<meta property="og:updated_time" content="2017-04-16T16:12:10.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="React 性能工程">
+<meta name="twitter:title" content="[译]React 性能工程">
 <meta name="twitter:description" content="这是 React 性能工程系列的第一部分, 第二部分见深入了解 React 性能调试
 本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!
 然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问">
@@ -89,7 +89,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      React 性能工程
+      [译]React 性能工程
     </h1>
   
 
@@ -101,10 +101,10 @@
 <p>本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!</p>
 <p>然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问题上的一点经验.</p>
 <p>本文中, 我将介绍 react 性能分析的基本工具, 一些导致性能瓶颈的常见问题, 调试上的一些关键点.</p>
-<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
+<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>用3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
 <p>使用 React 可以不做额外工作下立即一些性能优化.</p>
 <p>因为 React 托管了所有 DOM 操作, 多数情况下 DOM 的解析与布局问题都可以被避免. 屏幕背后, React 维护了一套虚拟DOM 的机制, 使文档在最小的改变下让文档变回被期待的样子.</p>
-<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks" target="_blank" rel="external">强制同步布局</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
+<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks" target="_blank" rel="external">强制布局同步</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">someNode.style.left = parseInt(someNode.style.left) + 10 + &quot;px&quot;;</div></pre></td></tr></table></figure>
 <p>我们声明了 <code>&lt;SomeComponent style={ {left: this.state.left} } /&gt;</code>, 然后通过更新 state 而非读取 DOM 的方式:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">this.setState(&#123;left: this.state.left + 10&#125;).</div></pre></td></tr></table></figure>
@@ -161,14 +161,13 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;div&gt;</div><div class="line">  &lt;ComplexForm props=&#123;this.props.complexFormProps&#125; /&gt;</div><div class="line">  &lt;CustomList items=&#123;this.props.items&#125; /&gt;</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure>
 <h3 id="缓存计算开销"><a href="#缓存计算开销" class="headerlink" title="缓存计算开销"></a>缓存计算开销</h3><p>这看起来违背了”单一 state 源”的规则. 但 props 计算开销是昂贵的, 可以在组件中做缓存. 代替直接的做法, 在 render 函数中进行 <code>doExpensiveComputation(this.prop.someProp)</code>, 记录渲染的结果, 并在下一次当 prop 没变时直接输出缓存.</p>
 <h3 id="linkState"><a href="#linkState" class="headerlink" title="linkState"></a>linkState</h3><p>译注: linkState 在 React15+ 已经不再推荐(<a href="https://facebook.github.io/react/docs/two-way-binding-helpers.html" target="_blank" rel="external">https://facebook.github.io/react/docs/two-way-binding-helpers.html</a>). 所以这段不翻了.</p>
-<h3 id="编译优化"><a href="#编译优化" class="headerlink" title="编译优化"></a>编译优化</h3><p>译注: 这段是说新版本 babel 的一些优化, 但是同样有点 out date…</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj10gwxmh0005cjm4zx2jsnb5" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/blog/react/performance-engineering-with-react/" data-id="cj1kw49nr0006irm4xl2nm8i4" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -178,6 +177,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/blog/tools/diy-develop-tools-by-ast/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Récent</strong>
+      <div class="article-nav-title">
+        
+          开发基于 AST 的前端工具
+        
+      </div>
+    </a>
   
   
     <a href="/blog/react/our-best-practices-for-writing-react-components/" id="article-nav-older" class="article-nav-link-wrap">
@@ -204,7 +212,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Catégories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
     </div>
   </div>
 
@@ -214,7 +222,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
   </div>
 
@@ -224,7 +232,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
@@ -233,7 +241,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -246,7 +254,11 @@
       <ul>
         
           <li>
-            <a href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+            <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
+          </li>
+        
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
           </li>
         
           <li>
@@ -290,7 +302,7 @@
 <script>
   var disqus_shortname = 'ekoneko';
   
-  var disqus_url = 'http://ekoneko.github.io/blog/react/performance-engineering-with-react/';
+  var disqus_url = 'http://ekoneko.github.io/blog/blog/react/performance-engineering-with-react/';
   
   (function(){
     var dsq = document.createElement('script');

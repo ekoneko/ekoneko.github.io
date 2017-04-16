@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-
+  
   <title>ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
@@ -11,17 +11,17 @@
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ekoneko.github.io">
-
+  
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
-
-
+  
+  
     <link rel="icon" href="/favicon.png">
-
-
+  
+  
     <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-
+  
   <link rel="stylesheet" href="/blog/css/style.css">
-
+  
 
 </head>
 
@@ -35,21 +35,21 @@
       <h1 id="logo-wrap">
         <a href="/blog/" id="logo">ekoneko.github.io</a>
       </h1>
-
+      
     </div>
     <div id="header-inner" class="inner">
       <nav id="main-nav">
         <a id="main-nav-toggle" class="nav-icon"></a>
-
+        
           <a class="main-nav-link" href="/blog/">Home</a>
-
+        
           <a class="main-nav-link" href="/blog/archives">Archives</a>
-
+        
       </nav>
       <nav id="sub-nav">
-
+        
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
-
+        
         <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
@@ -60,41 +60,113 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-diy-develop-tools-by-ast" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/tools/diy-develop-tools-by-ast/" class="article-date">
+  <time datetime="2017-04-12T16:51:40.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/tools/">tools</a>
+  </div>
 
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在遇到了两个小需求:</p>
+<ol>
+<li>要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本</li>
+<li>一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行</li>
+</ol>
+<p>这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成<code>抽象语法树</code>再进行处理则要方便的多.</p>
+<p>按照<a href="https://zh.wikipedia.org/zh-hans/%E6%8A%BD%E8%B1%A1%E8%AA%9E%E6%B3%95%E6%A8%B9">维基百科</a>的定义:</p>
+<pre><code>在计算机科学中，抽象语法树（abstract syntax tree或者缩写为AST），或者语法树（syntax tree），是源代码的抽象语法结构的树状表现形式，这里特指编程语言的源代码。 树上的每个节点都表示源代码中的一种结构。
+</code></pre><p>简单说来 AST 就是将整个代码作为一个根节点, 其中的每一个表达式作为一个子节点, 表达式内部, 又是由若干表达式与字符, 操作符作为子节点, 一点点细分直到所有单独的文本或操作符作为叶子节点… (怀念大学操作系统前几章的介绍<code>状态机</code>解析程序语言的部分)</p>
+<p>生成 AST 的过程我们不需要手工完成, 像是 <code>acorn</code>, <code>babylon</code> 等许多模块都可以实现代码文本向 AST 的转换. 本文就是基于 <code>babylon</code> 实现的. 大部分的 AST 解析器功能和思路都比较接近, 我选择 <code>babylon</code> 的原因是 <code>babylon</code> 直接支持 JSX 语法的转译, 对于我们 React 的项目来说省去了很多麻烦.</p>
+<h2 id="babylon"><a href="#babylon" class="headerlink" title="babylon"></a>babylon</h2><p><a href="https://www.npmjs.com/package/babylon"><code>babylon</code></a> 是 <code>babel</code> 内的 JavaScript 语法分析器. 作为一个功能独立的库, 也可以在 <code>babel</code> 之外调用, 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function parse (text, filePath) &#123;</div><div class="line">  try &#123;</div><div class="line">    return babylon.parse(text, &#123;</div><div class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</div><div class="line">    &#125;)</div><div class="line">  &#125; catch (e) &#123;</div><div class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>babylon.parse(code, [options])</code> 会将代码字符串转译成 AST. 参数中的 <code>plugins</code> 是 <code>babylon</code> 内置的一些 ECMA 标准外的其他常用语法的支持. 我的工具打算运行在 <code>React</code> 项目上, <code>jsx</code> 插件可以解析 jsx 语法, 以及 <a href="https://babeljs.io/docs/plugins/transform-class-properties/">classProperties</a>插件提供一些 ES6 标准之外的语法支持.</p>
+<h3 id="babylon-walk"><a href="#babylon-walk" class="headerlink" title="babylon-walk"></a>babylon-walk</h3><p>babylon 也提供了一个 <a href="https://www.npmjs.com/package/babylon-walk"><code>babylon-walk</code></a> 的工具来遍历语法树.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const walk = require(&apos;babylon-walk&apos;);</div><div class="line">const visitors = &#123;</div><div class="line">  StringLiteral: func,</div><div class="line">  JSXText: func,</div><div class="line">&#125;</div><div class="line">const state = &#123;&#125;</div><div class="line">walk.simple(node, visitors, state);</div></pre></td></tr></table></figure>
+<p><code>node</code>是待遍历的 ast 节点, 如果需要遍历整个代码只需传递根节点就好</p>
+<p><code>visitors</code> 是一个 nodeType 与回调函数的对应表. 遍历时如果一个节点的类型存在对应的 visitors, <code>babylon-walk</code> 就会调用对应的回调函数, 并传递 <code>node</code> 和 <code>state</code></p>
+<p><code>state</code> 是一个普通的 object, 或是其他任何东西. 他的作用是在遍历途中保存一些需要的东西, 而不需要在 walk 的作用域外创建一个变量</p>
+<p><code>babylon-walk</code> 除上面用到的<code>simple</code>, 一共支持三种遍历模式:</p>
+<ol>
+<li><code>sample</code>: 最普通的遍历</li>
+<li><code>ancestor</code>: 回调函数中会附加所有遍历的先代节点信息</li>
+<li><code>recursive</code>: 遍历时根据回调函数的返回值选择继续遍历的子节点</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/blog/tools/diy-develop-tools-by-ast/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/blog/tools/diy-develop-tools-by-ast/" data-id="cj1kw49nh0001irm4k163q86u" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-performance-engineering-with-react" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/react/performance-engineering-with-react/" class="article-date">
   <time datetime="2017-03-28T15:22:07.000Z" itemprop="datePublished">2017-03-28</time>
 </a>
-
+    
   <div class="article-category">
     <a class="article-category-link" href="/blog/categories/react/">react</a>
   </div>
 
   </div>
   <div class="article-inner">
-
-
+    
+    
       <header class="article-header">
-
-
+        
+  
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+      <a class="article-title" href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
     </h1>
-
+  
 
       </header>
-
+    
     <div class="article-entry" itemprop="articleBody">
-
+      
         <p>这是 React 性能工程系列的第一部分, 第二部分见<a href="http://benchling.engineering/deep-dive-react-perf-debugging/">深入了解 React 性能调试</a></p>
 <p>本文是为了复杂的 react 项目. 如果你只是在做一些小型项目, 当还没有面临性能问题时, 请不要考虑优化, 只要构建就好了!</p>
 <p>然而, 当开始写一些 DNA 设计工具啦, 凝胶图像分析软件啦, 富文本编辑器或是功能完备的表格系统时, 免不了会遇见性能瓶颈, 并需要尝试寻找解决之道, 本文就是尝试分享我们在此类问题上的一点经验.</p>
 <p>本文中, 我将介绍 react 性能分析的基本工具, 一些导致性能瓶颈的常见问题, 调试上的一些关键点.</p>
-<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
+<h2 id="React-性能基础"><a href="#React-性能基础" class="headerlink" title="React 性能基础"></a>React 性能基础</h2><p>用3句话概述浏览器性能: 理想下浏览器渲染是60帧/秒, 即 16.7ms 一帧. 当应用较慢, 通常用户事件, 数据处理会有较长的延迟. 多数情况并不会有复杂的数据处理, 大部分事件会浪费在重新渲染上.</p>
 <p>使用 React 可以不做额外工作下立即一些性能优化.</p>
 <p>因为 React 托管了所有 DOM 操作, 多数情况下 DOM 的解析与布局问题都可以被避免. 屏幕背后, React 维护了一套虚拟DOM 的机制, 使文档在最小的改变下让文档变回被期待的样子.</p>
-<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks">强制同步布局</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
+<p>由于 React组件在 JavaScript 里存储状态, 不建议访问直接操作 DOM. 一个比较常见的例子是在不恰当的时机访问了一个 DOM, 然后导致了<a href="https://developers.google.com/web/tools/chrome-devtools/profile/rendering-tools/analyze-runtime#how-to-identify-layout-bottlenecks">强制布局同步</a> (e.g. <code>someNode.style.left</code>浏览器会强制渲染一个 frame). 代替这种做法:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">someNode.style.left = parseInt(someNode.style.left) + 10 + &quot;px&quot;;</div></pre></td></tr></table></figure>
 <p>我们声明了 <code>&lt;SomeComponent style={ {left: this.state.left} } /&gt;</code>, 然后通过更新 state 而非读取 DOM 的方式:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">this.setState(&#123;left: this.state.left + 10&#125;).</div></pre></td></tr></table></figure>
@@ -104,54 +176,54 @@
 <h3 id="ELEMENTS-窗口"><a href="#ELEMENTS-窗口" class="headerlink" title="ELEMENTS 窗口"></a>ELEMENTS 窗口</h3><p>(Chrome dev tools 上的) Elements 面板可以方便直观的看到什么元素被重新渲染了, 当属性变化或一个DOM 节点 被更新/新增/替换时会有一个闪烁的效果. 但是这种检测本身会影响到性能, 如果要准确计算 FPS 时, 请切换到 Consoles 面板.</p>
 <h3 id="PROPTYPES"><a href="#PROPTYPES" class="headerlink" title="PROPTYPES"></a>PROPTYPES</h3><p>React 开发中, <a href="PropType validation">PropType 校验</a> 发生在组件被渲染时.利用 Chrome dev tools 上的Profiler面板可以观察到 React 组件花费了大量时间在校验(validate)的方法上</p>
 <p>虽然开发工具的警告在调试阶段很有用, 但是生产环境下缺造成了额外的开销. 有时我会切换到生产模式来忽略这个延迟</p>
-
+        
           <p class="article-more-link">
             <a href="/blog/react/performance-engineering-with-react/#more">Read More</a>
           </p>
-
-
+        
+      
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj10gwxmh0005cjm4zx2jsnb5" class="article-share-link">Partager</a>
-
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
-
-
+      <a data-url="http://ekoneko.github.io/blog/blog/react/performance-engineering-with-react/" data-id="cj1kw49nr0006irm4xl2nm8i4" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
 
     </footer>
   </div>
-
+  
 </article>
 
 
-
+  
     <article id="post-our-best-practices-for-writing-react-components" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/react/our-best-practices-for-writing-react-components/" class="article-date">
   <time datetime="2017-03-03T00:00:00.000Z" itemprop="datePublished">2017-03-03</time>
 </a>
-
+    
   <div class="article-category">
     <a class="article-category-link" href="/blog/categories/react/">react</a>
   </div>
 
   </div>
   <div class="article-inner">
-
-
+    
+    
       <header class="article-header">
-
-
+        
+  
     <h1 itemprop="name">
       <a class="article-title" href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
     </h1>
-
+  
 
       </header>
-
+    
     <div class="article-entry" itemprop="articleBody">
-
+      
         <p>原文 Url: <a href="https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8">https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8</a></p>
 <hr>
 <p>自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.</p>
@@ -239,203 +311,207 @@ export default class ProfileContainer extends Component {
   }
 </code></pre><p>对于 class 类型的组件, 必须确保方法被调用时 <code>this</code> 指向正确的对象. 这里经常在调用时被写成 <code>this.handleSubmit.bind</code></p>
 <p>但用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
-
+        
           <p class="article-more-link">
             <a href="/blog/react/our-best-practices-for-writing-react-components/#more">Read More</a>
           </p>
-
-
+        
+      
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj10gwxma0001cjm4c5iwfkwa" class="article-share-link">Partager</a>
-
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
-
-
+      <a data-url="http://ekoneko.github.io/blog/blog/react/our-best-practices-for-writing-react-components/" data-id="cj1kw49no0005irm4zue5s2ou" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
 
     </footer>
   </div>
-
+  
 </article>
 
 
-
+  
     <article id="post-express-hbs" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/node/express-hbs/" class="article-date">
   <time datetime="2014-01-27T16:00:00.000Z" itemprop="datePublished">2014-01-28</time>
 </a>
-
+    
   <div class="article-category">
     <a class="article-category-link" href="/blog/categories/node/">node</a>
   </div>
 
   </div>
   <div class="article-inner">
-
-
+    
+    
       <header class="article-header">
-
-
+        
+  
     <h1 itemprop="name">
       <a class="article-title" href="/blog/node/express-hbs/">express-hbs简介</a>
     </h1>
-
+  
 
       </header>
-
+    
     <div class="article-entry" itemprop="articleBody">
-
+      
         <p>express-hbs 是一个handlebars模板引擎.</p>
 <p>虽然express自带的<code>jade</code>也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ { } }来实现布局. 我更青睐这种的.</p>
-
+        
           <p class="article-more-link">
             <a href="/blog/node/express-hbs/#more">Read More</a>
           </p>
-
-
+        
+      
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj10gwxm60000cjm44rn4637a" class="article-share-link">Partager</a>
-
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
-
-
+      <a data-url="http://ekoneko.github.io/blog/blog/node/express-hbs/" data-id="cj1kw49nd0000irm4yez8hrgx" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li></ul>
 
     </footer>
   </div>
-
+  
 </article>
 
 
-
+  
     <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/test/hello-world/" class="article-date">
   <time datetime="2014-01-17T16:00:00.000Z" itemprop="datePublished">2014-01-18</time>
 </a>
-
+    
   <div class="article-category">
     <a class="article-category-link" href="/blog/categories/test/">test</a>
   </div>
 
   </div>
   <div class="article-inner">
-
-
+    
+    
       <header class="article-header">
-
-
+        
+  
     <h1 itemprop="name">
       <a class="article-title" href="/blog/test/hello-world/">Hello World</a>
     </h1>
-
+  
 
       </header>
-
+    
     <div class="article-entry" itemprop="articleBody">
-
+      
         <p>第一篇测试文章XD</p>
 <p>其实半年前就打算在<code>github</code>上搭一个静态站来存技术向的笔记啥的</p>
 <p>因为拖延症的缘故一直到最近才搭好/w\</p>
 <p>本地搭的<code>jekyllrb</code>, 然后同步到<code>github</code>上.</p>
 <p>慢慢更新好了(趴</p>
 
-
+      
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj10gwxmg0004cjm4ebh3x0go" class="article-share-link">Partager</a>
-
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
-
-
+      <a data-url="http://ekoneko.github.io/blog/blog/test/hello-world/" data-id="cj1kw49nn0004irm4osju43z4" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
 
     </footer>
   </div>
-
+  
 </article>
 
 
-
+  
 
 </section>
-
+        
           <aside id="sidebar">
-
-
+  
+    
   <div class="widget-wrap">
     <h3 class="widget-title">Catégories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
     </div>
   </div>
 
 
-
-
+  
+    
   <div class="widget-wrap">
     <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
   </div>
 
 
-
-
+  
+    
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
-
-
+  
+    
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
 
-
-
+  
+    
   <div class="widget-wrap">
     <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
-
+        
           <li>
-            <a href="/blog/react/performance-engineering-with-react/">React 性能工程</a>
+            <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
           </li>
-
+        
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
+          </li>
+        
           <li>
             <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
           </li>
-
+        
           <li>
             <a href="/blog/node/express-hbs/">express-hbs简介</a>
           </li>
-
+        
           <li>
             <a href="/blog/test/hello-world/">Hello World</a>
           </li>
-
+        
       </ul>
     </div>
   </div>
 
-
+  
 </aside>
-
+        
       </div>
       <footer id="footer">
-
+  
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
@@ -445,16 +521,16 @@ export default class ProfileContainer extends Component {
 </footer>
     </div>
     <nav id="mobile-nav">
-
+  
     <a href="/blog/" class="mobile-nav-link">Home</a>
-
+  
     <a href="/blog/archives" class="mobile-nav-link">Archives</a>
-
+  
 </nav>
-
+    
 <script>
   var disqus_shortname = 'ekoneko';
-
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
