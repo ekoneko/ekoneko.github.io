@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>[译]如何更好的组织 React 应用 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
+
+最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
+注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
+注2: 所有的例">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]如何更好的组织 React 应用">
+<meta property="og:url" content="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
+
+最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
+注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
+注2: 所有的例">
+<meta property="og:updated_time" content="2017-05-06T16:35:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]如何更好的组织 React 应用">
+<meta name="twitter:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
+
+最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
+注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
+注2: 所有的例">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-how-to-better-organize-your-react-app" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/react/how-to-better-organize-your-react-app/" class="article-date">
+  <time datetime="2017-05-06T14:58:53.000Z" itemprop="datePublished">2017-05-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/react/">react</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [译]如何更好的组织 React 应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文 Url: <a href="https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1" target="_blank" rel="external">https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1</a></p>
+<hr>
+<p>最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织</p>
+<p>注1: 我的例子中都使用了 redux, 如果你不了解, 参考 <a href="http://redux.js.org/" target="_blank" rel="external">redux文档</a></p>
+<p>注2: 所有的例子都基于 react, 但在 react native 中可以保持相同的结构</p>
+<h2 id="创建一个应用有哪些挑战"><a href="#创建一个应用有哪些挑战" class="headerlink" title="创建一个应用有哪些挑战?"></a>创建一个应用有哪些挑战?</h2><p>这是一个发生或将发生在所有开发者项目中的事情:</p>
+<ol>
+<li><p>你和几个开发者开始为客户开发一个应用, 一切都很美好</p>
+</li>
+<li><p>你的客户提了几个新需求, 嗯, 加上了</p>
+</li>
+<li><p>你的客户又要求去掉几个功能, 并加上一些新功能, 有点棘手但并不难实现. 项目开始变得不那么完美</p>
+</li>
+<li><p>你的客户继续要求增加/修改/删除需求, 你开始在一些代码上打补丁. 代码不再让人骄傲, 但还能用</p>
+</li>
+<li><p>6个月后, 代码变得复杂, 难以理解, 像一团意大利面条</p>
+</li>
+</ol>
+<p>直到有一天客户要求推出一个新版本时, 你放弃了乱成一团的旧代码, 开始了一个新的项目</p>
+<a id="more"></a>
+<hr>
+<p>自从我开始学习 react 时, 我读了许多文章关于如何创建一个 todo list或者之类的小玩意. 这些文章对理解 react 很有帮助. 但很快的我发现自己很难找到一些文章关于如何开发好一个有十几个页面, 几百个组件的应用.</p>
+<p>一段时间搜索后, 我发现 react 的样板项目差不多都有相同的结构, 所有文件按类型划分, 例如这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /actions</div><div class="line">    /notifications.js</div><div class="line"></div><div class="line"> /components</div><div class="line">    /Header</div><div class="line">    /Footer</div><div class="line">    /Notifications</div><div class="line">      /index.js</div><div class="line">  /containers</div><div class="line">    /Home</div><div class="line">    /Login</div><div class="line">    /Notifications</div><div class="line">      /index.js</div><div class="line">  /images</div><div class="line">    /logo.png</div><div class="line">  /reducers</div><div class="line">    /login.js</div><div class="line">    /notifications.js</div><div class="line">  /styles</div><div class="line">    /app.scss</div><div class="line">    /header.scss</div><div class="line">    /home.scss</div><div class="line">    /footer.scss</div><div class="line">    /notifications.scss</div><div class="line">  /utils</div><div class="line">  index.js</div></pre></td></tr></table></figure>
+<p>这种架构或许可行, 但我认为并不是最好的.</p>
+<p>这种按类型划分结构的代码规模增长后, 往往会变得难以维护. 而认识这一点时往往已经太迟了. 你需要花费大量的时间和金钱才能改善, 或者在接下来几年将就着维护.</p>
+<p>然而好的一方面, 你可以按照任何一种你喜欢的方法去组织 react 项目, react 只是一个js类库.</p>
+<h2 id="什么样的组织方法更好呢"><a href="#什么样的组织方法更好呢" class="headerlink" title="什么样的组织方法更好呢"></a>什么样的组织方法更好呢</h2><p>许多年前我在金融公司用 <code>Ember</code> 做应用. 这种 Ember 应用有趣的一点是, 项目目录是按照功能划分的, 而非类型. 这改变了一切.</p>
+<p><code>Pods</code> 在 Ember 中很强大, 但仍有限制, 我想要更加灵活的东西. 随着经验积累, 我试着使用一种更好的结构, 按照功能划分结构, 并按需嵌套. 现在的结构如下:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /components</div><div class="line">    /Button</div><div class="line">    /Notifications</div><div class="line">      /components</div><div class="line">        /ButtonDismiss  </div><div class="line">          /images</div><div class="line">          /locales</div><div class="line">          /specs</div><div class="line">          /index.js</div><div class="line">          /styles.scss</div><div class="line">      /index.js</div><div class="line">      /styles.scss</div><div class="line">  /data</div><div class="line">    /users</div><div class="line">      /actions.js</div><div class="line">      /api.js</div><div class="line">      /reducer.js</div><div class="line">  /scenes</div><div class="line">    /Home</div><div class="line">      /components</div><div class="line">        /ButtonLike</div><div class="line">      /services</div><div class="line">        /processData</div><div class="line">      /index.js</div><div class="line">      /styles.scss</div><div class="line">    /Sign</div><div class="line">      /components</div><div class="line">        /FormField</div><div class="line">      /scenes</div><div class="line">        /Login</div><div class="line">        /Register</div><div class="line">          /locales</div><div class="line">          /specs</div><div class="line">          /index.js</div><div class="line">          /styles.scss</div><div class="line">  /services</div><div class="line">    /api</div><div class="line">    /geolocation</div><div class="line">    /session</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div><div class="line">  index.js</div><div class="line">  store.js</div></pre></td></tr></table></figure>
+<p>所有的组件, 场景, 服务(一个需求)都可以独立运作, 包含了自身需要的图片, 样式, 翻译, action 和单元测试. 每一个功能都可以单独被项目应用(有一点像 node 的 modules).</p>
+<p>为了保证可以运作, 必须遵守如下规则:</p>
+<ol>
+<li><p>组件可以定义嵌套组件或服务, 但不能使用或定义场景</p>
+</li>
+<li><p>场景可以定义嵌套组件, 服务和场景</p>
+</li>
+<li><p>服务可以定义嵌套服务, 但不能定义组件和场景</p>
+</li>
+<li><p>数据需求是独立的</p>
+</li>
+<li><p>能允许父子关系的嵌套 (不允许跨目录使用)</p>
+</li>
+</ol>
+<h3 id="组件-Component"><a href="#组件-Component" class="headerlink" title="组件(Component)"></a>组件(Component)</h3><p>你已经知道组件是什么, 但这种组织下重要的一点是, 组件可以嵌套组件</p>
+<p>组件定义在项目根目录下. 组件目录里的东西是全局的可以在项目任何地方使用. 但如果你决定在组件目录下创建一个新的组件目录(嵌套). 这个新的组件目录只能由其直属父目录调用</p>
+<h4 id="为什么要这样呢"><a href="#为什么要这样呢" class="headerlink" title="为什么要这样呢"></a>为什么要这样呢</h4><p>当开发一个大型应用时, 经常会遇到你需要创建一个肯定不会复用的组件. 如果这个组件放在组件的根目录上, 它将迷失在上百个组件之中. 你可以将之分类, 但等到清理的时候你可能已经不记得哪些组件在哪里用到了.</p>
+<p>但如果组件的根目录上只有主要的组件, 比如各种按钮, 表单项, 缩略图, 以及一些复杂的拥有子组件的, 像是评论列表, 混合表单等, 读起来就会轻松许多.</p>
+<p>例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /components</div><div class="line">    /Button</div><div class="line">      /index.js</div><div class="line">    /Notifications</div><div class="line">      /components</div><div class="line">        /ButtonDismiss</div><div class="line">          /index.js</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div></pre></td></tr></table></figure>
+<ol>
+<li><p><code>Buttons</code> 可以在任何地方被调用</p>
+</li>
+<li><p><code>Notifications</code> 也可以在任何地方被调用, 它定义了子组件 <code>ButtonDismiss</code>. 你不能在 <code>Notifications</code>之外的地方使用 <code>ButtonDismiss</code></p>
+</li>
+<li><p><code>ButtonDismiss</code> 可以使用 <code>Button</code></p>
+</li>
+</ol>
+<h3 id="场景-Scenes"><a href="#场景-Scenes" class="headerlink" title="场景(Scenes)"></a>场景(Scenes)</h3><p>场景是应用中的一个页面. 你可以像组件一样使用场景. 但我更喜欢将之隔离开.</p>
+<p>如果你使用了 react-router, 你可以将所有场景在 index.js 中引入并设置路由表.</p>
+<p>和组件一样, 场景也可以嵌套场景, 并且可以在场景中定义组件和服务. 必须记得一点: 在场景中定义的组件和服务只能在这个场景中使用</p>
+<p>例子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /scenes</div><div class="line">    /Home</div><div class="line">      /components</div><div class="line">        /ButtonShare</div><div class="line">          /index.js</div><div class="line">      /index.js</div><div class="line">    /Sign</div><div class="line">      /components</div><div class="line">        /ButtonHelp</div><div class="line">          /index.js</div><div class="line">      /scenes</div><div class="line">        /Login</div><div class="line">          /components</div><div class="line">            /Form</div><div class="line">              /index.js</div><div class="line">            /ButtonFacebookLogin</div><div class="line">              /index.js</div><div class="line">          /index.js</div><div class="line"></div><div class="line">        /Register</div><div class="line">          /index.js</div><div class="line">      /index.js</div></pre></td></tr></table></figure>
+<ol>
+<li><p><code>Home</code> 中定义了组件 <code>ButtonShare</code>, 它只能在 <code>Home</code> 场景下使用</p>
+</li>
+<li><p><code>Sign</code> 定义了组件 <code>ButtonHelp</code>, 它可以在 <code>Login</code> 和 <code>Register</code> 场景及其所属的组件中使用</p>
+</li>
+<li><p><code>Form</code> 组件可以使用 <code>ButtonHelp</code> 因为 <code>ButtonHelp</code> 在其父目录下.</p>
+</li>
+<li><p><code>Register</code> 不能用 <code>Login</code> 下的组件, 但可以用 <code>ButtonHelp</code></p>
+</li>
+</ol>
+<h3 id="服务-Service"><a href="#服务-Service" class="headerlink" title="服务(Service)"></a>服务(Service)</h3><p>不是所有东西都能组件化, 你需要创建一个独立模块来支持组件和场景.</p>
+<p>你可以让一个自用的服务(self-contained module), 或应用内任何地方重用. 这取决于具体项目的复杂度.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /services</div><div class="line">    /api</div><div class="line">      /services</div><div class="line">        /handleError</div><div class="line">          /index.js</div><div class="line">      /index.js</div><div class="line">    /geolocation</div><div class="line">    /session</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div></pre></td></tr></table></figure>
+<h3 id="数据-Data"><a href="#数据-Data" class="headerlink" title="数据(Data)"></a>数据(Data)</h3><p>data 实体和 service 很相似. 这是服务端 API与客户端之间的桥梁(bridge) 或 适配器(adapter). 当然没有 server Api 的话就不需要 data.</p>
+<p>data 负责大部分的网络通讯, 读写内容, 传输数据或存储数据(比如 redux). 通常 data 能被任何组件或场景调用.</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>如果你有兴趣看看具体项目, 作者 GitHub 上有两个参考</p>
+<ol>
+<li><p><a href="https://github.com/alexmngn/react-rock-paper-scissors" target="_blank" rel="external">https://github.com/alexmngn/react-rock-paper-scissors</a> (ReactJS)</p>
+</li>
+<li><p><a href="https://github.com/alexmngn/react-native-authentication" target="_blank" rel="external">https://github.com/alexmngn/react-native-authentication</a> (React-Native)</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj2dhqphc0001pkm47hrlc214" class="article-share-link">Delen</a>
+      
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaren</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/tools/diy-develop-tools-by-ast/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ouder</strong>
+      <div class="article-nav-title">开发基于 AST 的前端工具</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categorieën</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Labels</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archieven</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recente berichten</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
+          </li>
+        
+          <li>
+            <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
+          </li>
+        
+          <li>
+            <a href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
+          </li>
+        
+          <li>
+            <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
+          </li>
+        
+          <li>
+            <a href="/blog/node/express-hbs/">express-hbs简介</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>
