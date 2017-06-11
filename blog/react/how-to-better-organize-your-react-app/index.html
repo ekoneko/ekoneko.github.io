@@ -5,28 +5,17 @@
   
   <title>[译]如何更好的组织 React 应用 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
-
-最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
-注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
-注2: 所有的例">
+  <meta name="description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1  最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织 注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档 注2: 所有的例">
+<meta name="keywords" content="react">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[译]如何更好的组织 React 应用">
 <meta property="og:url" content="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
-
-最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
-注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
-注2: 所有的例">
+<meta property="og:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1  最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织 注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档 注2: 所有的例">
 <meta property="og:updated_time" content="2017-05-06T16:35:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]如何更好的组织 React 应用">
-<meta name="twitter:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1
-
-最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织
-注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档
-注2: 所有的例">
+<meta name="twitter:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1  最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织 注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档 注2: 所有的例">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -66,10 +55,10 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
       </div>
     </div>
   </div>
@@ -190,9 +179,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj2dhqphc0001pkm47hrlc214" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj3swdspn0005chm4abhzdyv6" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -203,9 +192,18 @@
     
 <nav id="article-nav">
   
+    <a href="/blog/engineering/a-unified-styling-language/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          [译]统一样式语言
+        
+      </div>
+    </a>
+  
   
     <a href="/blog/tools/diy-develop-tools-by-ast/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ouder</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">开发基于 AST 的前端工具</div>
     </a>
   
@@ -226,9 +224,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categorieën</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
     </div>
   </div>
 
@@ -236,9 +234,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
   </div>
 
@@ -248,16 +246,16 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 10px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -265,9 +263,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
+          </li>
         
           <li>
             <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
@@ -283,10 +285,6 @@
         
           <li>
             <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
-          </li>
-        
-          <li>
-            <a href="/blog/node/express-hbs/">express-hbs简介</a>
           </li>
         
       </ul>

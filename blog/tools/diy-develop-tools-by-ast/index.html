@@ -5,34 +5,17 @@
   
   <title>开发基于 AST 的前端工具 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近在遇到了两个小需求:
-
-要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本
-一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行
-
-这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多.
-按照维基百科的定义">
+  <meta name="description" content="最近在遇到了两个小需求:  要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本 一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行  这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多. 按照维基百科的定义">
+<meta name="keywords" content="other">
 <meta property="og:type" content="article">
 <meta property="og:title" content="开发基于 AST 的前端工具">
 <meta property="og:url" content="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="最近在遇到了两个小需求:
-
-要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本
-一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行
-
-这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多.
-按照维基百科的定义">
+<meta property="og:description" content="最近在遇到了两个小需求:  要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本 一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行  这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多. 按照维基百科的定义">
 <meta property="og:updated_time" content="2017-04-16T16:15:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发基于 AST 的前端工具">
-<meta name="twitter:description" content="最近在遇到了两个小需求:
-
-要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本
-一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行
-
-这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多.
-按照维基百科的定义">
+<meta name="twitter:description" content="最近在遇到了两个小需求:  要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本 一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行  这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多. 按照维基百科的定义">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -72,10 +55,10 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
       </div>
     </div>
   </div>
@@ -148,9 +131,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj2dhqph80000pkm41ocs2hqf" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj3swdsp70000chm4agzal1i9" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -162,7 +145,7 @@
 <nav id="article-nav">
   
     <a href="/blog/react/how-to-better-organize-your-react-app/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Nieuwer</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           [译]如何更好的组织 React 应用
@@ -172,7 +155,7 @@
   
   
     <a href="/blog/react/performance-engineering-with-react/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ouder</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">[译]React 性能工程</div>
     </a>
   
@@ -193,9 +176,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categorieën</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
     </div>
   </div>
 
@@ -203,9 +186,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
   </div>
 
@@ -215,16 +198,16 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 10px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -232,9 +215,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
+          </li>
         
           <li>
             <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
@@ -250,10 +237,6 @@
         
           <li>
             <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
-          </li>
-        
-          <li>
-            <a href="/blog/node/express-hbs/">express-hbs简介</a>
           </li>
         
       </ul>
