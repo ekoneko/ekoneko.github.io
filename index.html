@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Zoeken"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -108,124 +108,17 @@
 <li>包管理</li>
 <li>无浏览器样式 (Non-browser styling)</li>
 </ol>
-<h3 id="1-范围约束"><a href="#1-范围约束" class="headerlink" title="1. 范围约束"></a>1. 范围约束</h3><p>普片认为, 构筑有效的 CSS 是一件很困难的事情. 尤其是在一个长期的项目中, 很难找到对应的 CSS.</p>
-<p>CSS 社区投入了很大精力想解决这个问题, 通过一些方式增加样式的可维护性, 例如 <a href="https://github.com/stubbornella/oocss/wiki" target="_blank" rel="external">OOCSS</a>, <a href="https://smacss.com/" target="_blank" rel="external">SMACSS</a> 等. 其中最流行的是来自 <a href="https://github.com/yandex" target="_blank" rel="external">Yandex</a> 的 <a href="http://getbem.com/" target="_blank" rel="external">BEM</a>,  Block Element Modifier.</p>
-<p>BEM( 纯 CSS 实现)只是一个命名约定, 通过像是 <code>.Block__element--modifier</code> 的 <code>class</code> 限制样式. 在 BEM 的项目中, 开发者不得不在所有场合遵循 BEM 规则, 能做到这一点, BEM 是很好用的, 但范围限制只能以纯粹的规范来约束么?</p>
-<p>事实上, 大多 CSS-in-JS 都遵循 BEM 的心态, 以不同的方式将样式定位在单个元素上. 例如 <a href="https://github.com/threepointone/glamor" target="_blank" rel="external">glamor</a>, 写起来像是这样:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import &#123; css &#125; from &apos;glamor&apos;</div><div class="line">const title = css(&#123;</div><div class="line">  fontSize: &apos;1.8em&apos;,</div><div class="line">  fontFamily: &apos;Comic Sans MS&apos;,</div><div class="line">  color: &apos;blue&apos;</div><div class="line">&#125;)</div><div class="line">console.log(title)</div><div class="line">// → &apos;css-1pyvz&apos;</div></pre></td></tr></table></figure>
-<p>请注意, <code>CSS class</code> 并没有在代码中出现. 对样式的引用不再需要在代码中硬编码, 而是由库自动生成. 不用担心选择器全局范围冲突, 也意味着我们不需要手动增加前缀.</p>
-<p>选择器的范围与代码所在的范围相匹配. 如果想让这规则在整个应用中都适用, 则需要以 js 模块的方式引入. 这对于长期维护项目是极其强大的, 可以确保样式像其他资源一样能被轻易追踪.</p>
-<p>从简单的规范约束到代码约束, 这提高了样式代码的基础质量.</p>
-<p>–</p>
-<p>继续之前有个很重要的事情声明</p>
-<p>生成的样式是 css, 不是行内样式</p>
-<p>早期 CSS-in-JS 类直接将样式绑定在每一个元素上, 元素上的 style 无法代替 css 的所有功能. 新的类库基本上会生成全局的样式, 实时进行插入和删除</p>
-<p><a href="https://github.com/cssinjs/jss" target="_blank" rel="external">JSS</a> 就是一个例子. 使用 <code>JSS</code> 可以实现像是 <code>hover</code>, <code>@media</code> 之类的功能, 直接生成相同的 css 代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">const styles = &#123;</div><div class="line">  button: &#123;</div><div class="line">    padding: &apos;10px&apos;,</div><div class="line">    &apos;&amp;:hover&apos;: &#123;</div><div class="line">      background: &apos;blue&apos;</div><div class="line">    &#125;</div><div class="line">  &#125;,</div><div class="line">  &apos;@media (min-width: 1024px)&apos;: &#123;</div><div class="line">    button: &#123;</div><div class="line">      padding: &apos;20px&apos;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这段代码将自动生成对应的 class</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">const &#123; classes &#125; = jss.createStyleSheet(styles).attach()</div></pre></td></tr></table></figure>
-<p>无论是通过某些框架, 或是简单的 innerHTML, 生成的 class 都可以直接替换之前的 class 字符串</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">document.body.innerHTML = `</div><div class="line">  &lt;h1 class=&quot;$&#123;classes.heading&#125;&quot;&gt;Hello World!&lt;/h1&gt;</div><div class="line">`</div></pre></td></tr></table></figure>
-<p>这种样式管理可以很方便的整合到其他库中, 比如 <a href="https://github.com/cssinjs/react-jss" target="_blank" rel="external">react-jss</a> 可以在全局的生命周期注入样式.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">import injectSheet from &apos;react-jss&apos;</div><div class="line">const Button = (&#123; classes, children &#125;) =&gt; (</div><div class="line">  &lt;button className=&#123;classes.button&#125;&gt;</div><div class="line">    &lt;span className=&#123;classes.label&#125;&gt;</div><div class="line">      &#123;children&#125;</div><div class="line">    &lt;/span&gt;</div><div class="line">  &lt;/button&gt;</div><div class="line">)</div><div class="line">export default injectSheet(styles)(Button)</div></pre></td></tr></table></figure>
-<p>将样式关联在组件上会使生成的样式与其他代码紧密耦合. 由于 <code>BEM</code> 带来的习惯, 许多 CSS-in-JS 社区认为提取是十分重要的, 在样式关联的过程中丢掉了命名与复用.</p>
-<p>一种解决这个问题的新方案是 <a href="https://github.com/styled-components/styled-components" target="_blank" rel="external">styled-components</a>.</p>
-<p>代替创建样式, styled-components 会直接创建样式关联的组件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">import styled from &apos;styled-components&apos;</div><div class="line"></div><div class="line">const Title = styled.h1`</div><div class="line">  font-family: Comic Sans MS;</div><div class="line">  color: blue;</div><div class="line">`</div></pre></td></tr></table></figure>
-<p>我们没有创建一个 class 关联到元素上, 而是直接生成了一个包含样式的组件.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;Title&gt;Hello World!&lt;/Title&gt;</div></pre></td></tr></table></figure>
-<p><code>styled-components</code> 还是使用的 css 字符串, 另一种结构化做的更好的方式是 PayPal 的 <a href="https://github.com/paypal/glamorous" target="_blank" rel="external">Glamorous</a>.</p>
-<p><code>Glamorous</code>提供了和 <code>styled-components</code> 相似的 <code>component-first</code> API, 但用 object 定义样式而非字符串.<br>这种做法更方便以后减少样式体积或是提高性能</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">import glamorous from &apos;glamorous&apos;</div><div class="line"></div><div class="line">const Title = glamorous.h1(&#123;</div><div class="line">  fontFamily: &apos;Comic Sans MS&apos;,</div><div class="line">  color: &apos;blue&apos;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>无论哪种描述样式的语法, 样式与组件都不再仅仅是<code>作用范围</code>的关系, 而是一个密不可分的整体. 当使用像是 React 之类的框架时, 组件就是构建项目的基本单位, 样式则是一种形式的组件. <em>如果任何东西都可以描述成组件, 为什么还需要单独写样式呢</em></p>
-<hr>
-<p>作为一个用惯了 BEM 的人, 这些变化都不是很大. 但对于习惯了 CSS Modules 的人, 他们并不太愿意为此放弃已经熟练的 CSS 工具与生态环境. 这就是为什么许多项目依旧愿意不改变习惯的基础上通过写大量的 css 解决大多数问题.</p>
-<h3 id="2-关键样式"><a href="#2-关键样式" class="headerlink" title="2. 关键样式"></a>2. 关键样式</h3><p>最近相对流行的做法是在文档的顶部引入当前页需要的内联样式来优化页面加载时间. 这与传统加载样式的方式不同, 需要等所有样式都加载完毕才开始进行渲染.</p>
-<p>有一些工具可以提取出当前页所需的关键样式, 比如<a href="https://github.com/addyosmani/critical" target="_blank" rel="external">critical</a>. 然而这种做法并没有解决关键样式难以维护或自动化的问题. 这是一个棘手且可选的性能优化问题, 很多项目直接放弃了这一步.</p>
-<p>CSS-in-JS 就不一样了</p>
-<p>在一个服务端渲染的项目里, 提取关键样式不是一个可选优化, 服务端会严格要求提取出关键的样式.</p>
-<p>举个例子, <a href="https://github.com/Khan/aphrodite" target="_blank" rel="external">Aphrodite</a> 通过在元素上绑定 class 时调用 CSS 函数跟踪一次渲染所需要哪些样式.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">import &#123; StyleSheet, css &#125; from &apos;aphrodite&apos;</div><div class="line">const styles = StyleSheet.create(&#123;</div><div class="line">  title: &#123; ... &#125;</div><div class="line">&#125;)</div><div class="line">const Heading = (&#123; children &#125;) =&gt; (</div><div class="line">  &lt;h1 className=&#123;css(styles.heading)&#125;&gt;&#123; children &#125;&lt;/h1&gt;</div><div class="line">)</div></pre></td></tr></table></figure>
-<p>即使样式是通过 js 定义的, 也可以很方便找到当前页面上的全部样式, 并在 server render 时以&lt;style&rt;形式插入文档顶部</p>
-<p>如果你观察过 React 的 SSR 项目, 你会发现这种做法非常普遍. 组件通过 js 定义的标记, 会被以 HTML 字符串输出.</p>
-<p>如果是以渐进(progressive enhancement)的形式构建程序, 甚至可能不需要客户端上执行任何 JavaScript.</p>
-<p>另一方面, 客户端渲染的js则需要脚本去启动你的单页应用, 带入生命周期. 按照指定的方式渲染浏览器.</p>
-<p>由于渲染 HTML 和 CSS 的时间是一致的. <code>Aphrodite</code>之类的工具通常会同时计算关键样式并渲染出 HTML. 渲染 React 组件的过程也是相似的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">const appHtml = `</div><div class="line">  &lt;div id=&quot;root&quot;&gt;</div><div class="line">    $&#123;html&#125;</div><div class="line">  &lt;/div&gt;</div><div class="line">`</div></pre></td></tr></table></figure>
-<p>服务端使用 CSS-in-JS, 不但能让客户端没有 JavaScript 的场合下正常工作, 还能更快的进行渲染.</p>
-<h3 id="3-更智能的优化"><a href="#3-更智能的优化" class="headerlink" title="3. 更智能的优化"></a>3. 更智能的优化</h3><p>人们最近都在尝试一些新的方式去格式化 CSS, 比如雅虎的 <a href="https://acss.io/" target="_blank" rel="external">Atomic CSS</a>等.<br>在项目中避免 class 包含”语义”, 而是短小以及用途单一. 例如 Atomic CSS 会用一种近似函数的方式去构建样式表:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;div class=&quot;Bgc(#0280ae.5) C(#fff) P(20px)&quot;&gt;</div><div class="line">  Atomic CSS</div><div class="line">&lt;/div&gt;</div></pre></td></tr></table></figure>
-<p>这样做是为了缩小样式代码, class可以被尽可能复用. 这种做法可以减少代码文件体积, 并对开发者没有什么影响.</p>
-<p>如之前所描述的, CSS-in-JS 的 className 是由程序自动生成的,</p>
-<p>代替:</p>
-<pre><code>&lt;aside className=&quot;sidebar&quot; /&gt;
-</code></pre><p>代码会写成:</p>
-<pre><code>&lt;aside className={styles.sidebar} /&gt;
-</code></pre><p>这种变化看起来很小, 但对标签与样式转换很有帮助. 上面例子中的 <code>styles.sidebar</code> 可以转换为多个 class 名称</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;aside className=&#123;styles.sidebar&#125; /&gt;</div><div class="line">// Could easily resolve to this:</div><div class="line">&lt;aside className=&#123;&apos;class1 class2 class3 class4&apos;&#125; /&gt;</div></pre></td></tr></table></figure>
-<p>如果给每一种样式生成一个对应的 class, 这样能做很多有趣的事情.</p>
-<p>我喜欢的一个例子是 <a href="https://github.com/rtsao/styletron" target="_blank" rel="external">Styletron</a></p>
-<p><code>Styletron</code> 核心API 只做一件事情, 将样式分组, 然后生成对应 className.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">import styletron from &apos;styletron&apos;;</div><div class="line">styletron.injectDeclaration(&#123;</div><div class="line">  prop: &apos;color&apos;,</div><div class="line">  val: &apos;red&apos;,</div><div class="line">  media: &apos;(min-width: 800px)&apos;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">// → &apos;a&apos;</div></pre></td></tr></table></figure>
-<p>当然 <code>Styletron</code> 还提供了更高级的 API, 比如 <code>injectStyle</code> 用于一次性定义样式集.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">import &#123; injectStyle &#125; from &apos;styletron-utils&apos;;</div><div class="line">injectStyle(styletron, &#123;</div><div class="line">  color: &apos;red&apos;,</div><div class="line">  display: &apos;inline-block&apos;</div><div class="line">&#125;);</div><div class="line">// → &apos;a d&apos;</div><div class="line"></div><div class="line">injectStyle(styletron, &#123;</div><div class="line">  color: &apos;red&apos;,</div><div class="line">  fontSize: &apos;1.6em&apos;</div><div class="line">&#125;);</div><div class="line">// → &apos;a e&apos;</div></pre></td></tr></table></figure>
-<p>注意上面两组 class 的公共部分.</p>
-<p>放弃对 class 的直接管理, 仅仅声明我们需要的样式. 由库自己去进行 class 命名的优化.</p>
-<p><img src="https://cdn-images-1.medium.com/max/1600/1*pWXr1A6uhiOkYHqwfBMtWg.png"></p>
-<p>上图为 使用 Airbnb 风格的 CSS-in-JS 打包大小对比. 通过手动将样式抽象复用的方式现在完全可以自动化实现, 从这里的趋势看出, CSS 原子化现在已经成熟.</p>
-<h3 id="4-包管理"><a href="#4-包管理" class="headerlink" title="4. 包管理"></a>4. 包管理</h3><p>继续往下看之前请先想一想, <b>我们是如何分享 css 代码的?</b></p>
-<p>可能是手动下载 css 文件, 通过一些前端依赖管理工具, 比如 <a href="https://bower.io/" target="_blank" rel="external">bower</a>, 现在还可以直接使用<a href="https://www.npmjs.com/" target="_blank" rel="external">npm</a> (感谢 <code>Browserify</code> 和 <code>webpack</code>), 或是其他一些解包 css 的工具. 前端往往会手动的处理 css 依赖.</p>
-<p>无论哪种方式在处理对其他 css 的依赖都不是很理想.</p>
-<p>很多人还记得 <code>bower</code> 与 <code>npm</code> 对依赖处理之间的异同.</p>
-<p>Bower 没有耦合任何模块形式, NPM 则采用了 <a href="http://wiki.commonjs.org/wiki/Modules/1.1" target="_blank" rel="external">CommonJS</a>. 这导致两者发布差异很大.</p>
-<p>Npm 对小型嵌套的依赖非常适用, 而 <code>bower</code>则往往需要引入完整, 庞大的依赖. 每个依赖自身不能很好的处理自己的依赖, 这些往往都需要手动配置.</p>
-<p>最终 Npm 上的包迅速增长, 而 Bower 却慢慢被人淡忘…</p>
-<p>不幸的是, CSS 社区似乎正在重演 Bower 的道路. 想要解决CSS 嵌套依赖及复杂的层级结构, 我们需要的不仅仅是一个包管理工具, 还需要一种模块式的依赖方法.</p>
-<p>那 CSS 需要单独的依赖管理工具吗?</p>
-<p>事实上 CSS 与 HTML 关系很像. 如果被问到我们如何分享 HTML, 很容易就能意识到, 我们从不直接分享 HTML, 我们分享的是 HTML-in-JS.</p>
-<p>在  jQuery plugins, Angular directives 和 React components 中, 我们都是用小的组件构成大的组件, 每个组件都有自己的 HTML. 每一块都能单独在 npm 上发布. 作为标记语言的 HTML 不够强大到可以这样发布并处理依赖关系, 但是将 HTML 嵌入编程语言中, 我们可以很容易的实现这样的功能.</p>
-<p>我们当然也可以像分享 HTML 一样分享 CSS.  我们可以通过 <code>mixins</code>, <code>extends class</code> 或者简单的 <code>Object.assign</code> 或是一种<a href="https://github.com/tc39/proposal-object-rest-spread" target="_blank" rel="external">对象分割操作</a> 来处理样式.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const styles = &#123;</div><div class="line">  ...rules,</div><div class="line">  ...moreRules,</div><div class="line">  fontFamily: &apos;Comic Sans MS&apos;,</div><div class="line">  color: &apos;blue&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这样我们可以组合并分享样式使用同样的规则, 同样的工具, 同样的基础以及同样的生态体系.</p>
-<p>一个比较好的例子是 <a href="https://github.com/styled-components/polished" target="_blank" rel="external">Polished</a>.</p>
-<p><code>Polished</code> 是 CSS-in-JS 中的 lodash. 他提供了一套完善的混合/色彩函数/快捷操作等工具. 有一点像 JavaScript 版的 Sass. 关键差别在于 <code>Polished</code>生成的代码能更好的组合/测试/分享, 并完全适用于 js 包管理的生态.</p>
-<h3 id="5-无浏览器样式"><a href="#5-无浏览器样式" class="headerlink" title="5. 无浏览器样式"></a>5. 无浏览器样式</h3><p>上述的都是 CSS-in-JS 的一些方便之处, 通过传统 CSS 的方式也依然能达到同样的目的. 我将最有趣的也是面向未来的一点放在了最后面. 这一点不是为了当前的 CSS-in-JS, 而是未来设计的一个基础, 这不仅面向前端开发人员, 也面向设计师, 这将彻底改变两个专业的沟通方式.</p>
-<p>首先我们需要观察一下 React.</p>
-<hr>
-<p>React 的模块是最终渲染之前的中间组件. 在浏览器中它没有直接操作 DOM, 取而代之的是 虚拟 DOM (virtual DOM).</p>
-<p>有趣的是渲染到 DOM 的并不是 React, 而是 <code>react-dom</code> 库.</p>
-<p>不同的环境允许 React 生成不同的对象, JSX 提供的不仅仅是虚拟 DOM, 而是虚拟<em>一切</em> (virtual whatever).</p>
-<p>这是 <a href="https://facebook.github.io/react-native" target="_blank" rel="external">ReactNative</a>做的事情, 用 JavaScript 语法写原生应用, 最终生成原生组件, 用 <code>Text</code> 和 <code>View</code> 代替 <code>div</code> 和 <code>span</code>.</p>
-<p>最有趣的是, <code>ReactNative</code> 有其独有的一份 <a href="https://facebook.github.io/react-native/docs/stylesheet.html" target="_blank" rel="external">StyleSheet API</a>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var styles = StyleSheet.create(&#123;</div><div class="line">  container: &#123;</div><div class="line">    borderRadius: 4,</div><div class="line">    borderWidth: 0.5,</div><div class="line">    borderColor: &apos;#d6d7da&apos;,</div><div class="line">  &#125;,</div><div class="line">  title: &#123;</div><div class="line">    fontSize: 19,</div><div class="line">    fontWeight: &apos;bold&apos;,</div><div class="line">  &#125;,</div><div class="line">  activeTitle: &#123;</div><div class="line">    color: &apos;red&apos;,</div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>看起来和普通的样式很像, 有颜色, 字体和边框样式. 这些规则很简单, 很容易映射到普通的 UI 环境. 不过有趣的地方在于转换到原生的语法上.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var styles = StyleSheet.create(&#123;</div><div class="line">  container: &#123;</div><div class="line">    display: &apos;flex&apos;</div><div class="line">  &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>在浏览器之外, <code>React Native</code> 也实现了一套 Native 的 <code>flexbox</code>.</p>
-<p>这个功能最早作为一个名为 <code>css-layout</code> 的 JavaScript 包被发布, 后来又被重构成了 C.</p>
-<p>鉴于其被广泛使用及重要性, 最终它成为了一个独立的品牌: <a href="https://facebook.github.io/yoga" target="_blank" rel="external">Yoga</a>.</p>
-<p>虽然 <code>Yoga</code>是作为将 CSS 移植到非浏览器环境的一个项目, 出于实现成本成本考虑, 它也没有实现所有的 CSS 功能.</p>
-<p>这些听起来虽然有所限制, 但是纵观 CSS 历史, 使用 CSS 一直都是挑选出合适的子集.</p>
-<p><code>Yoga</code> 避免了不必要的级联样式, 专注于 flexbox 的实现. 这给跨平台(cross-platform)组件带来了许多可能性.</p>
-<p><a href="https://github.com/necolas/react-native-web" target="_blank" rel="external">React Native for Web</a> 用于反过来将 ReactNative 用于 web 中. 使用 webpack 等构建工具可以很好的给包设置别名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">module: &#123;</div><div class="line">  alias: &#123;</div><div class="line">    &apos;react-native&apos;: &apos;react-native-web&apos;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>使用 <code>react-native-web</code> 可以将 ReactNative 的组件直接应用在 web 中, 当然也包含其 <code>StyleSheet API</code>.</p>
-<p>另一个比较相似的东西是 <a href="https://github.com/lelandrichardson/react-primitives" target="_blank" rel="external">react-primitives</a>. 它定义了一批在各个平台对应不同实现的原始组件, 用于构建跨平台应用.</p>
-<p>微软提供的 ReactXp 库, 用于提供一个支持 web 与原生双方的编码方式, 使用了所谓<a href="https://microsoft.github.io/reactxp/docs/styles.html" target="_blank" rel="external">平台无关风格实现</a>的编码思想.</p>
-<p>即使不写 native app, 跨平台的组件减少了环境依赖的限制, 往往会带来意料之外的惊喜.</p>
-<p>其中一个惊喜是 airbnb 的 <a href="http://airbnb.io/react-sketchapp" target="_blank" rel="external">react-sketchapp</a>.</p>
-<p>直到 <code>react-sketchapp</code>的到来前, 我们还是不得不将前端开发和设计单独进行.</p>
-<p><code>react-sketchapp</code> 让我们根据 Sketch 的文档, 自动生成跨平台的 react 组件. 这颠覆了开发者和设计师过去的合作方式. 现在, 当我们想改变组件的 UI 时, 我们只需要改变设计, 反之同理.</p>
-<hr>
-<p>CSS-in-JS 这种统一语言的组件定义行为, 让我们将关注更好的分离开 – 不是技术而是功能层面的分离. 每一个组件都有自己独立的范围, 然后组合出一个可维护的系统, 使我们能更好的分享我们的组件, 更好的利用开源模块构建复杂的应用.</p>
-<p>这一切让人对于这种统一样式语言(unified styling language) 充满了期待, 或许这会给前端社区带来一种从未有过的方法.</p>
-<p>当然, 目前来说使用 CSS-in-JS 还需要谨慎. 这一技术还不成熟, 也不一定完全合适于你的项目. 无论如何, 这个技术最近越来越受人们欢迎, 很值得去了解并关注它的发展之路.</p>
-
+        
+          <p class="article-more-link">
+            <a href="/blog/engineering/a-unified-styling-language/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj3swj1fs0000gym47tng0c2p" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj3swj1fs0000gym47tng0c2p" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li></ul>
@@ -290,9 +183,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj3swdspn0005chm4abhzdyv6" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj3swdspn0005chm4abhzdyv6" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -362,9 +255,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj3swdsp70000chm4agzal1i9" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj3swdsp70000chm4agzal1i9" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -427,9 +320,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj3swdspw000achm4p67rrgo2" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj3swdspw000achm4p67rrgo2" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -562,9 +455,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj3swdspr0006chm4gl6zbail" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj3swdspr0006chm4gl6zbail" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -612,9 +505,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj3swdspb0001chm4da7ovqco" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj3swdspb0001chm4da7ovqco" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li></ul>
@@ -661,9 +554,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj3swdspl0004chm4okda4gw5" class="article-share-link">Delen</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj3swdspl0004chm4okda4gw5" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaren</a>
+        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
@@ -682,7 +575,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categorieën</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
     </div>
@@ -692,7 +585,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Labels</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
     </div>
@@ -702,7 +595,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 10px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
@@ -711,7 +604,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archieven</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
@@ -721,7 +614,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recente berichten</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
@@ -758,7 +651,7 @@ export default class ProfileContainer extends Component {
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
