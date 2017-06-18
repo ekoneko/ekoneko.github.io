@@ -61,6 +61,65 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-stop-using-css-in-js" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/engineering/stop-using-css-in-js/" class="article-date">
+  <time datetime="2017-06-18T14:52:27.000Z" itemprop="datePublished">2017-06-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/engineering/">engineering</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="external">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
+<p>原文发表于: 2016-04-27</p>
+<p>最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文<a href="https://ekoneko.github.io/blog/engineering/a-unified-styling-language/">统一样式语言</a> 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳了一些(作者认为上的) CSS-in-JS 误区.</p>
+<h2 id="关于-CSS"><a href="#关于-CSS" class="headerlink" title="关于 CSS"></a>关于 CSS</h2><p><code>styled-components</code> 的文档说</p>
+<pre><code>原始 CSS 是用于文档形式的 web 的. 在1993年, 网页都是一些静态的文档, 那时用 CSS 来解决文档的样式问题. 如今, 我们构建的是更加丰富, 可交互, 面向用户的 APP. CSS 已经不适合构建这样的项目
+</code></pre><p>我不赞同. CSS 也在与时俱进加入了许多新功能. (伪类, 伪元素, CSS 变量, \@media, 帧动画, 组合, 列, flex, 网格, calc, etc…)</p>
+<p>从 UI 的角度上, “组件”就是独立的文档碎片. (比如 &lt;button /&rt;就是一个组件) CSS 用来描述文档, 也就是所有组件的集合, 有何不妥呢. 正所谓物尽其用.</p>
+<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="external">demo</a></p>
+<p>这成为了 React 中一种新型定义组件样式的趋势.</p>
+<p>先明确一点: styled-components 组件是 CSS 的高阶抽象. 它在 JS 中定义 CSS, 并在 JSX 解析时绑定在对应元素上.</p>
+<p>我不喜欢这种趋势, 它充满了太多误解. 调查了IRC, reddit, discord等地方, 人们用 <code>styled-components</code> 的理由. 我把他们称为”幻想” (myths)</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/engineering/stop-using-css-in-js/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj42x3z2x000k0um4j5dqn1xo" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-a-unified-styling-language" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/engineering/a-unified-styling-language/" class="article-date">
@@ -88,6 +147,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>原文: [<a href="https://medium.com/seek-blog/a-unified-styling-language-d0c208de2660" target="_blank" rel="external">https://medium.com/seek-blog/a-unified-styling-language-d0c208de2660</a>]</p>
+<p>原文发表于: 2017-05-23</p>
 <p>近几年里我们看到了很多 <a href="https://github.com/MicheleBertoli/css-in-js" target="_blank" rel="external"><code>css in js</code></a> 的尝试.<br>大多来自 React 社区. 显然这遭到了很多的吐槽, 尤其是那些非常熟练 css 的人, 觉得这种行为难以置信</p>
 <pre><code>&quot;为什么会有人想把 css 写在 js 里?&quot;
 &quot;这绝对是糟糕的主意!&quot;
@@ -116,7 +176,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj3swj1fs0000gym47tng0c2p" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj42x3z1w00000um4j6nec1gr" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -183,7 +243,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj3swdspn0005chm4abhzdyv6" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj42x3z2a00060um4drh3vsb8" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -255,7 +315,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj3swdsp70000chm4agzal1i9" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj42x3z30000n0um49qzg7tef" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -320,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj3swdspw000achm4p67rrgo2" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj42x3z37000q0um4g3ykc4zz" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -455,7 +515,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj3swdspr0006chm4gl6zbail" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj42x3z2y000l0um4flnh69xz" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -505,7 +565,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj3swdspb0001chm4da7ovqco" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj42x3z2b00090um46qlr2eyi" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -554,7 +614,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj3swdspl0004chm4okda4gw5" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj42x3z2800050um4nvsnzlmv" class="article-share-link">Partager</a>
       
         <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
       
@@ -597,7 +657,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 10px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 15px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
     </div>
   </div>
 
@@ -619,6 +679,10 @@ export default class ProfileContainer extends Component {
       <ul>
         
           <li>
+            <a href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
+          </li>
+        
+          <li>
             <a href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
           </li>
         
@@ -632,10 +696,6 @@ export default class ProfileContainer extends Component {
         
           <li>
             <a href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
-          </li>
-        
-          <li>
-            <a href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
           </li>
         
       </ul>
