@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>webpack 介绍 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+<meta name="keywords" content="webpack">
+<meta property="og:type" content="article">
+<meta property="og:title" content="webpack 介绍">
+<meta property="og:url" content="http://ekoneko.github.io/blog/webpack/some-about-webpack/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+<meta property="og:image" content="https://webpack.github.io/assets/what-is-webpack.png">
+<meta property="og:updated_time" content="2017-07-23T16:09:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="webpack 介绍">
+<meta name="twitter:description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+<meta name="twitter:image" content="https://webpack.github.io/assets/what-is-webpack.png">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-some-about-webpack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/webpack/some-about-webpack/" class="article-date">
+  <time datetime="2017-07-22T16:10:48.000Z" itemprop="datePublished">2017-07-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/webpack/">webpack</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      webpack 介绍
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>(文本用于某 tech-talk 话题…)</p>
+<h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
+<p>社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 <code>AMD</code>, <code>CommonJs</code> 以及 ES6 规范的 <code>import</code></p>
+<p>由于浏览器加载 script 异步的天性, 最先(也是最自然)诞生的模块是 <code>异步模块定义(Asynchronous Module Definition)</code>, 简称 <code>AMD</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</div></pre></td></tr></table></figure>
+<p><code>AMD</code> 通过一个数组声明自己所依赖的文件,当所有依赖加载完毕后, 作为参数传递给回调函数. <code>RequireJs</code> 是一个 <code>AMD</code> 比较常见的实现. 类似的还有国人玉伯写的 <code>Sea.js</code>(虽然 Sea.js 提出了 <code>CMD</code> 的概念, 但本质还是 AMD 的变形).</p>
+<p><code>AMD</code> 允许以 runtime 的形式运行, 动态的加载依赖文件, 也可以一次性将依赖构建在一个或多个文件中运行, 后者在生产环境下使用较为普遍, 可以有效的优化页面加载速度, 例如 <code>Require.js</code> 提供的 <code>r.js</code>, 在 CLI 中执行可以将源码构建并优化成生产环境运行的目标代码, 写入指定目录, 这一点已经和 webpack 比较相似了.</p>
+<p>另外值得一提的是 <code>Require.js</code> 并不仅仅可以处理 js 模块, 还可以用于引入 css, 文本资源等等. 通过一些 <code>Require.js</code> 的插件来实现, 在代码中也需要显示的声明文件类型 (eg: <code>require(&#39;css!style.css&#39;)</code>). 相比日后 webpack 要繁琐些.</p>
+<p>CommonJs 是 nodejs 默认的加载方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const $ = require(‘jQuery’);</div><div class="line">console.log($.version);</div></pre></td></tr></table></figure>
+<p>这种同步的写法在浏览器中显然无法直接运行. 但我们可以在构建阶段将 js 文本解析成<code>抽象语法树(Abstract Syntax Tree)</code>, 然后将所有 require 的内容合并在一个文件中. 这样的解析工具有 <code>Browserify</code> 以及后来的 <code>Webpack</code>.</p>
+<p><code>Webpack</code> 在 <code>Browserify</code> 基础上做了一些优化, 比如可以将构建的文件拆分成多个 <code>chunk</code>, 不用刷新页面就可以’热替换’模块等.</p>
+<p>ES6 的 import 实际上和 CommonJs 比较相似, 不单独赘述.</p>
+<p><code>AMD</code> 需要把真正的代码放入一个回调函数中, 很多类库在文件头部会出现判断是否存在 define 和 define.amd 的判断逻辑然后分别调以不同的模块加载方式. 相较之下, <code>CommonJs</code> 和 <code>ES6 import</code> 的用法对于源码破坏性要小的多, 也更符合其他语言的模块加载逻辑.</p>
+<h2 id="Webpack-与-Grunt-Gulp"><a href="#Webpack-与-Grunt-Gulp" class="headerlink" title="Webpack 与 Grunt, Gulp"></a>Webpack 与 Grunt, Gulp</h2><p>其实 Webpack 与 Grunt/Gulp 并不是一类工具.</p>
+<p>Grunt/Gulp 是一种基于项目工程的任务执行工具(task runner). 一般用于对项目中指定目录下的一类文件进行处理或监听. 有点类似于 C 项目的 <code>make</code>. 例如利用 Grunt 可以将 A 目录下的所有 js 文件通过 babel 转译成 es5的格式, 并写入 B 目录中.</p>
+<p>Webpack 则是一种模块打包工具. Webpack 会从定义的入口文件(<code>entry</code>)出发, 将所有被依赖的 js/css/png 等类型文件调用指定的 loader, 并将结果输出到指定位置.</p>
+<p>实际上 Grunt 有对应的插件可以<a href="https://github.com/webpack-contrib/grunt-webpack" target="_blank" rel="external">运行 webpack</a>. 但目前的 webpack 功能已经十分强大, 足以代替 Grunt/Gulp 单独使用. 多引用一个工具就会多一分出错的可能, 并增加学习的成本, 现在的项目我不建议去使用 Grunt/Gulp 这一类型的工具.</p>
+<p>那么相对于 Grunt / Gulp, Webpack 又有什么优势呢?</p>
+<p>不得不提到, <code>npm</code> 战胜 <code>bower</code> 后统一了JavaScript 的包管理市场. 面对第三方代码的引用, Grunt / Gulp 这种通过<b>描述规则</b>的构建方式很难有效的自动化筛选出需要打包的依赖. 而 Webpack 通过<b>解析程序</b>进行模块化分析, 很轻易的可以挑选出依赖中需要打包的部分. 甚至通过 code splitting 技术可以实现依赖的按需加载. 这一优势很自然的成为了当下最热门的构建工具.</p>
+<a id="more"></a>
+<h2 id="所以-Webpack-到底可以做什么"><a href="#所以-Webpack-到底可以做什么" class="headerlink" title="所以, Webpack 到底可以做什么"></a>所以, Webpack 到底可以做什么</h2><p>首先 Webpack 像 <code>Browserify</code>一样, 可以对 <code>CommonJs</code>, <code>ES6</code>的模块进行处理, 使之可以正常的运行在浏览器上. 这里说的模块不仅仅是 js, 还有 css, 图片以及其他各种各样的模块</p>
+<p><img src="https://webpack.github.io/assets/what-is-webpack.png"></p>
+<p>就像官方 banner 画的这样.</p>
+<p>从 <code>entry</code> 开始, 依赖的模块会去调用 webpack 的 module 进行处理. webpack 的 module 有以下几个属性</p>
+<ol>
+<li>test: 可以处理的文件格式</li>
+<li>exclude: 忽略处理的目录</li>
+<li>loaders/use: 通过什么样的 loader 去处理资源</li>
+</ol>
+<p>通常项目的 entry 会从 <code>.js</code> 文件开始, 通过 <code>babel-loader</code> 进行解析, 并且将所依赖(require / import)的模块调用相对应的 webpack modules 去处理. 直到遍历完全部的内容.</p>
+<p>除了基本的模块打包外, webpack 和它周围的生态还提供了振奋人心的工具.</p>
+<h3 id="source-map"><a href="#source-map" class="headerlink" title="source map"></a>source map</h3><p>通过模块化构建生成的代码很难直接阅读, 这给调试带来了不便. 目前主流浏览器都支持 source map 的功能让命令行的信息映射到对应原始脚本上.</p>
+<p>顺带一提, 除了普通的 source map 外, webpack 的开发工具(<code>devtool</code>)还支持一种<code>eval-source-map</code>的格式, 这种模式会让原脚本在 eval 中执行, 有一定的安全隐患, 但在开发模式下并不会产生额外的生成 source map的时间.</p>
+<h3 id="dev-server"><a href="#dev-server" class="headerlink" title="dev server"></a>dev server</h3><p><code>webpack-dev-server</code> 可以在不生成文件的基础上创建一个 web 服务器, 并提供开发所需要的大部分辅助功能. (如路由代理, 热加载等等)</p>
+<h3 id="loaders"><a href="#loaders" class="headerlink" title="loaders"></a>loaders</h3><p>webpack 已经拥有大量的 loaders. 过去使用 Grunt/Gulp 需要对 js 与 css 进行单独的任务处理. 在 Webpack 中, 设置好 entry, 以及资源文件对应的 loader 的规则, webpack 就会自动完成 babel / sass / less 等构件工具的工作.</p>
+<p>loaders 中 <code>raw-loader</code> 和 <code>imports-loader</code> 比较特殊, 经常用来做 hack 之类的奇怪的事情.</p>
+<p><code>raw-loader</code> 顾名思义就是以原始内容的方式导入模块. 例如某些(奇怪的)场合我们需要将 js 以字符串变量的形式被读取, 就可以写成 <code>import rawJs from &#39;raw-loader!some.js&#39;</code></p>
+<p><code>imports-loader</code> 用于向依赖中注入全局变量. 在一些需要兼容第三方代码的场合十分有用. 例如某些类库会判断 <code>window.jQuery</code> 是否存在, 就可以用到 <code>imports-loader</code> 注入 jQuery 对象: <code>import &#39;imports-loader?jQuery=jquery!./example.js&#39;</code></p>
+<p>imports-loader 也可以用来阻止 AMD: <code>imports-loader?define=&gt;false</code></p>
+<p>还有一个比较神奇的 loader 是<code>bundle-loader</code>. 这个组件用于异步加载代码模块, 参考 <a href="https://segmentfault.com/a/1190000007938737" target="_blank" rel="external">基于Webpack 2的React组件懒加载</a></p>
+<h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件和 loader 不同, loader 在构建过程中作用于一个个资源文件. 插件则作用于完整的构建.</p>
+<p>例如将构建后的文件分成多段的 <code>CommonsChunkPlugin</code>, 自动生成 html 文件, 并注入构建后目标文件的 <code>HtmlWebpackPlugin</code>, 以及开发阶段不用刷新浏览器页面就可以热更新修改后模块的 <code>HotModuleReplacementPlugin</code>.</p>
+<h4 id="常用插件介绍"><a href="#常用插件介绍" class="headerlink" title="常用插件介绍"></a>常用插件介绍</h4><p>// TODO</p>
+<h2 id="新特性"><a href="#新特性" class="headerlink" title="新特性"></a>新特性</h2><p>在最近间隔很短的几个月里, webpack 先后发布了 2.0 和 3.0两个版本</p>
+<h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a>Tree Shaking</h3><p>tree-shaking 是指借助es6 import export 语法静态性的特点来删掉 export 但是没有 import 过的东西. 最早出现在 <code>rollup.js</code> 中, 后来在 webpack2.0 被引入.</p>
+<h3 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h3><p>webpack 3则是进一步借鉴了 <code>rollup.js</code> 的功能, 新引入了一种提升模块作用域的功能. 这一功能优化了 webpack 内部打包 js 模块的数据结构, 轻微缩小了构建体积, 以及降低构建后带来的额外性能损失, 详细可以参考这篇文章: <a href="https://www.zhihu.com/search?type=content&amp;q=webpack3.0" target="_blank" rel="external">webpack3之Scope Hoisting</a></p>
+<h2 id="write-a-loader"><a href="#write-a-loader" class="headerlink" title="write a loader"></a>write a loader</h2><p>// TODO</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj5gx6aqk00060em4xn2ztge4" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/engineering/stop-using-css-in-js/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">[译]停止使用 CSS-in-JS 的九个理由</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 15px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
+          </li>
+        
+          <li>
+            <a href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
+          </li>
+        
+          <li>
+            <a href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
+          </li>
+        
+          <li>
+            <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
+          </li>
+        
+          <li>
+            <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/webpack/some-about-webpack/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>

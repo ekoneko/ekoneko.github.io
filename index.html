@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -60,6 +60,74 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-some-about-webpack" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/webpack/some-about-webpack/" class="article-date">
+  <time datetime="2017-07-22T16:10:48.000Z" itemprop="datePublished">2017-07-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/webpack/">webpack</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>(文本用于某 tech-talk 话题…)</p>
+<h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
+<p>社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 <code>AMD</code>, <code>CommonJs</code> 以及 ES6 规范的 <code>import</code></p>
+<p>由于浏览器加载 script 异步的天性, 最先(也是最自然)诞生的模块是 <code>异步模块定义(Asynchronous Module Definition)</code>, 简称 <code>AMD</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</div></pre></td></tr></table></figure>
+<p><code>AMD</code> 通过一个数组声明自己所依赖的文件,当所有依赖加载完毕后, 作为参数传递给回调函数. <code>RequireJs</code> 是一个 <code>AMD</code> 比较常见的实现. 类似的还有国人玉伯写的 <code>Sea.js</code>(虽然 Sea.js 提出了 <code>CMD</code> 的概念, 但本质还是 AMD 的变形).</p>
+<p><code>AMD</code> 允许以 runtime 的形式运行, 动态的加载依赖文件, 也可以一次性将依赖构建在一个或多个文件中运行, 后者在生产环境下使用较为普遍, 可以有效的优化页面加载速度, 例如 <code>Require.js</code> 提供的 <code>r.js</code>, 在 CLI 中执行可以将源码构建并优化成生产环境运行的目标代码, 写入指定目录, 这一点已经和 webpack 比较相似了.</p>
+<p>另外值得一提的是 <code>Require.js</code> 并不仅仅可以处理 js 模块, 还可以用于引入 css, 文本资源等等. 通过一些 <code>Require.js</code> 的插件来实现, 在代码中也需要显示的声明文件类型 (eg: <code>require(&#39;css!style.css&#39;)</code>). 相比日后 webpack 要繁琐些.</p>
+<p>CommonJs 是 nodejs 默认的加载方式:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const $ = require(‘jQuery’);</div><div class="line">console.log($.version);</div></pre></td></tr></table></figure>
+<p>这种同步的写法在浏览器中显然无法直接运行. 但我们可以在构建阶段将 js 文本解析成<code>抽象语法树(Abstract Syntax Tree)</code>, 然后将所有 require 的内容合并在一个文件中. 这样的解析工具有 <code>Browserify</code> 以及后来的 <code>Webpack</code>.</p>
+<p><code>Webpack</code> 在 <code>Browserify</code> 基础上做了一些优化, 比如可以将构建的文件拆分成多个 <code>chunk</code>, 不用刷新页面就可以’热替换’模块等.</p>
+<p>ES6 的 import 实际上和 CommonJs 比较相似, 不单独赘述.</p>
+<p><code>AMD</code> 需要把真正的代码放入一个回调函数中, 很多类库在文件头部会出现判断是否存在 define 和 define.amd 的判断逻辑然后分别调以不同的模块加载方式. 相较之下, <code>CommonJs</code> 和 <code>ES6 import</code> 的用法对于源码破坏性要小的多, 也更符合其他语言的模块加载逻辑.</p>
+<h2 id="Webpack-与-Grunt-Gulp"><a href="#Webpack-与-Grunt-Gulp" class="headerlink" title="Webpack 与 Grunt, Gulp"></a>Webpack 与 Grunt, Gulp</h2><p>其实 Webpack 与 Grunt/Gulp 并不是一类工具.</p>
+<p>Grunt/Gulp 是一种基于项目工程的任务执行工具(task runner). 一般用于对项目中指定目录下的一类文件进行处理或监听. 有点类似于 C 项目的 <code>make</code>. 例如利用 Grunt 可以将 A 目录下的所有 js 文件通过 babel 转译成 es5的格式, 并写入 B 目录中.</p>
+<p>Webpack 则是一种模块打包工具. Webpack 会从定义的入口文件(<code>entry</code>)出发, 将所有被依赖的 js/css/png 等类型文件调用指定的 loader, 并将结果输出到指定位置.</p>
+<p>实际上 Grunt 有对应的插件可以<a href="https://github.com/webpack-contrib/grunt-webpack" target="_blank" rel="external">运行 webpack</a>. 但目前的 webpack 功能已经十分强大, 足以代替 Grunt/Gulp 单独使用. 多引用一个工具就会多一分出错的可能, 并增加学习的成本, 现在的项目我不建议去使用 Grunt/Gulp 这一类型的工具.</p>
+<p>那么相对于 Grunt / Gulp, Webpack 又有什么优势呢?</p>
+<p>不得不提到, <code>npm</code> 战胜 <code>bower</code> 后统一了JavaScript 的包管理市场. 面对第三方代码的引用, Grunt / Gulp 这种通过<b>描述规则</b>的构建方式很难有效的自动化筛选出需要打包的依赖. 而 Webpack 通过<b>解析程序</b>进行模块化分析, 很轻易的可以挑选出依赖中需要打包的部分. 甚至通过 code splitting 技术可以实现依赖的按需加载. 这一优势很自然的成为了当下最热门的构建工具.</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/webpack/some-about-webpack/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj5gx6aqk00060em4xn2ztge4" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-stop-using-css-in-js" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -106,9 +174,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj42x3z2x000k0um4j5dqn1xo" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj5gx6aqt000f0em414lus83h" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li></ul>
@@ -176,9 +244,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj42x3z1w00000um4j6nec1gr" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj5gx6aq500000em4wlretfzh" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li></ul>
@@ -243,9 +311,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj42x3z2a00060um4drh3vsb8" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj5gx6aqn000a0em40qnirgqf" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -315,9 +383,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj42x3z30000n0um49qzg7tef" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj5gx6aqg00040em4eksgb39z" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -380,9 +448,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj42x3z37000q0um4g3ykc4zz" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj5gx6aqp000c0em4rpha62nj" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -515,9 +583,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj42x3z2y000l0um4flnh69xz" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj5gx6aqu000h0em4xr3o37og" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -565,9 +633,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj42x3z2b00090um46qlr2eyi" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj5gx6aqb00010em4fqe1heep" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li></ul>
@@ -614,9 +682,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj42x3z2800050um4nvsnzlmv" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj5gx6aqh00050em47blc5yb4" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
@@ -635,9 +703,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li></ul>
     </div>
   </div>
 
@@ -645,9 +713,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
     </div>
   </div>
 
@@ -655,9 +723,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 15px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a>
+      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 15px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a>
     </div>
   </div>
 
@@ -666,7 +734,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -674,9 +742,13 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
+          </li>
         
           <li>
             <a href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
@@ -694,10 +766,6 @@ export default class ProfileContainer extends Component {
             <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
           </li>
         
-          <li>
-            <a href="/blog/react/performance-engineering-with-react/">[译]React 性能工程</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -711,7 +779,7 @@ export default class ProfileContainer extends Component {
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
