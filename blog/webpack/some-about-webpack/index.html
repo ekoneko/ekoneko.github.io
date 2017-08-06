@@ -5,18 +5,18 @@
   
   <title>webpack 介绍 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+  <meta name="description" content="模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加载 script 异步的天性, 最先(也是最">
 <meta name="keywords" content="webpack">
 <meta property="og:type" content="article">
 <meta property="og:title" content="webpack 介绍">
 <meta property="og:url" content="http://ekoneko.github.io/blog/webpack/some-about-webpack/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+<meta property="og:description" content="模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加载 script 异步的天性, 最先(也是最">
 <meta property="og:image" content="https://webpack.github.io/assets/what-is-webpack.png">
-<meta property="og:updated_time" content="2017-07-23T16:09:51.000Z">
+<meta property="og:updated_time" content="2017-07-28T09:05:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="webpack 介绍">
-<meta name="twitter:description" content="(文本用于某 tech-talk 话题…) 模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加">
+<meta name="twitter:description" content="模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加载 script 异步的天性, 最先(也是最">
 <meta name="twitter:image" content="https://webpack.github.io/assets/what-is-webpack.png">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
@@ -92,8 +92,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>(文本用于某 tech-talk 话题…)</p>
-<h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
+        <h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
 <p>社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 <code>AMD</code>, <code>CommonJs</code> 以及 ES6 规范的 <code>import</code></p>
 <p>由于浏览器加载 script 异步的天性, 最先(也是最自然)诞生的模块是 <code>异步模块定义(Asynchronous Module Definition)</code>, 简称 <code>AMD</code>.</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</div></pre></td></tr></table></figure>
@@ -135,16 +134,20 @@
 <p>还有一个比较神奇的 loader 是<code>bundle-loader</code>. 这个组件用于异步加载代码模块, 参考 <a href="https://segmentfault.com/a/1190000007938737" target="_blank" rel="external">基于Webpack 2的React组件懒加载</a></p>
 <h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件和 loader 不同, loader 在构建过程中作用于一个个资源文件. 插件则作用于完整的构建.</p>
 <p>例如将构建后的文件分成多段的 <code>CommonsChunkPlugin</code>, 自动生成 html 文件, 并注入构建后目标文件的 <code>HtmlWebpackPlugin</code>, 以及开发阶段不用刷新浏览器页面就可以热更新修改后模块的 <code>HotModuleReplacementPlugin</code>.</p>
-<h4 id="常用插件介绍"><a href="#常用插件介绍" class="headerlink" title="常用插件介绍"></a>常用插件介绍</h4><p>// TODO</p>
+<h3 id="社区支持"><a href="#社区支持" class="headerlink" title="社区支持"></a>社区支持</h3><p>webpack 广受欢迎很大程度上归功于社区提供了大量 loaders / plugins 以及优化实践的资料. 参考 webpack 的文档, 可以很方便的创建满足自己需求且符合通用标准的 loader 或 plugin, 并提供给更多的人使用. 目前几个流行框架, 如 React, Vue 与 Angular 也提供了 webpack 的构建方案与 boilerplate.</p>
 <h2 id="新特性"><a href="#新特性" class="headerlink" title="新特性"></a>新特性</h2><p>在最近间隔很短的几个月里, webpack 先后发布了 2.0 和 3.0两个版本</p>
 <h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a>Tree Shaking</h3><p>tree-shaking 是指借助es6 import export 语法静态性的特点来删掉 export 但是没有 import 过的东西. 最早出现在 <code>rollup.js</code> 中, 后来在 webpack2.0 被引入.</p>
-<h3 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h3><p>webpack 3则是进一步借鉴了 <code>rollup.js</code> 的功能, 新引入了一种提升模块作用域的功能. 这一功能优化了 webpack 内部打包 js 模块的数据结构, 轻微缩小了构建体积, 以及降低构建后带来的额外性能损失, 详细可以参考这篇文章: <a href="https://www.zhihu.com/search?type=content&amp;q=webpack3.0" target="_blank" rel="external">webpack3之Scope Hoisting</a></p>
-<h2 id="write-a-loader"><a href="#write-a-loader" class="headerlink" title="write a loader"></a>write a loader</h2><p>// TODO</p>
+<h3 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h3><p>webpack 3则是进一步借鉴了 <code>rollup.js</code> 的功能, 新引入了一种提升模块作用域的功能. 优化了 webpack 内部打包 js 模块的数据结构, 轻微缩小了构建体积, 以及降低构建后带来的额外性能损失, 详细可以参考这篇文章: <a href="https://www.zhihu.com/search?type=content&amp;q=webpack3.0" target="_blank" rel="external">webpack3之Scope Hoisting</a></p>
+<h2 id="loader-的工作原理"><a href="#loader-的工作原理" class="headerlink" title="loader 的工作原理"></a>loader 的工作原理</h2><p>Webpack 的 loader 实现非常简单, 我们通过官方较为简单的 <a href="https://github.com/webpack-contrib/file-loader" target="_blank" rel="external">file-loader</a> 看看具体的实现.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">import path from &apos;path&apos;;</div><div class="line">import loaderUtils from &apos;loader-utils&apos;;</div><div class="line"></div><div class="line">export default function fileLoader(content) &#123;</div><div class="line">  if (!this.emitFile) throw new Error(&apos;emitFile is required from module system&apos;);</div><div class="line"></div><div class="line">  const query = loaderUtils.getOptions(this) || &#123;&#125;;</div><div class="line">  const configKey = query.config || &apos;fileLoader&apos;;</div><div class="line">  const options = this.options[configKey] || &#123;&#125;;</div><div class="line"></div><div class="line">  const config = &#123;</div><div class="line">    publicPath: undefined,</div><div class="line">    useRelativePath: false,</div><div class="line">    name: &apos;[hash].[ext]&apos;,</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  Object.keys(options).forEach((attr) =&gt; &#123;</div><div class="line">    config[attr] = options[attr];</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  ...</div><div class="line"></div><div class="line">  return `export default $&#123;publicPath&#125;;`;</div><div class="line">&#125;</div><div class="line">export const raw = true;</div></pre></td></tr></table></figure>
+<p><code>loader-utils</code> 是 webpack 为 loader 开发准备的辅助工具, 最常见的用法是通过 <code>loaderUtils.getOptions</code> 获取 <code>webpack.config.js</code> 为 loader 配置的 query 参数.</p>
+<p>本质上 loader 就是一个函数, 输入的参数是 webpack 处理资源的内容, 返回值则是处理的结果. <code>file-loader</code> 而言处理的对象一般为图片等格式的附件, 将文件复制到目标目录后, 返回结果则是对应的资源位置.</p>
+<p>顺带注意一下结尾处的 <code>export const raw = true</code>. 默认情况下, loader 传入的参数会被 webpack 转码成 utf8 格式. 如果希望直接处理二进制或其他编码的内容, 需要允许 <code>loader.raw = true</code></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj5gx6aqk00060em4xn2ztge4" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj5s96lxz000dc9m4odqc121q" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -156,6 +159,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/blog/framework/learn-about-apollo/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          [笔记]Apollo 初体验
+        
+      </div>
+    </a>
   
   
     <a href="/blog/engineering/stop-using-css-in-js/" id="article-nav-older" class="article-nav-link-wrap">
@@ -182,7 +194,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li></ul>
     </div>
   </div>
 
@@ -192,7 +204,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js-node-express/">js, node, express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react-css-engineering/">react, css, engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
     </div>
   </div>
 
@@ -202,7 +214,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/js-node-express/" style="font-size: 10px;">js, node, express</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/react-css-engineering/" style="font-size: 15px;">react, css, engineering</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a>
     </div>
   </div>
 
@@ -224,6 +236,10 @@
       <ul>
         
           <li>
+            <a href="/blog/framework/learn-about-apollo/">[笔记]Apollo 初体验</a>
+          </li>
+        
+          <li>
             <a href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
           </li>
         
@@ -237,10 +253,6 @@
         
           <li>
             <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
-          </li>
-        
-          <li>
-            <a href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
           </li>
         
       </ul>
