@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -60,6 +60,76 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-learn-webrtc-faq" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/webrtc/learn-webrtc-faq/" class="article-date">
+  <time datetime="2017-08-10T16:21:33.000Z" itemprop="datePublished">2017-08-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/webrtc/">webrtc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/webrtc/learn-webrtc-faq/">WebRTC 学习 FAQ</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Q: WebRTC 是什么, 能做什么, 社区评价?</p>
+<p><a href="https://www.zhihu.com/question/22301898" target="_blank" rel="external">https://www.zhihu.com/question/22301898</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">WebRTC 全称 Web Real-Time Communication。它并不是单一的协议， 包含了媒体、加密、传输层等在内的多个协议标准以及一套基于 JavaScript 的 API。通过简单易用的 JavaScript API ，在不安装任何插件的情况下，让浏览器拥有了 P2P音视频和数据分享的能力。</div></pre></td></tr></table></figure>
+<p>Q: WebRTC 技术栈</p>
+<p><img src="https://upaiyun.kf5.com/attachments/download/3778945/0015971b5681d322f5e5212cb38cd7f/"></p>
+<p>Q: 如何搭建一个 WebRTC sample?</p>
+<p><a href="https://webrtc.github.io/samples/" target="_blank" rel="external">https://webrtc.github.io/samples/</a></p>
+<p>Q: WebRTC有哪些实现?</p>
+<p><a href="https://github.com/rainzhaojy/blogs/issues/3" target="_blank" rel="external">https://github.com/rainzhaojy/blogs/issues/3</a></p>
+<ol>
+<li>Browser Support</li>
+<li>WebRTC native code (<a href="https://webrtc.org/native-code/" target="_blank" rel="external">https://webrtc.org/native-code/</a>)</li>
+</ol>
+<p>Q: WebRTC 如何进行网络请求?</p>
+<p>通过 P2P 协议</p>
+<p><a href="https://bloggeek.me/4-p2p-webrtc-facts/" target="_blank" rel="external">https://bloggeek.me/4-p2p-webrtc-facts/</a></p>
+<ol>
+<li>WebRTC 在 p2p 上和 voIp 一样<br> 这意味着从一端到另外一端是 “best effort” 的机制</li>
+<li>WebRTC 是唯一的浏览器 p2p 方案</li>
+<li>P2P 还是需要 STUN and TURN</li>
+<li>WebRTC 还是需要外部信号协议</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/blog/webrtc/learn-webrtc-faq/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cj66nmklf000p7km4854ff94z" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-learn-about-apollo" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -90,40 +160,18 @@
         <p>趁着 GitHub 的 Api 转向 GraphQL 时, 了解了下相关知识和其中一个蛮有名气的实现: Apollo.</p>
 <p>先简单的唠叨两句, 相对比 Rest 和 GraphQL, 我觉得后者比较适合 Full-stack 框架的设计. 前端定义好的 SQL 可以完美对应 FE 的 model 层以及生成 PropTypes 或是 TypeScript 的类型定义. 而且 web app 接口的变化大多时候是前端驱动的, GraphQL 的特点之一, 业务带来的字段与查询变化, 开发人员可以优先专注前端, generate 出相应的接口与数据模型.</p>
 <p>发布时, 如果前后端的规则一致, 也可以对两端同时编译, 将前端 GraphQL 的细节抽象, 转换为类似 Rest 的接口形式. 避免了请求包含字段细节从而增加安全性, 以及不用去烦恼前后端通讯的 graphQL 大小.</p>
-<p>说到底, 想要发挥 GraphQL 的优势, 需要一套能 carry 全场的 graphql-generator 工具, 然而凭借我两三天对 graphql 的了解, 目前尚没有发现特别通用的工具.</p>
-<hr>
-<h2 id="简单的-Apollo-调用"><a href="#简单的-Apollo-调用" class="headerlink" title="简单的 Apollo 调用"></a>简单的 Apollo 调用</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">import ApolloClient, &#123; createNetworkInterface &#125; from &apos;apollo-client&apos;;</div><div class="line">import gql from &apos;graphql-tag&apos;;</div><div class="line"></div><div class="line">export default function() &#123;</div><div class="line">  const client = new ApolloClient(&#123;</div><div class="line">    networkInterface: createNetworkInterface(&#123;</div><div class="line">      uri: &apos;http://api.githunt.com/graphql&apos;</div><div class="line">    &#125;)</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  client.query(&#123;</div><div class="line">      query: gql`&#123;</div><div class="line">        feed (type: TOP, limit: 10) &#123;</div><div class="line">          repository &#123;</div><div class="line">            name, owner &#123; login &#125;</div><div class="line"></div><div class="line">            # Uncomment the line below to get number of stars!</div><div class="line">            # stargazers_count</div><div class="line">          &#125;</div><div class="line"></div><div class="line">          postedBy &#123; login &#125;</div><div class="line">        &#125;</div><div class="line">      &#125;`</div><div class="line">&#125;)</div><div class="line">    .then(data =&gt; console.log(data))</div><div class="line">    .catch(error =&gt; console.error(error));</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>client = new ApolloClient()</code> 创建实例初始化接口地址, 通过 <code>client.query</code> 进行请求, 和 rest 之类接口用 <code>fetch</code> 请求并无二致. 不同的是请求的参数是一个 <code>gql()</code> 对象, 内部的字符串就是 <code>GraphQL</code> 的查询语句(字符串)</p>
-<p>关于 GraphQL 的具体用法(查询字段, 增改等)可以参考<a href="http://ivweb.io/topic/597ed2e50b3f3a2d767bebd2" target="_blank" rel="external">GraphQL 名词 101：解析 GraphQL 的查询语法</a> 和 <a href="http://taobaofed.org/blog/2016/03/10/graphql-in-depth/" target="_blank" rel="external">深入理解 GraphQL</a></p>
-<h3 id="React-中使用"><a href="#React-中使用" class="headerlink" title="React 中使用"></a>React 中使用</h3><p>Apollo 提供了 <code>react-apollo</code> 模块可以方便的在 React 中引入 Apollo.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">import &#123; gql, ApolloClient, createNetworkInterface, ApolloProvider, graphql &#125; from &apos;react-apollo&apos;;</div><div class="line"></div><div class="line">const Feed = (&#123; data &#125;) =&gt; &#123;</div><div class="line">  const &#123; loading, feed = [] &#125; = data;</div><div class="line">  if (loading) &#123;</div><div class="line">    return &lt;div&gt;loading...&lt;/div&gt;</div><div class="line">  &#125;</div><div class="line">  return (</div><div class="line">    &lt;ul&gt;</div><div class="line">      &#123;feed.map((item, i) =&gt; &lt;Item key=&#123;i&#125; item=&#123;item&#125; /&gt;)&#125;</div><div class="line">    &lt;/ul&gt;</div><div class="line">  )</div><div class="line">&#125;</div><div class="line"></div><div class="line">const FeedWithData = graphql(gql`&#123;</div><div class="line">  feed (type: TOP, limit: 10) &#123;</div><div class="line">    repository &#123;</div><div class="line">      name, owner &#123; login &#125;</div><div class="line"></div><div class="line">      # Uncomment the line below to get number of stars!</div><div class="line">      # stargazers_count</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    postedBy &#123; login &#125;</div><div class="line">  &#125;</div><div class="line">&#125;`)(Feed);</div><div class="line"></div><div class="line">const App = () =&gt; (</div><div class="line">  &lt;ApolloProvider client=&#123;createClient()&#125;&gt;</div><div class="line">    &lt;FeedWithData /&gt;</div><div class="line">  &lt;/ApolloProvider&gt;</div><div class="line">);</div></pre></td></tr></table></figure>
-<p>通过 <code>ApolloProvider</code> 向组件注册了 <code>ApolloClient</code>, 通过高阶组件 <code>FeedWithData</code> 请求 GraphQL 查询内容, 注入到容器组件 <code>Feed</code> 中.</p>
-<p>这个例子比较简单, 稍微扩展一下就可以根据 <code>FeedWithData</code> 内 GQL 请求的字段, 导出 Feed 里 props.data 的 PropTypes.</p>
-<p>当然也有 <a href="http://dev.apollodata.com/angular2" target="_blank" rel="external">for angular</a> 以及 <a href="http://dev.apollodata.com/ios" target="_blank" rel="external">for ios</a> 和 <a href="http://dev.apollodata.com/android" target="_blank" rel="external">for Android</a> 等等的实现. 官网没有 Vue 的例子感觉蛮尴尬的, 不过随便搜一搜可以找得到<a href="https://github.com/Akryum/vue-apollo" target="_blank" rel="external">第三方</a>实现.</p>
-<h2 id="服务端实现"><a href="#服务端实现" class="headerlink" title="服务端实现"></a>服务端实现</h2><p>Apollo 针对流行框架提供了一系列的中间件, 这里以 koa(v2+) 的 <code>apollo-server-koa</code> 为例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const &#123; graphqlKoa, graphiqlKoa &#125; = require(&apos;apollo-server-koa&apos;);</div><div class="line"></div><div class="line">router.get(&apos;/graphql&apos;, graphqlKoa(&#123; schema: myGraphQLSchema &#125;));</div><div class="line">router.post(&apos;/graphql&apos;, graphqlKoa(&#123; schema: myGraphQLSchema &#125;));</div><div class="line">router.get(&apos;/graphiql&apos;, graphiqlKoa(&#123; endpointURL: &apos;/graphql&apos; &#125;));</div><div class="line">router.post(&apos;/graphiql&apos;, graphiqlKoa(&#123; endpointURL: &apos;/graphql&apos; &#125;));</div></pre></td></tr></table></figure>
-<p><code>graphqlKoa</code> 会创建一个 <code>graphql</code> 服务, <code>graphiqlKoa</code> 会创建一个方便调试 graphql 的页面.</p>
-<p><code>graphql-tools</code> 库提供的 <code>makeExecutableSchema</code> 用于创建 graphql 的 scheme.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const &#123; makeExecutableSchema &#125; = require(&apos;graphql-tools&apos;);</div><div class="line">const typeDefs = `</div><div class="line">    type Query &#123;</div><div class="line">        testString: String</div><div class="line">    &#125;</div><div class="line">`;</div><div class="line">const schema = makeExecutableSchema(&#123; typeDefs &#125;);</div></pre></td></tr></table></figure>
-<p><code>graphql-tools</code> 还提供了 <code>addMockFunctionsToSchema</code> 函数用于一键注入 mock 数据, 只需要一行代码就可以让 graphql 查询语句返回类似 hello world 之类的数据:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const &#123; addMockFunctionsToSchema &#125; = require(&apos;graphql-tools&apos;);</div><div class="line">addMockFunctionsToSchema(&#123; schema &#125;);</div></pre></td></tr></table></figure>
-<p>如果想要控制返回数据的内容, 我们需要用到 <code>resolvers</code>.</p>
-<p>每一个 GraphQL 的字段对应一个 resolver 函数, 用于告诉 GraphQL 查询时需要返回的内容.</p>
-<p>resolvers 的规则如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">const resolvers = &#123;</div><div class="line">  Query: &#123;</div><div class="line">    testString()&#123;</div><div class="line">      return &apos;Hello World&apos;;</div><div class="line">    &#125;,</div><div class="line">  &#125;,</div><div class="line">&#125;</div><div class="line">makeExecutableSchema(&#123; typeDefs, resolvers &#125;);</div></pre></td></tr></table></figure>
-<h2 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h2><p>按照官方 <a href="https://dev-blog.apollodata.com/tutorial-building-a-graphql-server-cddaa023c035" target="_blank" rel="external">Tutorial: How to build a GraphQL server</a> 的说法, graphQL 连接数据库的操作应该放在 <code>resolvers</code> 中.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">const resolvers = &#123;</div><div class="line">  Query: &#123;</div><div class="line">    feed: (root: any, args: any) =&gt; &#123;</div><div class="line">      const &#123; limit &#125; = args;</div><div class="line">      return myModel.findAll(&#123;</div><div class="line">        attributes: [&apos;id&apos;, &apos;name&apos;],</div><div class="line">        limit: Math.min(10, limit)</div><div class="line">      &#125;).then((data: any[]) =&gt; data.map((&#123;id, name&#125;) =&gt; (&#123;</div><div class="line">        id,</div><div class="line">        name,</div><div class="line">      &#125;)));</div><div class="line">    &#125;,</div><div class="line">  &#125;,</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>上面的 <code>myModel</code> 是一个 <code>sequelize</code> 的 <code>model</code>. 对于增删改类型的变化同理, 针对 GraphQL 的 <code>mutation</code> 去写 <code>resolver</code> 即可.</p>
-<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>以上内容是我最近在学习 GraphQL 和 Apollo 的一些笔记. 通过上面的内容可以简单的实现一套完整的 backend + frontend 系统.</p>
-<p>当然, 这样简单的实现我不认为对生产效率能有多大帮助, 重要的是一套完整的前端静态类型与 GraphQL, GraphQL 与 Scheme, 以及 Database 之间的生成工具.</p>
-<p>除了 <code>Apollo</code> 之外 GraphQL 还有一个更有名气的实现: <code>Relay</code>. 后者 GitHub 上的 star 数要多的多. 而且 <code>GraphQL</code> 与 <code>Relay</code> 都是 Facebook 一家的东西. 其实我从 Apollo 出发去了解 GraphQL, 也是因为偶然间看到了一篇文章 <a href="https://dev-blog.apollodata.com/reducing-our-redux-code-with-react-apollo-5091b9de9c2a" target="_blank" rel="external">Reducing our Redux code with React Apollo</a>, 至于 <code>Apollo</code> 与 <code>Relay</code> 的对比… 放在之后的笔记里吧…</p>
-
+<p>说到底, 想要发挥 GraphQL 的优势, 需要一套能 carry 全场的 graphql-generator 工具, 然而凭借我(两三天)对 graphql 的了解, 目前尚没有发现特别通用的工具.</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/framework/learn-about-apollo/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj60ydge500008km466art76q" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj66nmkla000m7km4vauwbfgv" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/apollo/">apollo</a></li></ul>
@@ -174,12 +222,6 @@
 <p><code>Webpack</code> 在 <code>Browserify</code> 基础上做了一些优化, 比如可以将构建的文件拆分成多个 <code>chunk</code>, 不用刷新页面就可以’热替换’模块等.</p>
 <p>ES6 的 import 实际上和 CommonJs 比较相似, 不单独赘述.</p>
 <p><code>AMD</code> 需要把真正的代码放入一个回调函数中, 很多类库在文件头部会出现判断是否存在 define 和 define.amd 的判断逻辑然后分别调以不同的模块加载方式. 相较之下, <code>CommonJs</code> 和 <code>ES6 import</code> 的用法对于源码破坏性要小的多, 也更符合其他语言的模块加载逻辑.</p>
-<h2 id="Webpack-与-Grunt-Gulp"><a href="#Webpack-与-Grunt-Gulp" class="headerlink" title="Webpack 与 Grunt, Gulp"></a>Webpack 与 Grunt, Gulp</h2><p>其实 Webpack 与 Grunt/Gulp 并不是一类工具.</p>
-<p>Grunt/Gulp 是一种基于项目工程的任务执行工具(task runner). 一般用于对项目中指定目录下的一类文件进行处理或监听. 有点类似于 C 项目的 <code>make</code>. 例如利用 Grunt 可以将 A 目录下的所有 js 文件通过 babel 转译成 es5的格式, 并写入 B 目录中.</p>
-<p>Webpack 则是一种模块打包工具. Webpack 会从定义的入口文件(<code>entry</code>)出发, 将所有被依赖的 js/css/png 等类型文件调用指定的 loader, 并将结果输出到指定位置.</p>
-<p>实际上 Grunt 有对应的插件可以<a href="https://github.com/webpack-contrib/grunt-webpack" target="_blank" rel="external">运行 webpack</a>. 但目前的 webpack 功能已经十分强大, 足以代替 Grunt/Gulp 单独使用. 多引用一个工具就会多一分出错的可能, 并增加学习的成本, 现在的项目我不建议去使用 Grunt/Gulp 这一类型的工具.</p>
-<p>那么相对于 Grunt / Gulp, Webpack 又有什么优势呢?</p>
-<p>不得不提到, <code>npm</code> 战胜 <code>bower</code> 后统一了JavaScript 的包管理市场. 面对第三方代码的引用, Grunt / Gulp 这种通过<b>描述规则</b>的构建方式很难有效的自动化筛选出需要打包的依赖. 而 Webpack 通过<b>解析程序</b>进行模块化分析, 很轻易的可以挑选出依赖中需要打包的部分. 甚至通过 code splitting 技术可以实现依赖的按需加载. 这一优势很自然的成为了当下最热门的构建工具.</p>
         
           <p class="article-more-link">
             <a href="/blog/webpack/some-about-webpack/#more">Read More</a>
@@ -188,9 +230,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj5s96lxz000dc9m4odqc121q" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj66nmklh000t7km4ekdh0re2" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
@@ -247,9 +289,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj5s96lyt0015c9m4zc52nmbq" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj66nmklj000u7km4vtpafecv" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -317,9 +359,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj5s96ly0000gc9m4p4tgeawy" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj66nmkk300007km42yejn4iu" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -384,9 +426,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj5s96lxq0005c9m4enaky7rz" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj66nmkl3000f7km4glj5eyjc" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -456,9 +498,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj5s96lxg0001c9m41u6reml0" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj66nmkln000y7km4n77wzs3j" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -521,9 +563,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj5s96lxx000bc9m4htp8nm1y" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj66nmkl4000g7km44z18nk9e" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -656,9 +698,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj5s96lxs0007c9m4y70w4lbq" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj66nmkl6000i7km487qu4y8p" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -706,9 +748,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj5s96lxi0002c9m4uykkqn2w" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj66nmkl1000c7km4vz9hv4om" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/express/">express</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/node/">node</a></li></ul>
@@ -720,65 +762,20 @@ export default class ProfileContainer extends Component {
 
 
   
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/test/hello-world/" class="article-date">
-  <time datetime="2014-01-17T16:00:00.000Z" itemprop="datePublished">2014-01-18</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/test/">test</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/test/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>第一篇测试文章XD</p>
-<p>其实半年前就打算在<code>github</code>上搭一个静态站来存技术向的笔记啥的</p>
-<p>因为拖延症的缘故一直到最近才搭好/w\</p>
-<p>本地搭的<code>jekyllrb</code>, 然后同步到<code>github</code>上.</p>
-<p>慢慢更新好了(趴</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj5s96lxr0006c9m43fdqb9rc" class="article-share-link">Share</a>
-      
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
 
 
-  
-
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><a class="extend next" rel="next" href="/blog/page/2/">__('next') &raquo;</a>
+  </nav>
 </section>
         
           <aside id="sidebar">
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -786,9 +783,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -796,9 +793,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -807,7 +804,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -815,9 +812,13 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/webrtc/learn-webrtc-faq/">WebRTC 学习 FAQ</a>
+          </li>
         
           <li>
             <a href="/blog/framework/learn-about-apollo/">[笔记]Apollo 初体验</a>
@@ -835,10 +836,6 @@ export default class ProfileContainer extends Component {
             <a href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
           </li>
         
-          <li>
-            <a href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -852,7 +849,7 @@ export default class ProfileContainer extends Component {
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
