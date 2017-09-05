@@ -1,1 +1,0 @@
-Drag or paste image to tinymce
