@@ -61,14 +61,14 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-a-plan-of-web-components" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-try-electron" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/engineering/a-plan-of-web-components/" class="article-date">
-  <time datetime="2017-09-04T13:22:50.000Z" itemprop="datePublished">2017-09-04</time>
+    <a href="/blog/electron/try-electron/" class="article-date">
+  <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">2017-09-21</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/engineering/">engineering</a>
+    <a class="article-category-link" href="/blog/categories/electron/">electron</a>
   </div>
 
   </div>
@@ -79,7 +79,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/engineering/a-plan-of-web-components/">前端组件化</a>
+      <a class="article-title" href="/blog/electron/try-electron/">electron 采坑记</a>
     </h1>
   
 
@@ -87,35 +87,45 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我的公司从去年开始把一些项目陆陆续续的从五花八门的设计迁移到了 react 框架. 结构上做到了统一, 目前, 我们的项目是多个团队在同一框架下并行开发应用. 各个应用运行在同一个单页面内, 并且共同维护一套公共组件库.</p>
-<p>随着业务发展组件暴露出来了一系列的问题, 例如未经测试完成的组件修改会被其他应用捎带上线, 以及组件的 break change 会带来意料之外的问题等. 依赖于组件的需求有时也会因人员调度问题阻塞正常迭代.</p>
-<p>针对以上问题, 我最近正着手于新一套组件的规范与设计. 新组件既能做到与目前组件同时使用, 也能够解决上述的问题并且带来更好的开发体验与效率.</p>
-<p>以下的正文是我和公司内前端团队 Review 的组件提案, 其中删减了一些公司内的具体业务.</p>
-<hr>
-<h2 id="新旧组件的概述"><a href="#新旧组件的概述" class="headerlink" title="新旧组件的概述"></a>新旧组件的概述</h2><h3 id="旧组件的问题"><a href="#旧组件的问题" class="headerlink" title="旧组件的问题"></a>旧组件的问题</h3><h4 id="1-规范混乱"><a href="#1-规范混乱" class="headerlink" title="1. 规范混乱"></a>1. 规范混乱</h4><p>旧组件的项目创建后仅仅是由前端团队一方进行维护. 产品设计团队的的样式标准进行过多轮迭代, 但与前端团队缺乏单独针对组件的沟通. 以至于旧组件做不到开箱即用, 给日后开发带来了额外工作量.</p>
-<p>不同的应用团队对于组件的维护的积极性也不一致, 加上没有一个统一的 CSS 书写规范, 各个应用中存在大量对组件样式的复写. 这对组件维护带来了极大的风险, 组件样式的统一调整可能会导致各个应用中复写的样式产生不可预期的后果.</p>
-<h4 id="2-文档缺失"><a href="#2-文档缺失" class="headerlink" title="2. 文档缺失"></a>2. 文档缺失</h4><p>旧组件对文档没有要求. 大部分组件并没有明确的使用指南与参数列表. 一些使用者仅仅是在其他应用中寻找相似的调用方式, 对于组件功能并没有清晰的认识, 更甚至会采用一些侵入式的方式去实现组件既有的功能.</p>
-<p>对于简单且容易实现的组件, 开发者如果不能明确的知道组件库中存在, 往往会自己重新实现一份, 造成了额外的成本浪费.</p>
-<p>另一方面, 缺少文档的组件也对后期维护带来了困扰. 其他人修改时也可能理不清组件作者的初衷.</p>
-<h4 id="3-业务耦合"><a href="#3-业务耦合" class="headerlink" title="3. 业务耦合"></a>3. 业务耦合</h4><p>旧组件的开发往往伴随业务迭代, 有些组件中包含了应用中的数据请求. 例如在 A 应用开发过程创建的组件, 可能其中包含了 /apis/A/request 的请求, 那么当 B 应用 开发环境调用时, 就必须部署 A 应用的服务. 给开发测试带来了不便.</p>
-<h4 id="4-版本依赖"><a href="#4-版本依赖" class="headerlink" title="4. 版本依赖"></a>4. 版本依赖</h4><p>旧版组件集中在单一仓库中, 以 npm 模块的方式被各个应用引入, 组件的修改与测试依赖于具体的应用. 如果 A 应用迭代开发阶段正在修改的 a 组件处于 unstable 状态, 当 B 应用需要携带组件发布时, 就比较容易将 unstable 的 A 组件”顺带”发布上线.</p>
-<p>当发布时 A, B 应用所引入的组件版本不一致(为了确保依赖的准确性, 我们没有使用 semver 的泛匹配)时, npm 会分别打包两个版本的组件, 导致最终生成的 bundle 文件体积很大.</p>
-<h4 id="5-人员协调困难"><a href="#5-人员协调困难" class="headerlink" title="5. 人员协调困难"></a>5. 人员协调困难</h4><p>有的组件工作会 block 业务的正常迭代. 公司现有资源环境下很难投入充足的人员去专职维护组件, 并且这也是十分浪费的一种行为. 因而有时候会导致业务发布的延期或伴随组件问题的发布.</p>
-<h3 id="新组件的特性"><a href="#新组件的特性" class="headerlink" title="新组件的特性"></a>新组件的特性</h3><p>新版组件是在旧组件的基础上针对上述的问题而设计的新一代组件库.</p>
-        
-          <p class="article-more-link">
-            <a href="/blog/engineering/a-plan-of-web-components/#more">Read More</a>
-          </p>
-        
+        <p>最近在用 <code>electron</code> 打包一个 webpack 生成的项目, 感觉自己踩了1万个坑. 当然主要原因还是我个人对 electron 只停留于了解的程度, 对于各种实践也是一边摸索一边进行.</p>
+<h2 id="绝对路径转换"><a href="#绝对路径转换" class="headerlink" title="绝对路径转换"></a>绝对路径转换</h2><p>webpack 的项目构建的包引用资源使用的是绝对路径, 如果 electron 加载的 html 方式是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.loadURL(file:<span class="comment">//path/to/index.html)</span></div></pre></td></tr></table></figure>
+<p>那么 index.html 中绝对路径引用的资源, 比如 <code>&lt;img src=&quot;/a.png&quot; /&gt;</code> 就会被定位到 <code>file://a/png</code> 上.</p>
+<p>当然只要把 webpack 的 <a href="https://webpack.js.org/guides/public-path/" target="_blank" rel="external">publicPath</a> 改为相对引用即可. 不过本着”自扫门前雪”的原则, electron 的问题还是想在 electron 中解决.</p>
+<p>对比这个场景里 <code>http://</code> 和 <code>file://</code> 加载的不同, 最大区别是 http 协议后面有一个域名来标记绝对路径的范围, 而 file 协议后面直接就跟上了路径, 在其范围内, 绝对路径是指向根部的.</p>
+<p>所以我们只需要想办法给 file 协议也加上一个域, 再在 <code>electron</code> 里处理就好了.</p>
+<p>electron 提供的 <a href="https://github.com/electron/electron/blob/master/docs/api/protocol.md" target="_blank" rel="external"><code>protocol</code></a> 接口就可以用来注册或拦截一个协议.</p>
+<p>我们可以注册一个新的文本协议来实现域到磁盘路径的转换</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'local'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.registerFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>上面的栗子里, 我们定义了一个 local 的协议, 会将 local://ekoneko/index.html 的请求转换为磁盘路径对应的文件请求. 此外, 我们也可以直接在 file 协议的基础上做拦截, 实现相同的效果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'file'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.interceptFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>基本上很相似, 只是把协议替换成了 <code>file</code>, <code>registerFileProtocol</code> 方法替换成了 <code>interceptFileProtocol</code>. 从规范上我个人更倾向不破坏现有协议, 但最终我还是选择了后一种实现.</p>
+<p>使用 <code>file</code> 协议比起自定义协议有两点好处.</p>
+<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要手响应头具备跨域支持, 还需要下面这么一段额外的拦截步骤:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.webContents.session.webRequest.onHeadersReceived(<span class="function">(<span class="params">detail, callback</span>) =&gt;</span> &#123;</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Origin'</span>] = [<span class="string">'local://ekoenko'</span>]</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Credentials'</span>] = [<span class="string">'true'</span>]</div><div class="line">  callback(&#123;</div><div class="line">    <span class="attr">responseHeaders</span>: detail.responseHeaders,</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>(BTW, electron header 头的内容必须是一个数组, 这里也稍微坑到我了一下)</p>
+<p>另外一个区别则是目标版本的 electron, <a href="https://github.com/electron/electron/issues/9663" target="_blank" rel="external">自定义协议用不了 service work</a>.</p>
+<h2 id="通配域"><a href="#通配域" class="headerlink" title="通配域"></a>通配域</h2><p>解决路径的问题, electron 的展示 UI 看起来基本上都正常了, 可是控制台里还是有 404 的错误信息.</p>
+<p>定睛一看, 有一个第三方服务中, url 的写法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">//example.com/wtf</div></pre></td></tr></table></figure>
+<p>这样, 加载时就被补全了 file 协议, 成了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file://example.com/wtf</div><div class="line">-&gt; /dirname/example.com/wtf</div></pre></td></tr></table></figure>
+<p>我并没有找到一个很好的方法处理这个问题 (尝试想让 electron 的协议同时支持 file or http 两种方式失败). 最终, 我选择了 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API" target="_blank" rel="external">service worker</a>.</p>
+<p>在 service worker 中, 我们可以<a href="https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent" target="_blank" rel="external">监听页面上所有 url 访问事件</a>. 拦截并修改返回结果. 因此, 我们只需要找到 file 协议的请求, 并且格式为 <code>file://</code> + <code>hostname(:port)</code> + <code>pathname</code>, 将之转向到 http 对应位置即可.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">self.addEventListener(<span class="string">'fetch'</span>, (ev) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> &#123;request&#125; = ev</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (request.url.slice(<span class="number">0</span>, <span class="number">7</span>) === <span class="string">'file://'</span>) &#123;</div><div class="line">        <span class="keyword">const</span> url = request.url.slice(<span class="number">8</span>)</div><div class="line">        <span class="keyword">if</span> (likeUrl(url)) &#123;</div><div class="line">            ev.respondWith(fetch(<span class="string">`https://<span class="subst">$&#123;url&#125;</span>`</span>, &#123;</div><div class="line">                <span class="attr">method</span>: request.method,</div><div class="line">                <span class="attr">mode</span>: request.mode,</div><div class="line">                <span class="attr">cache</span>: request.cache,</div><div class="line">                <span class="attr">headers</span>: request.headers,</div><div class="line">                <span class="attr">credentials</span>: request.credentials,</div><div class="line">            &#125;))</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>然而这样做还是有一个问题没能得到解决, service worker <a href="https://github.com/w3c/ServiceWorker/issues/712" target="_blank" rel="external">不能</a>捕获到</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;iframe src=&quot;//example.com/hs&quot;&gt;&lt;/iframe&gt;</div></pre></td></tr></table></figure>
+<p>这里的 url. 暂时没有想到什么通用的方式来解决它.</p>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-plan-of-web-components/" data-id="cj7h2p99d000449m403fagpbs" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tby4ew000rt4m4dx0o4pte" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-plan-of-web-components/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/modules/">modules</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
 
     </footer>
   </div>
@@ -180,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cj7h2p99f000549m4sce50nve" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cj7tby4ey000st4m48ztl76a5" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -232,7 +242,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj7h2p9a6000o49m4ttrf0pkn" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj7tby4el000it4m4lzk37ic4" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -293,7 +303,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj7h2p99m000a49m4t77u4kcv" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj7tby4en000mt4m42aso6d4p" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -352,7 +362,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj7h2p99q000c49m4bfddc2rq" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj7tby4f60013t4m4o883b2st" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -422,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj7h2p998000149m4hyfsb2w1" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj7tby4dl0000t4m4upguuyzn" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -489,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj7h2p9a5000l49m4prlqwy9j" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj7tby4ec000ft4m4cxxes5k8" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -561,7 +571,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj7h2p993000049m4u7cr2phr" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj7tby4ed000gt4m4rlxp4qjo" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -626,7 +636,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj7h2p9a1000g49m4oo87g7lq" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj7tby4f3000wt4m4rdjqmnd9" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -761,7 +771,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj7h2p99y000f49m4mjgwbfx3" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj7tby4f4000yt4m4mimzs9qu" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -788,7 +798,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -798,7 +808,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/modules/">modules</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -808,7 +818,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/engineering/" style="font-size: 16.67px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/modules/" style="font-size: 10px;">modules</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -830,7 +840,7 @@ export default class ProfileContainer extends Component {
       <ul>
         
           <li>
-            <a href="/blog/engineering/a-plan-of-web-components/">前端组件化</a>
+            <a href="/blog/electron/try-electron/">electron 采坑记</a>
           </li>
         
           <li>
