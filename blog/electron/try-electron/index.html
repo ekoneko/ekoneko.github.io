@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/electron/try-electron/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="最近在用 electron 打包一个 webpack 生成的项目, 感觉自己踩了1万个坑. 当然主要原因还是我个人对 electron 只停留于了解的程度, 对于各种实践也是一边摸索一边进行. 绝对路径转换webpack 的项目构建的包引用资源使用的是绝对路径, 如果 electron 加载的 html 方式是 1window.loadURL(file://path/to/index.html)">
-<meta property="og:updated_time" content="2017-09-20T17:56:31.000Z">
+<meta property="og:updated_time" content="2017-09-21T00:29:33.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="electron 采坑记">
 <meta name="twitter:description" content="最近在用 electron 打包一个 webpack 生成的项目, 感觉自己踩了1万个坑. 当然主要原因还是我个人对 electron 只停留于了解的程度, 对于各种实践也是一边摸索一边进行. 绝对路径转换webpack 的项目构建的包引用资源使用的是绝对路径, 如果 electron 加载的 html 方式是 1window.loadURL(file://path/to/index.html)">
@@ -104,7 +104,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'file'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.interceptFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>基本上很相似, 只是把协议替换成了 <code>file</code>, <code>registerFileProtocol</code> 方法替换成了 <code>interceptFileProtocol</code>. 从规范上我个人更倾向不破坏现有协议, 但最终我还是选择了后一种实现.</p>
 <p>使用 <code>file</code> 协议比起自定义协议有两点好处.</p>
-<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要手响应头具备跨域支持, 还需要下面这么一段额外的拦截步骤:</p>
+<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要响应头提供一部分跨域头. 当然在 electron 中也可以通过<a href="https://github.com/electron/electron/blob/master/docs/api/web-request.md" target="_blank" rel="external"> webRequest</a>手动的拦截 http 响应并注入 headers</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.webContents.session.webRequest.onHeadersReceived(<span class="function">(<span class="params">detail, callback</span>) =&gt;</span> &#123;</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Origin'</span>] = [<span class="string">'local://ekoenko'</span>]</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Credentials'</span>] = [<span class="string">'true'</span>]</div><div class="line">  callback(&#123;</div><div class="line">    <span class="attr">responseHeaders</span>: detail.responseHeaders,</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>(BTW, electron header 头的内容必须是一个数组, 这里也稍微坑到我了一下)</p>
 <p>另外一个区别则是目标版本的 electron, <a href="https://github.com/electron/electron/issues/9663" target="_blank" rel="external">自定义协议用不了 service work</a>.</p>
@@ -123,7 +123,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tby4ew000rt4m4dx0o4pte" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tbxlb5001fqcm4i3qrnk8f" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
       

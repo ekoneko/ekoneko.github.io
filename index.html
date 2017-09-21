@@ -101,7 +101,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'file'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.interceptFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>基本上很相似, 只是把协议替换成了 <code>file</code>, <code>registerFileProtocol</code> 方法替换成了 <code>interceptFileProtocol</code>. 从规范上我个人更倾向不破坏现有协议, 但最终我还是选择了后一种实现.</p>
 <p>使用 <code>file</code> 协议比起自定义协议有两点好处.</p>
-<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要手响应头具备跨域支持, 还需要下面这么一段额外的拦截步骤:</p>
+<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要响应头提供一部分跨域头. 当然在 electron 中也可以通过<a href="https://github.com/electron/electron/blob/master/docs/api/web-request.md" target="_blank" rel="external"> webRequest</a>手动的拦截 http 响应并注入 headers</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.webContents.session.webRequest.onHeadersReceived(<span class="function">(<span class="params">detail, callback</span>) =&gt;</span> &#123;</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Origin'</span>] = [<span class="string">'local://ekoenko'</span>]</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Credentials'</span>] = [<span class="string">'true'</span>]</div><div class="line">  callback(&#123;</div><div class="line">    <span class="attr">responseHeaders</span>: detail.responseHeaders,</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
 <p>(BTW, electron header 头的内容必须是一个数组, 这里也稍微坑到我了一下)</p>
 <p>另外一个区别则是目标版本的 electron, <a href="https://github.com/electron/electron/issues/9663" target="_blank" rel="external">自定义协议用不了 service work</a>.</p>
@@ -120,7 +120,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tby4ew000rt4m4dx0o4pte" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tbxlb5001fqcm4i3qrnk8f" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -190,7 +190,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cj7tby4ey000st4m48ztl76a5" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cj7tbxlau0013qcm4so0y4iex" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -242,7 +242,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj7tby4el000it4m4lzk37ic4" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cj7tbxla6000aqcm4dlgi3m2u" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -303,7 +303,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj7tby4en000mt4m42aso6d4p" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cj7tbxlaz0017qcm4t4aiummh" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -362,7 +362,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj7tby4f60013t4m4o883b2st" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cj7tbxlb3001bqcm4qrpkqwjv" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -432,7 +432,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj7tby4dl0000t4m4upguuyzn" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cj7tbxl9q0000qcm473afgc2y" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -499,7 +499,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj7tby4ec000ft4m4cxxes5k8" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cj7tbxla10005qcm4cf4b4qhf" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -571,7 +571,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj7tby4ed000gt4m4rlxp4qjo" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cj7tbxl9v0001qcm4ov7j3267" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -636,7 +636,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj7tby4f3000wt4m4rdjqmnd9" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cj7tbxlb20019qcm4cbsgkqa5" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -771,7 +771,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj7tby4f4000yt4m4mimzs9qu" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj7tbxlay0014qcm4gwezbig9" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
       
