@@ -61,9 +61,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-try-electron" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-exp-electron" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/electron/try-electron/" class="article-date">
+    <a href="/blog/electron/exp-electron/" class="article-date">
   <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">2017-09-21</time>
 </a>
     
@@ -79,7 +79,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/electron/try-electron/">electron 采坑记</a>
+      <a class="article-title" href="/blog/electron/exp-electron/">electron 实践笔记</a>
     </h1>
   
 
@@ -87,42 +87,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>最近在用 <code>electron</code> 打包一个 webpack 生成的项目, 感觉自己踩了1万个坑. 当然主要原因还是我个人对 electron 只停留于了解的程度, 对于各种实践也是一边摸索一边进行.</p>
-<h2 id="绝对路径转换"><a href="#绝对路径转换" class="headerlink" title="绝对路径转换"></a>绝对路径转换</h2><p>webpack 的项目构建的包引用资源使用的是绝对路径, 如果 electron 加载的 html 方式是</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.loadURL(file:<span class="comment">//path/to/index.html)</span></div></pre></td></tr></table></figure>
-<p>那么 index.html 中绝对路径引用的资源, 比如 <code>&lt;img src=&quot;/a.png&quot; /&gt;</code> 就会被定位到 <code>file://a/png</code> 上.</p>
-<p>当然只要把 webpack 的 <a href="https://webpack.js.org/guides/public-path/" target="_blank" rel="external">publicPath</a> 改为相对引用即可. 不过本着”自扫门前雪”的原则, electron 的问题还是想在 electron 中解决.</p>
-<p>对比这个场景里 <code>http://</code> 和 <code>file://</code> 加载的不同, 最大区别是 http 协议后面有一个域名来标记绝对路径的范围, 而 file 协议后面直接就跟上了路径, 在其范围内, 绝对路径是指向根部的.</p>
-<p>所以我们只需要想办法给 file 协议也加上一个域, 再在 <code>electron</code> 里处理就好了.</p>
-<p>electron 提供的 <a href="https://github.com/electron/electron/blob/master/docs/api/protocol.md" target="_blank" rel="external"><code>protocol</code></a> 接口就可以用来注册或拦截一个协议.</p>
-<p>我们可以注册一个新的文本协议来实现域到磁盘路径的转换</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'local'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.registerFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>上面的栗子里, 我们定义了一个 local 的协议, 会将 local://ekoneko/index.html 的请求转换为磁盘路径对应的文件请求. 此外, 我们也可以直接在 file 协议的基础上做拦截, 实现相同的效果</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'file'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.interceptFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>基本上很相似, 只是把协议替换成了 <code>file</code>, <code>registerFileProtocol</code> 方法替换成了 <code>interceptFileProtocol</code>. 从规范上我个人更倾向不破坏现有协议, 但最终我还是选择了后一种实现.</p>
-<p>使用 <code>file</code> 协议比起自定义协议有两点好处.</p>
-<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要响应头提供一部分跨域头. 当然在 electron 中也可以通过<a href="https://github.com/electron/electron/blob/master/docs/api/web-request.md" target="_blank" rel="external"> webRequest</a>手动的拦截 http 响应并注入 headers</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.webContents.session.webRequest.onHeadersReceived(<span class="function">(<span class="params">detail, callback</span>) =&gt;</span> &#123;</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Origin'</span>] = [<span class="string">'local://ekoenko'</span>]</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Credentials'</span>] = [<span class="string">'true'</span>]</div><div class="line">  callback(&#123;</div><div class="line">    <span class="attr">responseHeaders</span>: detail.responseHeaders,</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>(BTW, electron header 头的内容必须是一个数组, 这里也稍微坑到我了一下)</p>
-<p>另外一个区别则是目标版本的 electron, <a href="https://github.com/electron/electron/issues/9663" target="_blank" rel="external">自定义协议用不了 service work</a>.</p>
-<h2 id="通配域"><a href="#通配域" class="headerlink" title="通配域"></a>通配域</h2><p>解决路径的问题, electron 的展示 UI 看起来基本上都正常了, 可是控制台里还是有 404 的错误信息.</p>
-<p>定睛一看, 有一个第三方服务中, url 的写法是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">//example.com/wtf</div></pre></td></tr></table></figure>
-<p>这样, 加载时就被补全了 file 协议, 成了</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file://example.com/wtf</div><div class="line">-&gt; /dirname/example.com/wtf</div></pre></td></tr></table></figure>
-<p>我并没有找到一个很好的方法处理这个问题 (尝试想让 electron 的协议同时支持 file or http 两种方式失败). 最终, 我选择了 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API" target="_blank" rel="external">service worker</a>.</p>
-<p>在 service worker 中, 我们可以<a href="https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent" target="_blank" rel="external">监听页面上所有 url 访问事件</a>. 拦截并修改返回结果. 因此, 我们只需要找到 file 协议的请求, 并且格式为 <code>file://</code> + <code>hostname(:port)</code> + <code>pathname</code>, 将之转向到 http 对应位置即可.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">self.addEventListener(<span class="string">'fetch'</span>, (ev) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> &#123;request&#125; = ev</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (request.url.slice(<span class="number">0</span>, <span class="number">7</span>) === <span class="string">'file://'</span>) &#123;</div><div class="line">        <span class="keyword">const</span> url = request.url.slice(<span class="number">8</span>)</div><div class="line">        <span class="keyword">if</span> (likeUrl(url)) &#123;</div><div class="line">            ev.respondWith(fetch(<span class="string">`https://<span class="subst">$&#123;url&#125;</span>`</span>, &#123;</div><div class="line">                <span class="attr">method</span>: request.method,</div><div class="line">                <span class="attr">mode</span>: request.mode,</div><div class="line">                <span class="attr">cache</span>: request.cache,</div><div class="line">                <span class="attr">headers</span>: request.headers,</div><div class="line">                <span class="attr">credentials</span>: request.credentials,</div><div class="line">            &#125;))</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
-<p>然而这样做还是有一个问题没能得到解决, service worker <a href="https://github.com/w3c/ServiceWorker/issues/712" target="_blank" rel="external">不能</a>捕获到</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;iframe src=&quot;//example.com/hs&quot;&gt;&lt;/iframe&gt;</div></pre></td></tr></table></figure>
-<p>这里的 url. 暂时没有想到什么通用的方式来解决它.</p>
-
+        <p>最近工作需要尝试用 <code>electron</code> 将 web 打包成客户端. 基本功能和 web 保持一致即可, 对部分url 可能替换为本地逻辑实现. 所以现阶段基本上只要愉快的将我们 webpack 构建出的静态文件能通过 electron 访问就好了.</p>
+<p>看似很简单, 但实践起来还是踩了蛮多坑的. 我个人对 electron 也一直只是了解阶段, 对于各种实践也是一边摸索一边进行的…</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>electron 启动时会执行一个 nodejs 脚本.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">electron ./main.js</div></pre></td></tr></table></figure>
+<p>这个脚本可以用于初始化 electron 应用. 并且控制窗口的打开与事件监听. 在官方文档里, 这个进程被称作 <code>Main Process</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> electron = <span class="built_in">require</span>(<span class="string">'electron'</span>)</div><div class="line"></div><div class="line"><span class="keyword">const</span> &#123; BrowserWindow &#125; = electron</div><div class="line"></div><div class="line">mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">1280</span>, <span class="attr">height</span>: <span class="number">720</span>&#125;)</div><div class="line"></div><div class="line"><span class="comment">// Load code/index.html page</span></div><div class="line">mainWindow.loadURL(<span class="string">'file://index.html'</span>)</div><div class="line"></div><div class="line"><span class="comment">// ...</span></div></pre></td></tr></table></figure>
+<p>通过 <code>loadURL</code> 打开的窗口, 基本上就是一个内嵌 chrome 内核的浏览器, 只不过 <code>electron</code> 还贴心的注入了一些 nodejs 的模块供浏览器调用, 比如 <code>commonjs</code> 啦, <code>fs</code>, <code>path</code> 之类的. 在官方文档里, 这个进程被称作 <code>Renderer Process</code>.</p>
+<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="external"><code>romote</code></a> 的模块可以用来执行主模块里的东西.</p>
+<p>通过这些接口, 我们可以做到许多浏览器做不到的事情, 比如本地文件的读写, 代理, cors, 设备驱动, 等等等等…</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/electron/exp-electron/#more">Read More</a>
+          </p>
+        
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cj7tbxlb5001fqcm4i3qrnk8f" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/exp-electron/" data-id="cj89lu0fz0000bxm4nxw0f8ki" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/electron/exp-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -840,7 +824,7 @@ export default class ProfileContainer extends Component {
       <ul>
         
           <li>
-            <a href="/blog/electron/try-electron/">electron 采坑记</a>
+            <a href="/blog/electron/exp-electron/">electron 实践笔记</a>
           </li>
         
           <li>
