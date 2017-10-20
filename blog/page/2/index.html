@@ -61,6 +61,141 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-our-best-practices-for-writing-react-components" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/react/our-best-practices-for-writing-react-components/" class="article-date">
+  <time datetime="2017-03-03T00:00:00.000Z" itemprop="datePublished">2017-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/react/">react</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/react/our-best-practices-for-writing-react-components/">[译]react组件书写最佳实践</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文 Url: <a href="https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8" target="_blank" rel="external">https://engineering.musefind.com/our-best-practices-for-writing-react-components-dec3eb5c3fc8</a></p>
+<hr>
+<p>自从我开始学习 React 开始, 就在不同的教程上看到了不同的创建组件的方法. 虽然 React 框架逐渐成熟, 似乎却并没有一套’正确’的组件书写规范.</p>
+<p>在 <a href="https://musefind.com/" target="_blank" rel="external">MuseFind</a> 的一年, 我们写了大量的 React 组件, 最终, 总结出了一个我们用起来很开心的方法. 希望无论是初学者还是经验丰富的人都能从中获得帮助.</p>
+<p>开始之前有几点需要注意:</p>
+<ol>
+<li>我们用 ES6 / ES7语法</li>
+<li>如果你不晓得展示(presentational)组件与容器(container)组件的区别, 建议先看<a href="https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0#.kuvqndiqq" target="_blank" rel="external">这篇</a> (译注: <a href="https://segmentfault.com/a/1190000007788858" target="_blank" rel="external">中文翻译</a>)</li>
+<li>如果有建议或疑问请去原文评论</li>
+</ol>
+<h2 id="基于-Class-的组件"><a href="#基于-Class-的组件" class="headerlink" title="基于 Class 的组件"></a>基于 Class 的组件</h2><p>基于 Class 的组件是有状态或包含了一些方法的组件. 建议尽可能谨慎的去使用这种方式, 但其使用场景却是无可取代的.</p>
+<p>让我们从头开始构建一个组件:</p>
+<h3 id="引入-CSS"><a href="#引入-CSS" class="headerlink" title="引入 CSS"></a>引入 CSS</h3><pre><code>import React, {Component} from &apos;react&apos;
+import {observer} from &apos;mobx-react&apos;
+
+import ExpandableForm from &apos;./ExpandableForm&apos;
+import &apos;./styles/ProfileContainer.css&apos;
+</code></pre><p>我喜欢<a href="https://medium.freecodecamp.com/a-5-minute-intro-to-styled-components-41f40eb7cd55" target="_blank" rel="external">在js中关联css</a>. [b]在每个组件中引入 css样式[/b]</p>
+<p>在依赖引用与本地引用之间, 建议保留一个空行</p>
+<h3 id="初始化-state"><a href="#初始化-state" class="headerlink" title="初始化 state"></a>初始化 state</h3><pre><code>import React, {Component} from &apos;react&apos;
+import {observer} from &apos;mobx-react&apos;
+
+import ExpandableForm from &apos;./ExpandableForm&apos;
+import &apos;./styles/ProfileContainer.css&apos;
+
+export default class ProfileContainer extends Component {
+  state = { expanded: false }
+</code></pre><p>也可以使用在 constructor 函数中声明, 但是推荐这种更简洁的方法.</p>
+<p>同时建议直接导出 class</p>
+<h3 id="propTypes-与-defaultProps"><a href="#propTypes-与-defaultProps" class="headerlink" title="propTypes 与 defaultProps"></a>propTypes 与 defaultProps</h3><pre><code>import React, {Component} from &apos;react&apos;
+import {observer} from &apos;mobx-react&apos;
+
+import ExpandableForm from &apos;./ExpandableForm&apos;
+import &apos;./styles/ProfileContainer.css&apos;
+
+export default class ProfileContainer extends Component {
+  state = { expanded: false }
+
+  static propTypes = {
+    model: React.PropTypes.object.isRequired,
+    title: React.PropTypes.string
+  }
+
+  static defaultProps = {
+    model: {
+      id: 0
+    },
+    title: &apos;Your Name&apos;
+  }
+</code></pre><p>propTypes 与 defaultProps 是静态属性, 应尽可能在组件顶端声明. 他们应该承担文档的职责并可以第一时间被其他开发者看到.</p>
+<p>[b]所有组件都应该有 propTypes[/b]</p>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><pre><code>import React, {Component} from &apos;react&apos;
+import {observer} from &apos;mobx-react&apos;
+
+import ExpandableForm from &apos;./ExpandableForm&apos;
+import &apos;./styles/ProfileContainer.css&apos;
+
+export default class ProfileContainer extends Component {
+  state = { expanded: false }
+
+  static propTypes = {
+    model: React.PropTypes.object.isRequired,
+    title: React.PropTypes.string
+  }
+
+  static defaultProps = {
+    model: {
+      id: 0
+    },
+    title: &apos;Your Name&apos;
+  }
+
+  handleSubmit = (e) =&gt; {
+    e.preventDefault()
+    this.props.model.save()
+  }
+
+  handleNameChange = (e) =&gt; {
+    this.props.model.changeName(e.target.value)
+  }
+
+  handleExpand = (e) =&gt; {
+    e.preventDefault()
+    this.setState({ expanded: !this.state.expanded })
+  }
+</code></pre><p>对于 class 类型的组件, 必须确保方法被调用时 <code>this</code> 指向正确的对象. 这里经常在调用时被写成 <code>this.handleSubmit.bind</code></p>
+<p>但用 es6 的箭头函数去维护上下文正确会更加简洁.</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/react/our-best-practices-for-writing-react-components/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cj8zzvlz9000gp3m4f6bl41sl" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-express-hbs" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/node/express-hbs/" class="article-date">
@@ -97,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj7tbxla30006qcm4tf1mnqwq" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj8zzvlz30004p3m4srdr2e4t" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -146,7 +281,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj7tbxla00004qcm4zvxiinfy" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cj8zzvlz40006p3m4g0xwvqoj" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -173,7 +308,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -183,7 +318,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -193,7 +328,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -202,7 +337,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -215,11 +350,15 @@
       <ul>
         
           <li>
-            <a href="/blog/electron/exp-electron/">electron 实践笔记</a>
+            <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
           <li>
-            <a href="/blog/webrtc/learn-webrtc-faq/">WebRTC 学习 FAQ</a>
+            <a href="/blog/electron/exp-electron/">[笔记]electron 实践笔记</a>
+          </li>
+        
+          <li>
+            <a href="/blog/webrtc/learn-webrtc-faq/">[笔记]WebRTC 学习 FAQ</a>
           </li>
         
           <li>
@@ -228,10 +367,6 @@
         
           <li>
             <a href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
-          </li>
-        
-          <li>
-            <a href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
           </li>
         
       </ul>

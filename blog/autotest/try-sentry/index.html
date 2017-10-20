@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>express-hbs简介 | ekoneko.github.io</title>
+  <title>[笔记]使用 sentry | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="express-hbs 是一个handlebars模板引擎. 虽然express自带的jade也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ { } }来实现布局. 我更青睐这种的.">
-<meta name="keywords" content="js,node,express">
+  <meta name="description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
+<meta name="keywords" content="sentry">
 <meta property="og:type" content="article">
-<meta property="og:title" content="express-hbs简介">
-<meta property="og:url" content="http://ekoneko.github.io/blog/node/express-hbs/index.html">
+<meta property="og:title" content="[笔记]使用 sentry">
+<meta property="og:url" content="http://ekoneko.github.io/blog/autotest/try-sentry/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="express-hbs 是一个handlebars模板引擎. 虽然express自带的jade也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ { } }来实现布局. 我更青睐这种的.">
-<meta property="og:updated_time" content="2017-07-31T14:34:45.000Z">
+<meta property="og:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
+<meta property="og:updated_time" content="2017-10-20T14:36:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="express-hbs简介">
-<meta name="twitter:description" content="express-hbs 是一个handlebars模板引擎. 虽然express自带的jade也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ { } }来实现布局. 我更青睐这种的.">
+<meta name="twitter:title" content="[笔记]使用 sentry">
+<meta name="twitter:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -64,14 +64,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-express-hbs" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-try-sentry" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/node/express-hbs/" class="article-date">
-  <time datetime="2014-01-27T16:00:00.000Z" itemprop="datePublished">2014-01-28</time>
+    <a href="/blog/autotest/try-sentry/" class="article-date">
+  <time datetime="2017-10-18T10:02:04.000Z" itemprop="datePublished">2017-10-18</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/node/">node</a>
+    <a class="article-category-link" href="/blog/categories/autotest/">autotest</a>
   </div>
 
   </div>
@@ -82,7 +82,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      express-hbs简介
+      [笔记]使用 sentry
     </h1>
   
 
@@ -90,61 +90,35 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>express-hbs 是一个handlebars模板引擎.</p>
-<p>虽然express自带的<code>jade</code>也挺不错的, 但不支持html原生语法在很多场合下都会带来不方便 (尤其是copy代码时). 相对的, express-hbs在原生html的基础上用{ { } }来实现布局. 我更青睐这种的.</p>
-<a id="more"></a>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>说起来 handlebars 似乎是一个很有名气的引擎. 不过之前用前端js基本上只会用模板替换一些标签, 接触到nodejs时就已经有了express,自然一直用的都是jade. handlebars还是第一次用的说. 大体上看 express-hbs 和 jade 概念上比较类似. 都是先定义好一个<code>layout</code>(布局), 然后逐个定义layout中申明的<code>block</code>(块). 关于流程控制是常见的if, else 和 each. hbs.registerHelper可以申明比较高级的用户自定义模板函数.</p>
-<h2 id="安装和使用"><a href="#安装和使用" class="headerlink" title="安装和使用"></a>安装和使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><pre><code>npm install express-hbs
-</code></pre><h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><pre><code>var hbs = require(&apos;express-hbs&apos;);
-app.engine(&apos;hbs&apos;, hbs.express3({
-  partialsDir: __dirname + ‘/views/partials’
-}));
-app.set(‘view engine’, ‘hbs’);
-app.set(‘views’, __dirname + ‘/views’);
-</code></pre><h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ol>
-<li>partialsDir: partials模板路径,如果有多个传递数组否则传递字符串</li>
-<li>blockHelperName: 重写 block 名称</li>
-<li>contentHelperName: 重写 contentFor</li>
-<li>defaultLayout: 默认layout模板的绝对路径</li>
-<li>extname: 模板扩展后缀(默认 .hbs)</li>
-<li>handlebars: 用其他 handlebars 引擎替代express-hbs的依赖</li>
-<li>layoutsDir: layout的模板路径</li>
-<li>templateOptions: template的参数</li>
-</ol>
-<h3 id="渲染"><a href="#渲染" class="headerlink" title="渲染"></a>渲染</h3><p>和jade差不多,</p>
-<p>  res.render(xxx.hbs, { data })</p>
-<p>不太一样的是layout的选择需要在调用时指定<code>data.layout</code></p>
-<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><h3 id="变量替换"><a href="#变量替换" class="headerlink" title="变量替换"></a>变量替换</h3><pre><code>{ { argument } }    // 解析为字符串
-{ { { argument } } } // 解析为 HTML
-</code></pre><p>也就是说两个大括号的形式会把 <code>&lt;</code> 等 html 字符转义成 &lt; 之类的东西</p>
-<h3 id="block占位符"><a href="#block占位符" class="headerlink" title="block占位符"></a>block占位符</h3><pre><code>{ { { block “pageScripts” } } }
-</code></pre><h3 id="block申明"><a href="#block申明" class="headerlink" title="block申明"></a>block申明</h3><pre><code>{ { #contentFor “pageScripts” } }
-CONTENT HERE
-{ { /contentFor } }
-</code></pre><h3 id="在模板中申明一个layout"><a href="#在模板中申明一个layout" class="headerlink" title="在模板中申明一个layout"></a>在模板中申明一个layout</h3><pre><code>{ { !&lt; LAYOUT } }
-</code></pre><p>PS: 注: layout如果以” . ” 开头,则表示相对当前模板路径, 否则表示 layoutsDir 参数的相对路径.</p>
-<h3 id="结构控制"><a href="#结构控制" class="headerlink" title="结构控制"></a>结构控制</h3><h4 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h4><pre><code>{ { #each data } }
-&lt;p&gt;{ { this } }&lt;/p&gt;  遍历并输出
-{ { /each } }
-</code></pre><h4 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h4><p>if…else的形式, 和each差不多</p>
-<h3 id="内建辅助方法"><a href="#内建辅助方法" class="headerlink" title="内建辅助方法"></a>内建辅助方法</h3><h4 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h4><pre><code>hbs.registerHelper( ‘userFunction’, function(p1, p2) {
-    return new hbs.SafeString(‘&lt;a href=”‘+p1+’” target=”_blank”&gt;’ + p2 + ‘&lt;/a&gt;);
-});
-</code></pre><h4 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h4><pre><code>{ { {  userFunction ‘https://github.com/ekoneko’ ‘ekoneko’ } } }
-</code></pre><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="多个-hbs并存"><a href="#多个-hbs并存" class="headerlink" title="多个 hbs并存"></a>多个 hbs并存</h3><pre><code>var hbs = require(‘express-hbs’);
-var instance1 = hbs.create();
-var instance2 = hbs.create();
-</code></pre><p>不同的hbs单例拥有自己的命名空间和缓存. 或许构建大型项目会比较好用吧</p>
+        <h2 id="sentry-介绍"><a href="#sentry-介绍" class="headerlink" title="sentry 介绍"></a>sentry 介绍</h2><p><a href="https://sentry.io/" target="_blank" rel="external">sentry</a> 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录.</p>
+<p>除了官方提供的 sentry.io 外, 也支持自己部署 (<a href="https://zhuanlan.zhihu.com/p/24445449" target="_blank" rel="external">Sentry 简易搭建指南</a>), 适用于安全性有所要求的项目.</p>
+<p>sentry 的界面看起来十分高大上. <code>Issues</code> 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免被某一个问题刷屏的情况. 也可以像 GitHub 的 issue 一样 assign 给相应的开发者处理. 并且 sentry 也支持邮寄和各种 IM 的 robot, 十分好用.</p>
+<h3 id="release"><a href="#release" class="headerlink" title="release"></a>release</h3><p>代码的不同版本, 会对应不同的 bug, sentry 中用 <code>release</code> 来标识一个代码包的当前版本. 理论上不同代码包应该对应一个唯一性的 release version</p>
+<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 sentry.io (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://abcdefghijklmn@sentry.io/12345</div></pre></td></tr></table></figure>
+<p>用来作为监控的来源识别</p>
+<p>参考<a href="https://docs.sentry.io/clients/javascript/install/" target="_blank" rel="external">官方文档</a>, 使用 sentry 需要引入其 sdk 脚本文件 ravenjs.</p>
+<p>可以通过静态脚本引入</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.ravenjs.com/3.19.1/raven.min.js"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>也可以用 npm 等包管理软件引入 <code>npm install raven-js</code></p>
+<p>加载 raven 后, 配置和之前注册项目的关联</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Raven</div><div class="line">    .config(<span class="string">'https://abcdefghijklmn@sentry.io/12345'</span>, &#123;</div><div class="line">      <span class="attr">release</span>: <span class="string">'your release'</span>,</div><div class="line">      <span class="comment">// and more config</span></div><div class="line">    &#125;)</div><div class="line">    .install();</div></pre></td></tr></table></figure>
+<p>这里的 release 可以是任意字符串, 用于识别当前的代码的构建版本. 建议 webpack 每次打包时生成一个唯一的 release 号, 如使用项目 hash, git commit 或者简单的时间字符串等.</p>
+<h2 id="解决-sourcemap"><a href="#解决-sourcemap" class="headerlink" title="解决 sourcemap"></a>解决 sourcemap</h2><p>处于保密考虑, 一般生产环境不会提供 sourcemap. 这样 js 抛出的错误信息对开发人员很不友好. 我们可以将 sourcemap 传到 sentry 上来解决这个问题.</p>
+<p>官方提供了<a href="https://docs.sentry.io/api/" target="_blank" rel="external">一套 API 接口</a> 可以向指定的 release 上传文件. 这里推荐一个更简单的实现:</p>
+<p>通过 <a href="https://github.com/40thieves/webpack-sentry-plugin" target="_blank" rel="external">webpack-sentry-plugin</a> 插件在 webpack 构建时完成阶段直接将制定规则的文件同步到 sentry 上:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">plugins.push(<span class="keyword">new</span> SentryPlugin(&#123;                                                                  </div><div class="line">    <span class="attr">organization</span>: <span class="string">'ekoneko'</span>,                                                                     </div><div class="line">    <span class="attr">project</span>: <span class="string">'test'</span>,                                                                             </div><div class="line">    <span class="attr">apiKey</span>: <span class="string">'......'</span>,                  </div><div class="line">    <span class="attr">release</span>: <span class="string">''</span>,                                                                                     </div><div class="line">&#125;))</div></pre></td></tr></table></figure>
+<p>配置前, 还需要前往 <a href="https://sentry.io/api/" target="_blank" rel="external">sentry.io/api/</a> 生成一个 apiKey</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cj8zzvlz30004p3m4srdr2e4t" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cj8zzysho0000rvm4ehja1xzo" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/express/">express</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/node/">node</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/sentry/">sentry</a></li></ul>
 
     </footer>
   </div>
@@ -152,19 +126,10 @@ var instance2 = hbs.create();
     
 <nav id="article-nav">
   
-    <a href="/blog/react/our-best-practices-for-writing-react-components/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          [译]react组件书写最佳实践
-        
-      </div>
-    </a>
   
-  
-    <a href="/blog/test/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/blog/electron/exp-electron/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Hello World</div>
+      <div class="article-nav-title">[笔记]electron 实践笔记</div>
     </a>
   
 </nav>
@@ -276,7 +241,7 @@ var instance2 = hbs.create();
 <script>
   var disqus_shortname = 'ekoneko';
   
-  var disqus_url = 'http://ekoneko.github.io/blog/node/express-hbs/';
+  var disqus_url = 'http://ekoneko.github.io/blog/autotest/try-sentry/';
   
   (function(){
     var dsq = document.createElement('script');
