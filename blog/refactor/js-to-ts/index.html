@@ -5,17 +5,17 @@
   
   <title>js-to-ts | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 由于 Typescript 承载的信息要多于 JavaScript 的实现, 我们并不打算一开始就完善所有的定义与接口. 第一步要做的事情是, 让原本由 CreateReactApp 导出的项目能在 typescript 下以 ts(x) 的形式通过">
+  <meta name="description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 在开始之前, 先安利一下 Typescript 官方文档提供的从 JavaScript 迁移, 以及其中提到的 React 项目转换指南. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容. 配置文件相关引用方式tsc 默认对于 commonjs 的">
 <meta name="keywords" content="typescript migrate">
 <meta property="og:type" content="article">
 <meta property="og:title" content="js-to-ts">
 <meta property="og:url" content="http://ekoneko.github.io/blog/refactor/js-to-ts/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 由于 Typescript 承载的信息要多于 JavaScript 的实现, 我们并不打算一开始就完善所有的定义与接口. 第一步要做的事情是, 让原本由 CreateReactApp 导出的项目能在 typescript 下以 ts(x) 的形式通过">
-<meta property="og:updated_time" content="2017-11-30T17:29:56.000Z">
+<meta property="og:description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 在开始之前, 先安利一下 Typescript 官方文档提供的从 JavaScript 迁移, 以及其中提到的 React 项目转换指南. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容. 配置文件相关引用方式tsc 默认对于 commonjs 的">
+<meta property="og:updated_time" content="2017-12-01T07:32:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="js-to-ts">
-<meta name="twitter:description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 由于 Typescript 承载的信息要多于 JavaScript 的实现, 我们并不打算一开始就完善所有的定义与接口. 第一步要做的事情是, 让原本由 CreateReactApp 导出的项目能在 typescript 下以 ts(x) 的形式通过">
+<meta name="twitter:description" content="前言最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题. 在开始之前, 先安利一下 Typescript 官方文档提供的从 JavaScript 迁移, 以及其中提到的 React 项目转换指南. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容. 配置文件相关引用方式tsc 默认对于 commonjs 的">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -55,7 +55,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Søk"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -91,33 +91,34 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题.</p>
-<p>由于 Typescript 承载的信息要多于 JavaScript 的实现, 我们并不打算一开始就完善所有的定义与接口. 第一步要做的事情是, 让原本由 <code>CreateReactApp</code> 导出的项目能在 typescript 下以 ts(x) 的形式通过编译.</p>
+<p>在开始之前, 先安利一下 Typescript 官方文档提供的<a href="https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html" target="_blank" rel="external">从 JavaScript 迁移</a>, 以及其中提到的 <a href="https://github.com/Microsoft/TypeScript-React-Conversion-Guide#typescript-react-conversion-guide" target="_blank" rel="external">React 项目转换指南</a>. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容.</p>
 <h2 id="配置文件相关"><a href="#配置文件相关" class="headerlink" title="配置文件相关"></a>配置文件相关</h2><h3 id="引用方式"><a href="#引用方式" class="headerlink" title="引用方式"></a>引用方式</h3><p>tsc 默认对于 commonjs 的模块是这样加载的</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> * <span class="keyword">as</span> React <span class="keyword">from</span> <span class="string">'react'</span></div></pre></td></tr></table></figure>
-<p>我们不想改变原先的写法: <code>import React from &#39;react&#39;</code>. 索性, ts 提供了 <code>allowSyntheticDefaultImports</code> 的 compile options 可以解决这个问题</p>
+<p>我们不想改变原先的写法: <code>import React from &#39;react&#39;</code>. 幸好, ts 提供了一个编译参数 <code>allowSyntheticDefaultImports</code>.</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"allowSyntheticDefaultImports"</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">"module"</span>: <span class="string">"esnext"</span>,</div><div class="line">  <span class="attr">"moduleResolution"</span>: <span class="string">"node"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="相对路径"><a href="#相对路径" class="headerlink" title="相对路径"></a>相对路径</h3><p>我们的 webpack 配置里将 src 目录配置在了 resolve 中</p>
+<h3 id="相对路径"><a href="#相对路径" class="headerlink" title="相对路径"></a>相对路径</h3><p>我们项目的 webpack 配置将 src 目录配置在了 resolve 中</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">resolve</span>: &#123;</div><div class="line">    <span class="attr">modules</span>: [<span class="string">'node_modules'</span>, <span class="string">'src'</span>]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>代码中, 可以通过 `import ‘App’ from ‘components/App’ 的方式引用 src/components/App.jsx 文件</p>
-<p>在 tsc 中, 需要配置 <code>baseUrl</code> 或 <code>paths</code></p>
+<p>在 typescript 中, 需要配置 <code>baseUrl</code> 或 <code>paths</code> 来告诉 tsc 寻找文件的路径.</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">"baseUrl"</span>: <span class="string">"./src"</span>,</div></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">compilerOptions</span>: &#123;</div><div class="line">    <span class="string">"baseUrl"</span>: <span class="string">"."</span>,</div><div class="line">    <span class="string">"paths"</span>: &#123;</div><div class="line">      <span class="string">"*"</span>: [</div><div class="line">        <span class="string">"src/*"</span>,</div><div class="line">        <span class="string">"node_modules/*"</span></div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>二者略有<a href="https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url" target="_blank" rel="external">不同</a>. 从结论上看 paths 的方式会检测加载模块关联的声明, 对于声明缺失的模块编译时会抛出一个错误.</p>
-<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>我们可以创建 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="external">global.d.ts</a> 文件来声明一些全局变量和 <code>WebpackDefinePlugin</code> 输出的东西</p>
+<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>对于项目中用到的全局变量, 以及 <code>WebpackDefinePlugin</code> 之类输出的东西, 我们可以建一个 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="external">global.d.ts</a> 文件来声明进行声明, 比如:</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">const</span> global: <span class="built_in">any</span></div></pre></td></tr></table></figure>
-<p>另一方面, webpack 会通过X-loader 处理 js 之外的文件加载, 为了不让 typescript 干涉, 需要在 <code>global.d.ts</code> 里加上</p>
+<p>另一方面, webpack 通过X-loader 加载 js 之外的文件加载. 这些东西 tsc 看不懂, 就会报错. 我们希望 tsc 在 type checking 时能跳过这些模块, 也可以在 <code>global.d.ts</code> 里加上模块的声明:</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">module</span> '*.png'</div><div class="line">declare <span class="keyword">module</span> '*.jpg'</div><div class="line">declare <span class="keyword">module</span> '*.svg'</div><div class="line">declare <span class="keyword">module</span> '*.mp4'</div><div class="line">// ...</div></pre></td></tr></table></figure>
-<p>顺带一提, 我们的 <code>WebpackDefinePlugin</code> 会把 process.env 的部分内容同步到页面上, 最初我是打算不引入 <code>@types/node</code>, 通过 global.d.ts 来声明 <code>process</code> 的. 然而托一些第三工具引入的 @types/node 会导致变量重复声明, 最后索性直接显式的引入 <code>@types/node</code> 好了.</p>
-<h2 id="从-js-到-ts-x"><a href="#从-js-到-ts-x" class="headerlink" title="从 js 到 ts(x)"></a>从 js 到 ts(x)</h2><p>tsc 的 allowJS 参数支持对 js 的解析. 但是当将 js 后缀改为 ts(x)时, 通常会出现大量的问题, 这里总结了在我们项目中比例较大的一部分情况.</p>
-<h3 id="是否包含-jsx"><a href="#是否包含-jsx" class="headerlink" title="是否包含 jsx"></a>是否包含 jsx</h3><p>js 转换为 ts 不仅仅是改变一下后缀, tsc 对待不同后缀的处理要求也不一样.</p>
-<p>tsc 要求包含 jsx 的文件后缀 必须是 .tsx (当然写 .js也能编译通过) 因此需要判断 js文件中是否包含 jsx 判断是转换为 .ts 还是 .tsx</p>
+<p>顺带一提, 我们的 <code>WebpackDefinePlugin</code> 会输出一个 process 变量来同步一部分配置文件到前端. 一开始我是拒绝在面向 browser 的项目引用 @types/node , 而是通过 global.d.ts 引入的. 然而很多第三方的模块会带入 @types/node 造成重复声明的异常,  最后只好直接显式的引入 <code>@types/node</code> 了.</p>
+<h2 id="从-js-到-ts-x"><a href="#从-js-到-ts-x" class="headerlink" title="从 js 到 ts(x)"></a>从 js 到 ts(x)</h2><p>tsc 的 allowJS 参数支持对 js 的解析. 但是当将 js 后缀改为 ts(x)时, 通常会出现大量的问题, 这里总结下在我们项目中比例较大的一部分情况.</p>
+<h3 id="是否包含-jsx"><a href="#是否包含-jsx" class="headerlink" title="是否包含 jsx"></a>是否包含 jsx</h3><p>过去, 我们并没有使用 .jsx 的后缀, 无论是否包含 JSX 格式的数据均保存为 .js 文件. 然而在 .ts 的文件中使用 JSX 会导致一个错误.</p>
+<p>因此改后缀之前需要判断 文件中是否包含 JSX 格式的数据, 分别转换为对应的 .ts 或 .tsx 文件</p>
 <a id="more"></a>
-<h3 id="Component-声明"><a href="#Component-声明" class="headerlink" title="Component 声明"></a>Component 声明</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CrumbHeaderAction</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">  render() &#123;</div><div class="line">    <span class="keyword">return</span> &lt;Div onClick=&#123;this.props.onClick&#125;&gt;</div><div class="line">      &#123;this.props.icon&#125;</div><div class="line">      &#123;this.props.label&#125;</div><div class="line">    &lt;/Div&gt;;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>上面这个代码如果把后缀从 js 改为 ts 就会报错. 因为 ts 默认会解析为</p>
+<h3 id="Component-声明"><a href="#Component-声明" class="headerlink" title="Component 声明"></a>Component 声明</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">CrumbHeaderAction</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</div><div class="line">  render() &#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Div</span> <span class="attr">onClick</span>=<span class="string">&#123;this.props.onClick&#125;</span>&gt;</span></span></div><div class="line">      &#123;this.props.icon&#125;</div><div class="line">      &#123;this.props.label&#125;</div><div class="line">    <span class="tag">&lt;/<span class="name">Div</span>&gt;</span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上面这个代码如果把后缀从 js 改为 ts 就会报错. React 默认声明的 props 和 state 都是 <code>{}</code>, tsc 会理解为下面这样:</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">class</span> ComName <span class="keyword">extends</span> Component&lt;&#123;&#125;, &#123;&#125;&gt;</div></pre></td></tr></table></figure>
 <p>由于 props.icon 和 props.label 不在 {} 中, 就会抛出一个 tsc 构建异常</p>
-<p>我们需要将上面的 <code>extends Component&lt;{}, {}&gt;</code> 转移成 <code>extends Component&lt;any, any&gt;</code> 或者详细的props 与 state 定义</p>
+<p>我们需要将上面的 <code>extends Component&lt;{}, {}&gt;</code> 转换成 <code>extends Component&lt;any, any&gt;</code> 或者更详细的 props 与 state 定义.</p>
+<p>这里我们为了简化流程选择通过 babel 的 AST 工具批量替换为 any 的形式. <a href="https://github.com/KnisterPeter/react-to-typescript-definitions" target="_blank" rel="external">通过 React 的 PropType 生成对应的声明</a>也是一个很好的方法. 不过多余的操作可能带来额外的问题. 个人建议这两件事情分开进行会更好些.</p>
 <h3 id="静态变量声明"><a href="#静态变量声明" class="headerlink" title="静态变量声明"></a>静态变量声明</h3><p>在上面的例子里 , 在 CrumbHeaderAction 外部定义 propTypes 也会报错</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">CrumbHeaderAction.propTypes = &#123;</div><div class="line">  <span class="attr">onClick</span>: PropTypes.func,</div><div class="line">  <span class="attr">label</span>: PropTypes.string,</div><div class="line">  <span class="attr">icon</span>: PropTypes.object</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>ts 是不支持隐式静态变量的. 我们要在 class 内部声明这个静态变量</p>
@@ -137,17 +138,29 @@
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const SC: React.StatelessComponent&lt;SCProps&gt; = (props: SCProps) =&gt; &#123;</div><div class="line">  return &lt;div&gt;&#123;props.content&#125;&lt;/div&gt;</div><div class="line">&#125;</div><div class="line">interface SCProps &#123;</div><div class="line">  content: string</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>除此之外还有一些不太常见的奇奇怪怪的问题…</p>
 <p>针对以上的规则, 我写了一个<a href="https://github.com/ekoneko/es2ts" target="_blank" rel="external">脚本</a>不那么智能的去做了一下转换, 大约可以解决掉 60% 左右的问题.</p>
+<p>(PS: 由于是自用的脚本, 并且定位比较尴尬做不到完美的迁移, 我只做了简单的封装并没有提供详细的使用指南与文档, 仅作为参考吧)</p>
+<p>(PS2: 事后发现了一些副作用: 这个脚本会造成最终生成的代码格式和过去不太一致, 比如注释前后的空白与换行错乱 Orz)</p>
 <h2 id="其他配置"><a href="#其他配置" class="headerlink" title="其他配置"></a>其他配置</h2><h3 id="jest"><a href="#jest" class="headerlink" title="jest"></a>jest</h3><p>ts的转换依赖 ts-jest 这个模块.</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"collectCoverageFrom"</span>: [</div><div class="line">    <span class="string">"src/**/*.&#123;ts,tsx&#125;"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"testMatch"</span>: [</div><div class="line">    <span class="string">"&lt;rootDir&gt;/src/**/__tests__/**/*.ts?(x)"</span>,</div><div class="line">    <span class="string">"&lt;rootDir&gt;/src/**/?(*.)(spec|test).ts?(x)"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"testEnvironment"</span>: <span class="string">"jsdom"</span>,</div><div class="line">  <span class="attr">"transform"</span>: &#123;</div><div class="line">    <span class="attr">"^.+\\.tsx?$"</span>: <span class="string">"&lt;rootDir&gt;/node_modules/ts-jest/preprocessor.js"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"transformIgnorePatterns"</span>: [</div><div class="line">    <span class="string">"[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"moduleFileExtensions"</span>: [</div><div class="line">    <span class="string">"js"</span>,</div><div class="line">    <span class="string">"json"</span>,</div><div class="line">    <span class="string">"jsx"</span>,</div><div class="line">    <span class="string">"ts"</span>,</div><div class="line">    <span class="string">"tsx"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"roots"</span>: [</div><div class="line">    <span class="string">"&lt;rootDir&gt;/src"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"modulePaths"</span>: [</div><div class="line">    <span class="string">"&lt;rootDir&gt;/src"</span></div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="tslint"><a href="#tslint" class="headerlink" title="tslint"></a>tslint</h3><p>没有什么特别好说的, 按照文档配置 tslint.json 即可. 可能需要更新 .git/hooks 相关的钩子, 我们的代码提交使用了 Phabricator 的 arc, 因此直接在项目中引入了 <a href="https://github.com/material-foundation/arc-tslint" target="_blank" rel="external">arc-tslint</a> 来在代码提交 review 前触发一次 lint.</p>
-<p>另外我们还引入了 <a href="https://github.com/buzinas/tslint-eslint-rules" target="_blank" rel="external">tslint-eslint-rules</a> 让 tslint 的规则更加接近eslint.</p>
+<h3 id="lint"><a href="#lint" class="headerlink" title="lint"></a>lint</h3><p><code>eslint</code> 本身提供了 typescript 的 <a href="https://github.com/eslint/typescript-eslint-parser" target="_blank" rel="external">parser</a> 然而使用时遇到了不少<a href="https://github.com/eslint/typescript-eslint-parser#known-issues" target="_blank" rel="external">问题</a>, 最后我选择了 <code>tslint</code>.</p>
+<p><code>tslint</code> 没有什么特别好说的, 按照文档配置 <code>tslint.json</code> 即可. </p>
+<p>之后可能需要更新 <code>.git/hooks</code> 相关的钩子. 这里我们的代码提交使用的是 <code>Phabricator</code> 的 <code>arc</code>, 因此直接在项目中引入了 <a href="https://github.com/material-foundation/arc-tslint" target="_blank" rel="external">arc-tslint</a> 在代码提交 review 前触发一次 lint.</p>
+<p>另外我们还引入了 <a href="https://github.com/buzinas/tslint-eslint-rules" target="_blank" rel="external">tslint-eslint-rules</a> 让 tslint 的规则更加接近我们过去用的 eslint 规则.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>虽然从 js 到 ts 的迁移途中会遇到种种困难, 我觉得 Typescript 带来的<a href="https://www.google.com.hk/search?q=typescript+benefits" target="_blank" rel="external">收益</a>还是要大于迁移成本的.</p>
+<p>另外其实迁移的过程可以分为多段执行:</p>
+<ol>
+<li>引入 typescript, 启用 <code>allowJS</code></li>
+<li>将 .js 转换为 .ts(x) (就是本文主要提到的内容)</li>
+<li>补充声明. 许多第三方库有对应的 <code>@types/name</code>, 上文也提到了将 React propTypes 转换为声明的工具, 最后, 手工也不失为一种办法…</li>
+</ol>
+<p>由于 tsc 允许 js + ts 的混合编译, 对于想迁移至 ts 却担忧历史负担的人也可以试试先引入 typescript 用于新写部分的代码, 暂时跳过比较复杂的 2 和 3.</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjacre7f9000c3dm4rgir00bf" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjanle18z000bsim44pt9ic2k" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li></ul>
@@ -181,7 +194,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Kategorier</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
@@ -210,7 +223,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Arkiv</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
@@ -220,7 +233,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Siste innlegg</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         

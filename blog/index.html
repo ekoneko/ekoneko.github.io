@@ -50,7 +50,7 @@
         
           <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Søk"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -88,27 +88,27 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题.</p>
-<p>由于 Typescript 承载的信息要多于 JavaScript 的实现, 我们并不打算一开始就完善所有的定义与接口. 第一步要做的事情是, 让原本由 <code>CreateReactApp</code> 导出的项目能在 typescript 下以 ts(x) 的形式通过编译.</p>
+<p>在开始之前, 先安利一下 Typescript 官方文档提供的<a href="https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html" target="_blank" rel="external">从 JavaScript 迁移</a>, 以及其中提到的 <a href="https://github.com/Microsoft/TypeScript-React-Conversion-Guide#typescript-react-conversion-guide" target="_blank" rel="external">React 项目转换指南</a>. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容.</p>
 <h2 id="配置文件相关"><a href="#配置文件相关" class="headerlink" title="配置文件相关"></a>配置文件相关</h2><h3 id="引用方式"><a href="#引用方式" class="headerlink" title="引用方式"></a>引用方式</h3><p>tsc 默认对于 commonjs 的模块是这样加载的</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> * <span class="keyword">as</span> React <span class="keyword">from</span> <span class="string">'react'</span></div></pre></td></tr></table></figure>
-<p>我们不想改变原先的写法: <code>import React from &#39;react&#39;</code>. 索性, ts 提供了 <code>allowSyntheticDefaultImports</code> 的 compile options 可以解决这个问题</p>
+<p>我们不想改变原先的写法: <code>import React from &#39;react&#39;</code>. 幸好, ts 提供了一个编译参数 <code>allowSyntheticDefaultImports</code>.</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"allowSyntheticDefaultImports"</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">"module"</span>: <span class="string">"esnext"</span>,</div><div class="line">  <span class="attr">"moduleResolution"</span>: <span class="string">"node"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="相对路径"><a href="#相对路径" class="headerlink" title="相对路径"></a>相对路径</h3><p>我们的 webpack 配置里将 src 目录配置在了 resolve 中</p>
+<h3 id="相对路径"><a href="#相对路径" class="headerlink" title="相对路径"></a>相对路径</h3><p>我们项目的 webpack 配置将 src 目录配置在了 resolve 中</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">resolve</span>: &#123;</div><div class="line">    <span class="attr">modules</span>: [<span class="string">'node_modules'</span>, <span class="string">'src'</span>]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>代码中, 可以通过 `import ‘App’ from ‘components/App’ 的方式引用 src/components/App.jsx 文件</p>
-<p>在 tsc 中, 需要配置 <code>baseUrl</code> 或 <code>paths</code></p>
+<p>在 typescript 中, 需要配置 <code>baseUrl</code> 或 <code>paths</code> 来告诉 tsc 寻找文件的路径.</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">"baseUrl"</span>: <span class="string">"./src"</span>,</div></pre></td></tr></table></figure>
 <p>或者</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">compilerOptions</span>: &#123;</div><div class="line">    <span class="string">"baseUrl"</span>: <span class="string">"."</span>,</div><div class="line">    <span class="string">"paths"</span>: &#123;</div><div class="line">      <span class="string">"*"</span>: [</div><div class="line">        <span class="string">"src/*"</span>,</div><div class="line">        <span class="string">"node_modules/*"</span></div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>二者略有<a href="https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url" target="_blank" rel="external">不同</a>. 从结论上看 paths 的方式会检测加载模块关联的声明, 对于声明缺失的模块编译时会抛出一个错误.</p>
-<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>我们可以创建 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="external">global.d.ts</a> 文件来声明一些全局变量和 <code>WebpackDefinePlugin</code> 输出的东西</p>
+<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>对于项目中用到的全局变量, 以及 <code>WebpackDefinePlugin</code> 之类输出的东西, 我们可以建一个 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="external">global.d.ts</a> 文件来声明进行声明, 比如:</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">const</span> global: <span class="built_in">any</span></div></pre></td></tr></table></figure>
-<p>另一方面, webpack 会通过X-loader 处理 js 之外的文件加载, 为了不让 typescript 干涉, 需要在 <code>global.d.ts</code> 里加上</p>
+<p>另一方面, webpack 通过X-loader 加载 js 之外的文件加载. 这些东西 tsc 看不懂, 就会报错. 我们希望 tsc 在 type checking 时能跳过这些模块, 也可以在 <code>global.d.ts</code> 里加上模块的声明:</p>
 <figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">module</span> '*.png'</div><div class="line">declare <span class="keyword">module</span> '*.jpg'</div><div class="line">declare <span class="keyword">module</span> '*.svg'</div><div class="line">declare <span class="keyword">module</span> '*.mp4'</div><div class="line">// ...</div></pre></td></tr></table></figure>
-<p>顺带一提, 我们的 <code>WebpackDefinePlugin</code> 会把 process.env 的部分内容同步到页面上, 最初我是打算不引入 <code>@types/node</code>, 通过 global.d.ts 来声明 <code>process</code> 的. 然而托一些第三工具引入的 @types/node 会导致变量重复声明, 最后索性直接显式的引入 <code>@types/node</code> 好了.</p>
-<h2 id="从-js-到-ts-x"><a href="#从-js-到-ts-x" class="headerlink" title="从 js 到 ts(x)"></a>从 js 到 ts(x)</h2><p>tsc 的 allowJS 参数支持对 js 的解析. 但是当将 js 后缀改为 ts(x)时, 通常会出现大量的问题, 这里总结了在我们项目中比例较大的一部分情况.</p>
-<h3 id="是否包含-jsx"><a href="#是否包含-jsx" class="headerlink" title="是否包含 jsx"></a>是否包含 jsx</h3><p>js 转换为 ts 不仅仅是改变一下后缀, tsc 对待不同后缀的处理要求也不一样.</p>
-<p>tsc 要求包含 jsx 的文件后缀 必须是 .tsx (当然写 .js也能编译通过) 因此需要判断 js文件中是否包含 jsx 判断是转换为 .ts 还是 .tsx</p>
+<p>顺带一提, 我们的 <code>WebpackDefinePlugin</code> 会输出一个 process 变量来同步一部分配置文件到前端. 一开始我是拒绝在面向 browser 的项目引用 @types/node , 而是通过 global.d.ts 引入的. 然而很多第三方的模块会带入 @types/node 造成重复声明的异常,  最后只好直接显式的引入 <code>@types/node</code> 了.</p>
+<h2 id="从-js-到-ts-x"><a href="#从-js-到-ts-x" class="headerlink" title="从 js 到 ts(x)"></a>从 js 到 ts(x)</h2><p>tsc 的 allowJS 参数支持对 js 的解析. 但是当将 js 后缀改为 ts(x)时, 通常会出现大量的问题, 这里总结下在我们项目中比例较大的一部分情况.</p>
+<h3 id="是否包含-jsx"><a href="#是否包含-jsx" class="headerlink" title="是否包含 jsx"></a>是否包含 jsx</h3><p>过去, 我们并没有使用 .jsx 的后缀, 无论是否包含 JSX 格式的数据均保存为 .js 文件. 然而在 .ts 的文件中使用 JSX 会导致一个错误.</p>
+<p>因此改后缀之前需要判断 文件中是否包含 JSX 格式的数据, 分别转换为对应的 .ts 或 .tsx 文件</p>
         
           <p class="article-more-link">
             <a href="/blog/refactor/js-to-ts/#more">Read More</a>
@@ -117,9 +117,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjacre7f9000c3dm4rgir00bf" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjanle18z000bsim44pt9ic2k" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li></ul>
@@ -175,9 +175,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/exp-electron/" data-id="cjacre7ez00013dm42702in8v" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/exp-electron/" data-id="cjanle18u0004sim4nyf0o5m3" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/exp-electron/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/electron/exp-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -245,9 +245,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjacre7fc000g3dm4oi078zyu" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjanle192000esim4gdc9y8db" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
@@ -297,9 +297,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjacre7fa000f3dm4gf2et9wp" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjanle193000gsim4dmeu1fe3" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/apollo/">apollo</a></li></ul>
@@ -358,9 +358,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjacre7ff000m3dm49edr9u0n" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjanle19d0010sim4rjhdkmjw" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
@@ -417,9 +417,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjacre7fi000t3dm4wqo0r50u" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjanle19f0013sim42xtvm74u" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -487,9 +487,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjacre7f300043dm4coarkst0" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjanle18y0009sim4i9n8bt4e" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -554,9 +554,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjacre7f7000a3dm4nr23ckpb" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjanle196000msim4q2y7uk9p" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -626,9 +626,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjacre7ew00003dm4tqhlc8g7" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjanle18q0001sim4odctta5b" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -691,9 +691,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjacre7fh000r3dm470bm9v9p" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjanle19a000tsim4jfmas2u8" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Kommentarer</a>
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -716,7 +716,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Kategorier</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
@@ -745,7 +745,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Arkiv</h3>
+    <h3 class="widget-title">Archives</h3>
     <div class="widget">
       <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
@@ -755,7 +755,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Siste innlegg</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
         
