@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/autotest/try-sentry/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
-<meta property="og:updated_time" content="2017-10-20T14:36:46.000Z">
+<meta property="og:updated_time" content="2017-12-01T07:46:20.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[笔记]使用 sentry">
 <meta name="twitter:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
@@ -94,7 +94,8 @@
 <p>除了官方提供的 sentry.io 外, 也支持自己部署 (<a href="https://zhuanlan.zhihu.com/p/24445449" target="_blank" rel="external">Sentry 简易搭建指南</a>), 适用于安全性有所要求的项目.</p>
 <p>sentry 的界面看起来十分高大上. <code>Issues</code> 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免被某一个问题刷屏的情况. 也可以像 GitHub 的 issue 一样 assign 给相应的开发者处理. 并且 sentry 也支持邮寄和各种 IM 的 robot, 十分好用.</p>
 <h3 id="release"><a href="#release" class="headerlink" title="release"></a>release</h3><p>代码的不同版本, 会对应不同的 bug, sentry 中用 <code>release</code> 来标识一个代码包的当前版本. 理论上不同代码包应该对应一个唯一性的 release version</p>
-<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 sentry.io (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
+<h3 id="价格"><a href="#价格" class="headerlink" title="价格"></a>价格</h3><p>自搭不谈, sentry.io 的服务我觉得还是很亲民的, 免费用户也提供了每月 10,000 次的 events 记录, 不过免费用户不提供多人共享一个项目, 并且events 的保存时间也比较有限.</p>
+<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 <a href="https://sentry.io/" target="_blank" rel="external">sentry.io</a> (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://abcdefghijklmn@sentry.io/12345</div></pre></td></tr></table></figure>
 <p>用来作为监控的来源识别</p>
 <p>参考<a href="https://docs.sentry.io/clients/javascript/install/" target="_blank" rel="external">官方文档</a>, 使用 sentry 需要引入其 sdk 脚本文件 ravenjs.</p>
@@ -102,6 +103,7 @@
 <figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.ravenjs.com/3.19.1/raven.min.js"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>也可以用 npm 等包管理软件引入 <code>npm install raven-js</code></p>
 <p>加载 raven 后, 配置和之前注册项目的关联</p>
+<a id="more"></a>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Raven</div><div class="line">    .config(<span class="string">'https://abcdefghijklmn@sentry.io/12345'</span>, &#123;</div><div class="line">      <span class="attr">release</span>: <span class="string">'your release'</span>,</div><div class="line">      <span class="comment">// and more config</span></div><div class="line">    &#125;)</div><div class="line">    .install();</div></pre></td></tr></table></figure>
 <p>这里的 release 可以是任意字符串, 用于识别当前的代码的构建版本. 建议 webpack 每次打包时生成一个唯一的 release 号, 如使用项目 hash, git commit 或者简单的时间字符串等.</p>
 <h2 id="解决-sourcemap"><a href="#解决-sourcemap" class="headerlink" title="解决 sourcemap"></a>解决 sourcemap</h2><p>处于保密考虑, 一般生产环境不会提供 sourcemap. 这样 js 抛出的错误信息对开发人员很不友好. 我们可以将 sourcemap 传到 sentry 上来解决这个问题.</p>
@@ -113,7 +115,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cj8zzysho0000rvm4ehja1xzo" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjanlw1zj0000axm4v65d8zux" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -125,6 +127,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/blog/refactor/js-to-ts/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          [笔记]js-to-ts
+        
+      </div>
+    </a>
   
   
     <a href="/blog/electron/exp-electron/" id="article-nav-older" class="article-nav-link-wrap">
@@ -151,7 +162,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -161,7 +172,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -171,7 +182,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -180,7 +191,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -191,6 +202,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
+          </li>
         
           <li>
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
@@ -206,10 +221,6 @@
         
           <li>
             <a href="/blog/framework/learn-about-apollo/">[笔记]Apollo 初体验</a>
-          </li>
-        
-          <li>
-            <a href="/blog/webpack/some-about-webpack/">webpack 介绍</a>
           </li>
         
       </ul>
