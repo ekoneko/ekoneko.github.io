@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -60,6 +60,78 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-diy-develop-tools-by-ast" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/tools/diy-develop-tools-by-ast/" class="article-date">
+  <time datetime="2017-04-12T16:51:40.000Z" itemprop="datePublished">2017-04-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/tools/">tools</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/tools/diy-develop-tools-by-ast/">开发基于 AST 的前端工具</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在遇到了两个小需求:</p>
+<ol>
+<li>要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本</li>
+<li>一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行</li>
+</ol>
+<p>这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成<code>抽象语法树</code>再进行处理则要方便的多.</p>
+<p>按照<a href="https://zh.wikipedia.org/zh-hans/%E6%8A%BD%E8%B1%A1%E8%AA%9E%E6%B3%95%E6%A8%B9" target="_blank" rel="external">维基百科</a>的定义:</p>
+<pre><code>在计算机科学中，抽象语法树（abstract syntax tree或者缩写为AST），或者语法树（syntax tree），是源代码的抽象语法结构的树状表现形式，这里特指编程语言的源代码。 树上的每个节点都表示源代码中的一种结构。
+</code></pre><p>简单说来 AST 就是将整个代码作为一个根节点, 其中的每一个表达式作为一个子节点, 表达式内部, 又是由若干表达式与字符, 操作符作为子节点, 一点点细分直到所有单独的文本或操作符作为叶子节点… (怀念大学操作系统前几章的介绍<code>状态机</code>解析程序语言的部分)</p>
+<p>生成 AST 的过程我们不需要手工完成, 像是 <code>acorn</code>, <code>babylon</code> 等许多模块都可以实现代码文本向 AST 的转换. 本文就是基于 <code>babylon</code> 实现的. 大部分的 AST 解析器功能和思路都比较接近, 我选择 <code>babylon</code> 的原因是 <code>babylon</code> 直接支持 JSX 语法的转译, 对于我们 React 的项目来说省去了很多麻烦.</p>
+<h2 id="babylon"><a href="#babylon" class="headerlink" title="babylon"></a>babylon</h2><p><a href="https://www.npmjs.com/package/babylon" target="_blank" rel="external"><code>babylon</code></a> 是 <code>babel</code> 内的 JavaScript 语法分析器. 作为一个功能独立的库, 也可以在 <code>babel</code> 之外调用, 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function parse (text, filePath) &#123;</div><div class="line">  try &#123;</div><div class="line">    return babylon.parse(text, &#123;</div><div class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</div><div class="line">    &#125;)</div><div class="line">  &#125; catch (e) &#123;</div><div class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>babylon.parse(code, [options])</code> 会将代码字符串转译成 AST. 参数中的 <code>plugins</code> 是 <code>babylon</code> 内置的一些 ECMA 标准外的其他常用语法的支持. 我的工具打算运行在 <code>React</code> 项目上, <code>jsx</code> 插件可以解析 jsx 语法, 以及 <a href="https://babeljs.io/docs/plugins/transform-class-properties/" target="_blank" rel="external">classProperties</a>插件提供一些 ES6 标准之外的语法支持.</p>
+<h3 id="babylon-walk"><a href="#babylon-walk" class="headerlink" title="babylon-walk"></a>babylon-walk</h3><p>babylon 也提供了一个 <a href="https://www.npmjs.com/package/babylon-walk" target="_blank" rel="external"><code>babylon-walk</code></a> 的工具来遍历语法树.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const walk = require(&apos;babylon-walk&apos;);</div><div class="line">const visitors = &#123;</div><div class="line">  StringLiteral: func,</div><div class="line">  JSXText: func,</div><div class="line">&#125;</div><div class="line">const state = &#123;&#125;</div><div class="line">walk.simple(node, visitors, state);</div></pre></td></tr></table></figure>
+<p><code>node</code>是待遍历的 ast 节点, 如果需要遍历整个代码只需传递根节点就好</p>
+<p><code>visitors</code> 是一个 nodeType 与回调函数的对应表. 遍历时如果一个节点的类型存在对应的 visitors, <code>babylon-walk</code> 就会调用对应的回调函数, 并传递 <code>node</code> 和 <code>state</code></p>
+<p><code>state</code> 是一个普通的 object, 或是其他任何东西. 他的作用是在遍历途中保存一些需要的东西, 而不需要在 walk 的作用域外创建一个变量</p>
+<p><code>babylon-walk</code> 除上面用到的<code>simple</code>, 一共支持三种遍历模式:</p>
+<ol>
+<li><code>sample</code>: 最普通的遍历</li>
+<li><code>ancestor</code>: 回调函数中会附加所有遍历的先代节点信息</li>
+<li><code>recursive</code>: 遍历时根据回调函数的返回值选择继续遍历的子节点</li>
+</ol>
+        
+          <p class="article-more-link">
+            <a href="/blog/tools/diy-develop-tools-by-ast/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjbss6b3x0004dxm4dn895fsi" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-performance-engineering-with-react" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -112,9 +184,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjanlnvd400106sm4wvukjvih" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjbss6b4i0011dxm4z8c91sea" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -247,9 +319,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cjanlnvd1000t6sm4qxbo1j9p" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cjbss6b4f000udxm417983bo7" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -297,9 +369,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cjanlnvcs000c6sm40k4c4pxk" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cjbss6b43000bdxm4gm55wqi9" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/express/">express</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/js/">js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/node/">node</a></li></ul>
@@ -346,9 +418,9 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cjanlnvcv000h6sm4c6ufiky6" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cjbss6b46000gdxm44d34eqoi" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/test/">test</a></li></ul>
@@ -371,7 +443,7 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
@@ -381,9 +453,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -391,9 +463,9 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -402,7 +474,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -410,9 +482,13 @@ export default class ProfileContainer extends Component {
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/autotest/jest-note/">[笔记]jest 使用体验</a>
+          </li>
         
           <li>
             <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
@@ -430,10 +506,6 @@ export default class ProfileContainer extends Component {
             <a href="/blog/webrtc/learn-webrtc-faq/">[笔记]WebRTC 学习 FAQ</a>
           </li>
         
-          <li>
-            <a href="/blog/framework/learn-about-apollo/">[笔记]Apollo 初体验</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -447,7 +519,7 @@ export default class ProfileContainer extends Component {
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2017 ekoneko<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

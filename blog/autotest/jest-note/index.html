@@ -3,14 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Mot-clé: electron | ekoneko.github.io</title>
+  <title>[笔记]jest 使用体验 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="ekoneko.github.io">
-<meta property="og:url" content="http://ekoneko.github.io/blog/tags/electron/index.html">
+  <meta name="description" content="最近在公司的项目里引入了 jest, 花了一段时间补充了各种用例, 由于是第一次正式使用 jest, 也遇到了一些问题, 写一篇笔记记录一下. snapshot对于大多数组件, jest 提供的 snapshot 都是一种很便利的工具. 只要能确定生成快照时的状态时正确的, 那么就可以比较轻易的发现修改扩大了影响范围的场景. 因此, 我们想要的结果自然是当一个组件没有被改变, 对应的 snapsh">
+<meta name="keywords" content="jest">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[笔记]jest 使用体验">
+<meta property="og:url" content="http://ekoneko.github.io/blog/autotest/jest-note/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="最近在公司的项目里引入了 jest, 花了一段时间补充了各种用例, 由于是第一次正式使用 jest, 也遇到了一些问题, 写一篇笔记记录一下. snapshot对于大多数组件, jest 提供的 snapshot 都是一种很便利的工具. 只要能确定生成快照时的状态时正确的, 那么就可以比较轻易的发现修改扩大了影响范围的场景. 因此, 我们想要的结果自然是当一个组件没有被改变, 对应的 snapsh">
+<meta property="og:updated_time" content="2017-12-30T03:21:26.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="ekoneko.github.io">
+<meta name="twitter:title" content="[笔记]jest 使用体验">
+<meta name="twitter:description" content="最近在公司的项目里引入了 jest, 花了一段时间补充了各种用例, 由于是第一次正式使用 jest, 也遇到了一些问题, 写一篇笔记记录一下. snapshot对于大多数组件, jest 提供的 snapshot 都是一种很便利的工具. 只要能确定生成快照时的状态时正确的, 那么就可以比较轻易的发现修改扩大了影响范围的场景. 因此, 我们想要的结果自然是当一个组件没有被改变, 对应的 snapsh">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -59,40 +64,88 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/blog/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/blog/electron/exp-electron/" class="archive-article-date">
-  <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">Sep 21</time>
+        <section id="main"><article id="post-jest-note" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/autotest/jest-note/" class="article-date">
+  <time datetime="2017-12-30T02:39:29.000Z" itemprop="datePublished">2017-12-30</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/autotest/">autotest</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/electron/exp-electron/">[笔记]electron 实践笔记</a>
+    <h1 class="article-title" itemprop="name">
+      [笔记]jest 使用体验
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在公司的项目里引入了 jest, 花了一段时间补充了各种用例, 由于是第一次正式使用 jest, 也遇到了一些问题, 写一篇笔记记录一下.</p>
+<h2 id="snapshot"><a href="#snapshot" class="headerlink" title="snapshot"></a>snapshot</h2><p>对于大多数组件, jest 提供的 snapshot 都是一种很便利的工具. 只要能确定生成快照时的状态时正确的, 那么就可以比较轻易的发现修改扩大了影响范围的场景.</p>
+<p>因此, 我们想要的结果自然是当一个组件没有被改变, 对应的 snapshot 每次生成也不会改变. 然而有一些因素可能会导致每次生成的snapshot 都不一样, 我们就遇到了两种情形:</p>
+<h3 id="相对时间"><a href="#相对时间" class="headerlink" title="相对时间"></a>相对时间</h3><p>组件中可能会有与当前时间相关的逻辑, 比如今天生成的 snapshot 里, 时间的描述是 “1天前”, 那等到明天重新生成快照时, 时间就会变成了 “两天前”.</p>
+<p>为此, 我们引入了 <a href="https://github.com/boblauer/MockDate" target="_blank" rel="external">mockdate</a> 的模块, 它会复写 window.Date, 使当前时间固定在某一时刻.</p>
+<h3 id="styled-components"><a href="#styled-components" class="headerlink" title="styled-components"></a>styled-components</h3><p>styled-components 生成的元素, 在生成快照时会出现一个随机字符串的 className, 这个 className 会随着样式改变而变化. 然而我们是没有办法区分随机字符串的变化是否是我们期待的.</p>
+<p>所幸 styled-components 提供了 <a href="https://github.com/styled-components/jest-styled-components" target="_blank" rel="external">jest-styled-components</a> 来解决这个问题. 它会把生成的 css 也放在快照里, 这样是否是期待的变化就一目了然了.</p>
+<a id="more"></a>
+<h2 id="typescript"><a href="#typescript" class="headerlink" title="typescript"></a>typescript</h2><p>我们的代码<a href="https://ekoneko.github.io/blog/refactor/js-to-ts/">迁移到了 typescript</a>上. 因此需要 <a href="https://www.npmjs.com/package/ts-jest" target="_blank" rel="external">ts-jest</a> 进行 transform.</p>
+<p>此外, 还需要在配置文件里将 <a href="https://facebook.github.io/jest/docs/en/configuration.html#mapcoverage-boolean" target="_blank" rel="external">mapcoverage</a> 设置为 <code>true</code>, 否则计算覆盖率时生成的统计数据与代码是不匹配的.</p>
+<h2 id="上下文问题"><a href="#上下文问题" class="headerlink" title="上下文问题"></a>上下文问题</h2><h3 id=""><a href="#" class="headerlink" title=""></a><link></h3><p>有时候我们会单独测试一个包含了 react-router 的 &lt;Link&gt; 却没有被 <code>withRouter</code> 修饰的组件.</p>
+<p>这时会抛出一个异常</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">you should not use link outside a router jest</div></pre></td></tr></table></figure>
+<p>按照 <a href="https://reacttraining.com/react-router/web/guides/testing" target="_blank" rel="external">react-router 官方文档关于测试的说法</a>, 我们可以在测试组件外包裹一个 <code>StaticRouter</code> 或 <code>MemoryRouter</code>.</p>
+<p>另外, react-router 每次构建 snapshot 会生成一个随机的 entries.key, 导致快照结果每次构建不相同, 需要手动指定 key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;MemoryRouter initialEntries=&#123;[&#123; key: &apos;AnyNotEmptyString&apos; &#125;]&#125;&gt;</div></pre></td></tr></table></figure>
+<h3 id="Redux-Store"><a href="#Redux-Store" class="headerlink" title="Redux Store"></a>Redux Store</h3><ol>
+<li><p>通过 <code>shallow</code> 第二个参数传入 {context: store}</p>
+</li>
+<li><p>被 connect() 修饰的组件, 可以通过 .WrappedComponent 获取原始组件, 替换 redux 的实现</p>
+</li>
+</ol>
 
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/autotest/jest-note/" data-id="cjbss6b420009dxm4xxm8dp5r" class="article-share-link">Partager</a>
+      
+        <a href="http://ekoneko.github.io/blog/autotest/jest-note/#disqus_thread" class="article-comment-link">Commentaires</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/jest/">jest</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/refactor/js-to-ts/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Ancien</strong>
+      <div class="article-nav-title">[笔记]js-to-ts</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
 </section>
         
           <aside id="sidebar">
@@ -191,11 +244,13 @@
 <script>
   var disqus_shortname = 'ekoneko';
   
+  var disqus_url = 'http://ekoneko.github.io/blog/autotest/jest-note/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
