@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>[笔记]electron 实践笔记 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近工作上需要把 web 上的内容打包成一个客户端, 以便于提供一些更好用户体验的功能. 我们的前端是目前比较标准的 webpack + react. 因此, 首先想到的是把 webpack 生成的文件丢进 electron 里运行. 看似很简单, 但实践还是踩了蛮多坑的. 当然一定程度上也是由于我个人对 electron 并不太熟悉, 各种实践也是一边摸索一边进行的… 工作原理electron">
+<meta name="keywords" content="electron,note">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[笔记]electron 实践笔记">
+<meta property="og:url" content="http://ekoneko.github.io/blog/electron/try-electron/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="最近工作上需要把 web 上的内容打包成一个客户端, 以便于提供一些更好用户体验的功能. 我们的前端是目前比较标准的 webpack + react. 因此, 首先想到的是把 webpack 生成的文件丢进 electron 里运行. 看似很简单, 但实践还是踩了蛮多坑的. 当然一定程度上也是由于我个人对 electron 并不太熟悉, 各种实践也是一边摸索一边进行的… 工作原理electron">
+<meta property="og:updated_time" content="2018-01-15T05:32:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[笔记]electron 实践笔记">
+<meta name="twitter:description" content="最近工作上需要把 web 上的内容打包成一个客户端, 以便于提供一些更好用户体验的功能. 我们的前端是目前比较标准的 webpack + react. 因此, 首先想到的是把 webpack 生成的文件丢进 electron 里运行. 看似很简单, 但实践还是踩了蛮多坑的. 当然一定程度上也是由于我个人对 electron 并不太熟悉, 各种实践也是一边摸索一边进行的… 工作原理electron">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-try-electron" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/electron/try-electron/" class="article-date">
+  <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">2017-09-21</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/electron/">electron</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [笔记]electron 实践笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近工作上需要把 web 上的内容打包成一个客户端, 以便于提供一些更好用户体验的功能. 我们的前端是目前比较标准的 webpack + react. 因此, 首先想到的是把 <code>webpack</code> 生成的文件丢进 <code>electron</code> 里运行.</p>
+<p>看似很简单, 但实践还是踩了蛮多坑的. 当然一定程度上也是由于我个人对 electron 并不太熟悉, 各种实践也是一边摸索一边进行的…</p>
+<h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>electron 启动时会执行一个 js 脚本创建一个 node 进程.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">electron ./main.js</div></pre></td></tr></table></figure>
+<p>这个进程可以用于初始化 electron 应用. 并且控制窗口的打开与事件监听. 在官方文档里, 这个进程被称作 <code>Main Process</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> electron = <span class="built_in">require</span>(<span class="string">'electron'</span>)</div><div class="line"></div><div class="line"><span class="keyword">const</span> &#123; BrowserWindow &#125; = electron</div><div class="line"></div><div class="line">mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">1280</span>, <span class="attr">height</span>: <span class="number">720</span>&#125;)</div><div class="line"></div><div class="line"><span class="comment">// Load code/index.html page</span></div><div class="line">mainWindow.loadURL(<span class="string">'file://index.html'</span>)</div><div class="line"></div><div class="line"><span class="comment">// ...</span></div></pre></td></tr></table></figure>
+<p>通过 <code>loadURL</code> 打开的窗口, 基本上就是一个内嵌 chrome 内核的浏览器, 只不过 <code>electron</code> 还贴心的注入了一些 nodejs 的模块, 比如 <code>commonjs</code> 的 require/modules, <code>fs</code>, <code>path</code> 之类的. </p>
+<p>这个浏览器窗口的进程在官方文档里, 被称作 <code>Renderer Process</code>.</p>
+<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="external"><code>remote</code></a> 的模块可以用来执行主模块里的东西.</p>
+<p>通过这些接口, 我们可以做到许多浏览器做不到的事情, 比如本地文件的读写, 代理, cors, 设备驱动, 等等等等…</p>
+<a id="more"></a>
+<h2 id="绝对路径转换"><a href="#绝对路径转换" class="headerlink" title="绝对路径转换"></a>绝对路径转换</h2><p>我们的 webpack 的项目构建的包引用资源使用的是绝对路径, 如果 electron 加载的 html 方式是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.loadURL(file:<span class="comment">//path/to/index.html)</span></div></pre></td></tr></table></figure>
+<p>那么 index.html 中绝对路径引用的资源, 比如 <code>&lt;img src=&quot;/a.png&quot; /&gt;</code> 就会被定位到 <code>file://a.png</code> 上, 然而我们期望的是 `file://{project_path}/a.png</p>
+<p>当然我们也可以修改 webpack 的 <a href="https://webpack.js.org/guides/public-path/" target="_blank" rel="external">publicPath</a>, 改为相对引用即可. 不过 electron 遇到的问题, 还是更期望可以直接通过 electron 解决.</p>
+<p>对比这个场景里 <code>http://</code> 和 <code>file://</code> 加载的不同, 最大区别是 http 协议后面有一个域名来标记绝对路径的范围, 而 file 协议后面直接就跟上了路径, 在其范围内, 绝对路径是指向根部的.</p>
+<p>所以我们只需要想办法给 file 协议也加上一个域, 再在 <code>electron</code> 里处理就好了.</p>
+<p>electron 提供的 <a href="https://github.com/electron/electron/blob/master/docs/api/protocol.md" target="_blank" rel="external"><code>protocol</code></a> 接口就可以用来注册或拦截一个协议.</p>
+<p>我们可以注册一个新的文本协议来实现域到磁盘路径的转换</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'local'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.registerFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>上面的栗子里, 我们定义了一个 local 的协议, 会将 local://ekoneko/index.html 的请求转换为磁盘路径对应的文件请求. </p>
+<p>此外, 我们也可以直接在 file 协议的基础上做拦截, 实现相同的效果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> PROTOCOL_NAME = <span class="string">'file'</span></div><div class="line"><span class="keyword">const</span> BASE_URL = <span class="string">`<span class="subst">$&#123;PROTOCOL_NAME&#125;</span>://ekoneko/`</span></div><div class="line"><span class="built_in">window</span>.loadURL(BASE_URL)</div><div class="line">protocol.interceptFileProtocol(PROTOCOL_NAME, (request, callback) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> url = request.url.replace(BASE_URL, <span class="string">''</span>) || <span class="string">'index.html'</span></div><div class="line">    <span class="keyword">const</span> filePath = path.normalize(<span class="string">`<span class="subst">$&#123;__dirname&#125;</span>/code/<span class="subst">$&#123;url&#125;</span>`</span>)</div><div class="line">    callback(filePath)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>基本上很相似, 只是把协议替换成了 <code>file</code>, <code>registerFileProtocol</code> 方法替换成了 <code>interceptFileProtocol</code>. 从规范上我个人更倾向不破坏现有协议, 但最终通过实践我还是认为后一种实现更有优势.</p>
+<p>原因有二: </p>
+<p>一是不用额外处理 <code>CORS</code> 问题. 由于和服务端的通信还是走 <code>htts?</code> 协议, 对于 <code>local://</code> 的环境下, 请求需要响应头提供一部分跨域头. 当然在 electron 中也可以通过<a href="https://github.com/electron/electron/blob/master/docs/api/web-request.md" target="_blank" rel="external"> webRequest</a>手动的拦截 http 响应并注入 headers</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.webContents.session.webRequest.onHeadersReceived(<span class="function">(<span class="params">detail, callback</span>) =&gt;</span> &#123;</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Origin'</span>] = [<span class="string">'local://ekoenko'</span>]</div><div class="line">  detail.responseHeaders[<span class="string">'Access-Control-Allow-Credentials'</span>] = [<span class="string">'true'</span>]</div><div class="line">  callback(&#123;</div><div class="line">    <span class="attr">responseHeaders</span>: detail.responseHeaders,</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>(BTW, electron header 的值必须是一个数组, 写成字符串不 work 也不报错, 写的时候也稍微坑了下)</p>
+<p>另外一个区别则是目标版本的 electron, <a href="https://github.com/electron/electron/issues/9663" target="_blank" rel="external">自定义协议用不了 serviceworker</a>.</p>
+<h2 id="适配相对协议"><a href="#适配相对协议" class="headerlink" title="适配相对协议"></a>适配相对协议</h2><p>解决路径的问题, electron 的展示 UI 看起来基本上都正常了, 可是控制台里还是有 404 的错误信息.</p>
+<p>定睛一看, 有一个第三方服务中, url 的写法是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">//example.com/wtf</div></pre></td></tr></table></figure>
+<p>这样, 加载时就被补全了 file 协议, 成了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">file://example.com/wtf</div><div class="line">-&gt; /dirname/example.com/wtf</div></pre></td></tr></table></figure>
+<p>我并没有找到一个很好的方法处理这个问题 (尝试想让 electron 的一个自定协议同时支持 file or http 两种方式, 并没有成功). 最终, 我选择了 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API" target="_blank" rel="external">service worker</a>.</p>
+<p>在 service worker 中, 我们可以<a href="https://developer.mozilla.org/en-US/docs/Web/API/FetchEvent" target="_blank" rel="external">监听页面上所有 url 访问事件</a>. 拦截并修改返回结果. 因此, 我们只需要找到 file 协议的请求, 并且格式为 <code>file://</code> + <code>hostname(:port)</code> + <code>pathname</code>, 将之转向到 http 对应位置即可.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">self.addEventListener(<span class="string">'fetch'</span>, (ev) =&gt; &#123;</div><div class="line">    <span class="keyword">const</span> &#123;request&#125; = ev</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (request.url.slice(<span class="number">0</span>, <span class="number">7</span>) === <span class="string">'file://'</span>) &#123;</div><div class="line">        <span class="keyword">const</span> url = request.url.slice(<span class="number">8</span>)</div><div class="line">        <span class="keyword">if</span> (likeUrl(url)) &#123;</div><div class="line">            ev.respondWith(fetch(<span class="string">`https://<span class="subst">$&#123;url&#125;</span>`</span>, &#123;</div><div class="line">                <span class="attr">method</span>: request.method,</div><div class="line">                <span class="attr">mode</span>: request.mode,</div><div class="line">                <span class="attr">cache</span>: request.cache,</div><div class="line">                <span class="attr">headers</span>: request.headers,</div><div class="line">                <span class="attr">credentials</span>: request.credentials,</div><div class="line">            &#125;))</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="service-worker-注入"><a href="#service-worker-注入" class="headerlink" title="service worker 注入"></a>service worker 注入</h2><p>同样的, service worker 的注入也可以不去修改 webpack 的配置或项目代码.</p>
+<p>我们可以在 <code>mainWindow.loadURL()</code> 之前, 先打开一个隐藏的窗口来进行 service worker 的注册.</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">serviceWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">0</span>, <span class="attr">height</span>: <span class="number">0</span>, <span class="attr">show</span>: <span class="literal">false</span>&#125;)</div><div class="line">serviceWindow.loadURL(<span class="string">'file://domain/serviceworker.html'</span>)</div><div class="line"></div><div class="line">serviceWindow.on(<span class="string">'page-title-updated'</span>, createMainWindow);</div></pre></td></tr></table></figure>
+<p><code>servicework er.html</code> 代码如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></div><div class="line">    navigator.serviceWorker.register(<span class="string">'/sw.js'</span>).then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">        <span class="built_in">document</span>.title = <span class="string">'sw loaded'</span></div><div class="line">    &#125;)</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>这里图省事用了 <code>page-title-updated</code> 事件来监听 service worker 注册动作的完成.</p>
+<p>注意当主窗口关闭时, 需要 <code>serviceWindow.destroy()</code> 销毁掉这个隐藏窗口, 否则可能导致 electron 的进程继续存在.</p>
+<p>这里补充一个小技巧, service worker 缓存在开发阶段很讨厌, 可以利用 electron 的 <a href="https://github.com/electron/electron/blob/master/docs/api/session.md#sesclearstoragedataoptions-callback" target="_blank" rel="external">clearStorageData</a> 清除 service worker 以及其他类型缓存. 可以定义在 <code>close</code> 事件上, 每次关闭窗口都可以自动清除存储缓存.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mainWindow.on(&apos;close&apos;, function () &#123;</div><div class="line">  mainWindow.webContents.session.clearStorageData(&#123;</div><div class="line">    storages: [&apos;serviceworkers&apos;],</div><div class="line">  &#125;)</div><div class="line"></div><div class="line">  serviceWindow.destroy();</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cjkahgjta0017yom4fi7cpmad" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/blog/autotest/try-sentry/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          [笔记]使用 sentry
+        
+      </div>
+    </a>
+  
+  
+    <a href="/blog/webrtc/learn-webrtc-faq/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">[笔记]WebRTC 学习 FAQ</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
+          </li>
+        
+          <li>
+            <a href="/blog/autotest/jest-note/">[笔记]jest 使用体验</a>
+          </li>
+        
+          <li>
+            <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
+          </li>
+        
+          <li>
+            <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
+          </li>
+        
+          <li>
+            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/electron/try-electron/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>

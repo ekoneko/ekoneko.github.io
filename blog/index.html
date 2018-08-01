@@ -48,9 +48,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -60,6 +60,65 @@
 </header>
       <div class="outer">
         <section id="main">
+  
+    <article id="post-try-electron-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/electron/try-electron-2/" class="article-date">
+  <time datetime="2018-08-01T01:39:34.000Z" itemprop="datePublished">2018-08-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/electron/">electron</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="file-协议缺失-content-type"><a href="#file-协议缺失-content-type" class="headerlink" title="file 协议缺失 content-type"></a>file 协议缺失 content-type</h2><p>通过 <code>electron.protocol.registerFileProtocol</code> 或 <code>electron.protocol.interceptFileProtocol</code> 产生的协议, Response Header 中是不包含 <code>content-type</code> 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等.</p>
+<p>解决方法是使用 <code>registerBufferProtocol</code> 代替 <code>registerFileProtocol</code> 协议.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">interceptBufferProtocol(<span class="string">'file'</span>, <span class="function">(<span class="params">request, callback</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> filePath = getFilePathFromRequest(request)</div><div class="line">  fs.readFile(filePath, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (err) &#123;</div><div class="line">      <span class="comment">// report error</span></div><div class="line">      callback()</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      callback(&#123;</div><div class="line">        <span class="comment">// 通过开源库 mime-types 获得后缀对应的 mime type</span></div><div class="line">        mimeType: getMimeType(filePath),</div><div class="line">        data</div><div class="line">      &#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>上面的例子可以看出来 buffer protocol 完美的替代了 file protocol</p>
+<h2 id="clearStorageData-清理-localStorage-失败"><a href="#clearStorageData-清理-localStorage-失败" class="headerlink" title="clearStorageData 清理 localStorage 失败"></a>clearStorageData 清理 localStorage 失败</h2><p>通过 <code>session.defaultSession.clearStorageData</code> 清理 <code>file://</code> 下的 localStorage 会失败, 必须强制指定一个 origin</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">session.defaultSession.clearStorageData(&#123;</div><div class="line">  origin: process.env.APP_PROTOCOL,</div><div class="line">  storages: [<span class="string">'localstorage'</span>]</div><div class="line">&#125;, callbackFn)</div></pre></td></tr></table></figure>
+<p>给 electron 提了一个 issue, 有开发者答复说是 chromium 的 bug, 会在升级到 chromium66的内核后修复. 所以理论上 electron 3+ 的版本不再会有这个问题, 待验证</p>
+<h2 id="设置-Cookie-后快速退出应用导致-Cookie-丢失"><a href="#设置-Cookie-后快速退出应用导致-Cookie-丢失" class="headerlink" title="设置 Cookie 后快速退出应用导致 Cookie 丢失"></a>设置 Cookie 后快速退出应用导致 Cookie 丢失</h2><p>Electron 对 io 操作有一定的优化, setCookie 并不是立即作用于磁盘上.</p>
+<p>推荐在 <code>before-quit</code> 的时候调用一次 <code>cookies.flushStore</code></p>
+<h2 id="代理导致-electron-应用崩溃"><a href="#代理导致-electron-应用崩溃" class="headerlink" title="代理导致 electron 应用崩溃"></a>代理导致 electron 应用崩溃</h2><p>我所遇到过 Electron 的问题中最费解的一个, 至今不理解这个问题原理是什么. 只知道当系统中设置了 pac 方式的代理时, 网络状态的切换会导致程序崩溃.</p>
+<p>我的解决方案是, 在 electron 中通过 <code>session.setProxy</code> 的方式强制设置一个代理(比如设置所有请求走 DIRECT). 就可以防止程序崩溃.</p>
+<h2 id="文件关联"><a href="#文件关联" class="headerlink" title="文件关联"></a>文件关联</h2><p><code>electron-builder</code> 提供了 <code>fileAssociations</code> 配置项可以在安装时注册文件的启动方式.</p>
+<p>在 mac 系统中, 我们可以通过 electron.app.on(‘open-file’) 事件监听打开文件的行为. </p>
+<p>由于打开文件的行为可以触发客户端的启动, open-file 事件的注册必须尽可能的早(在 app.ready 之前), 并在 app.ready 后触发对应的操作.</p>
+<p>windows 与 linux 下, 可以在 process.env.argv 中获得打开的文件</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjkahgjt70011yom4c9d7m0gu" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
   
     <article id="post-jest-note" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
@@ -102,9 +161,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/jest-note/" data-id="cjbss6b420009dxm4xxm8dp5r" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/jest-note/" data-id="cjkahgjsy000iyom4z8qxnu37" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/autotest/jest-note/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/autotest/jest-note/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/jest/">jest</a></li></ul>
@@ -172,9 +231,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjbss6b48000ldxm4mpepjgyo" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjkahgjsv000cyom4bpq66jh6" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li></ul>
@@ -233,9 +292,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjbss6b4k0017dxm4b8ppgicp" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjkahgjt90014yom4q33hi6ia" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/sentry/">sentry</a></li></ul>
@@ -247,9 +306,9 @@
 
 
   
-    <article id="post-exp-electron" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-try-electron" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/electron/exp-electron/" class="article-date">
+    <a href="/blog/electron/try-electron/" class="article-date">
   <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">2017-09-21</time>
 </a>
     
@@ -265,7 +324,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/blog/electron/exp-electron/">[笔记]electron 实践笔记</a>
+      <a class="article-title" href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
     </h1>
   
 
@@ -281,19 +340,19 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> electron = <span class="built_in">require</span>(<span class="string">'electron'</span>)</div><div class="line"></div><div class="line"><span class="keyword">const</span> &#123; BrowserWindow &#125; = electron</div><div class="line"></div><div class="line">mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">1280</span>, <span class="attr">height</span>: <span class="number">720</span>&#125;)</div><div class="line"></div><div class="line"><span class="comment">// Load code/index.html page</span></div><div class="line">mainWindow.loadURL(<span class="string">'file://index.html'</span>)</div><div class="line"></div><div class="line"><span class="comment">// ...</span></div></pre></td></tr></table></figure>
 <p>通过 <code>loadURL</code> 打开的窗口, 基本上就是一个内嵌 chrome 内核的浏览器, 只不过 <code>electron</code> 还贴心的注入了一些 nodejs 的模块, 比如 <code>commonjs</code> 的 require/modules, <code>fs</code>, <code>path</code> 之类的. </p>
 <p>这个浏览器窗口的进程在官方文档里, 被称作 <code>Renderer Process</code>.</p>
-<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="external"><code>romote</code></a> 的模块可以用来执行主模块里的东西.</p>
+<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="external"><code>remote</code></a> 的模块可以用来执行主模块里的东西.</p>
 <p>通过这些接口, 我们可以做到许多浏览器做不到的事情, 比如本地文件的读写, 代理, cors, 设备驱动, 等等等等…</p>
         
           <p class="article-more-link">
-            <a href="/blog/electron/exp-electron/#more">Read More</a>
+            <a href="/blog/electron/try-electron/#more">Read More</a>
           </p>
         
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/exp-electron/" data-id="cjbss6b3z0005dxm4qe7yugc4" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cjkahgjta0017yom4fi7cpmad" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/exp-electron/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -361,9 +420,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjbss6b4g000xdxm44965756l" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjkahgjt0000lyom4891ljo19" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
@@ -413,9 +472,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjbss6b49000ndxm442mddguf" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjkahgjsx000gyom43sly0yu3" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/apollo/">apollo</a></li></ul>
@@ -474,9 +533,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjbss6b4d000sdxm4d4nnljbm" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjkahgjt3000syom4jz398jhz" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
@@ -533,9 +592,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjbss6b4j0013dxm4weik6gq1" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjkahgjt5000zyom4m2v68oak" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -603,79 +662,12 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjbss6b400006dxm43rovf8wu" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjkahgjsm0002yom4960zytwr" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-how-to-better-organize-your-react-app" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/react/how-to-better-organize-your-react-app/" class="article-date">
-  <time datetime="2017-05-06T14:58:53.000Z" itemprop="datePublished">2017-05-06</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/react/">react</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/react/how-to-better-organize-your-react-app/">[译]如何更好的组织 React 应用</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>原文 Url: <a href="https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1" target="_blank" rel="external">https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1</a></p>
-<hr>
-<p>最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织</p>
-<p>注1: 我的例子中都使用了 redux, 如果你不了解, 参考 <a href="http://redux.js.org/" target="_blank" rel="external">redux文档</a></p>
-<p>注2: 所有的例子都基于 react, 但在 react native 中可以保持相同的结构</p>
-<h2 id="创建一个应用有哪些挑战"><a href="#创建一个应用有哪些挑战" class="headerlink" title="创建一个应用有哪些挑战?"></a>创建一个应用有哪些挑战?</h2><p>这是一个发生或将发生在所有开发者项目中的事情:</p>
-<ol>
-<li><p>你和几个开发者开始为客户开发一个应用, 一切都很美好</p>
-</li>
-<li><p>你的客户提了几个新需求, 嗯, 加上了</p>
-</li>
-<li><p>你的客户又要求去掉几个功能, 并加上一些新功能, 有点棘手但并不难实现. 项目开始变得不那么完美</p>
-</li>
-<li><p>你的客户继续要求增加/修改/删除需求, 你开始在一些代码上打补丁. 代码不再让人骄傲, 但还能用</p>
-</li>
-<li><p>6个月后, 代码变得复杂, 难以理解, 像一团意大利面条</p>
-</li>
-</ol>
-<p>直到有一天客户要求推出一个新版本时, 你放弃了乱成一团的旧代码, 开始了一个新的项目</p>
-        
-          <p class="article-more-link">
-            <a href="/blog/react/how-to-better-organize-your-react-app/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjbss6b45000fdxm4b6tuljb6" class="article-share-link">Partager</a>
-      
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
 
     </footer>
   </div>
@@ -695,7 +687,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
@@ -705,7 +697,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
@@ -715,9 +707,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 10px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 10px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -726,7 +718,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -734,9 +726,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
+          </li>
         
           <li>
             <a href="/blog/autotest/jest-note/">[笔记]jest 使用体验</a>
@@ -751,11 +747,7 @@
           </li>
         
           <li>
-            <a href="/blog/electron/exp-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
-          <li>
-            <a href="/blog/webrtc/learn-webrtc-faq/">[笔记]WebRTC 学习 FAQ</a>
+            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
           </li>
         
       </ul>
@@ -770,8 +762,8 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      &copy; 2018 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

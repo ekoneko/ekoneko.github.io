@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>[笔记]使用 sentry | ekoneko.github.io</title>
+  <title>[笔记]electron 踩到的坑 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
-<meta name="keywords" content="sentry">
+  <meta name="description" content="file 协议缺失 content-type通过 electron.protocol.registerFileProtocol 或 electron.protocol.interceptFileProtocol 产生的协议, Response Header 中是不包含 content-type 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等. 解决方法是使用">
+<meta name="keywords" content="electron,note">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[笔记]使用 sentry">
-<meta property="og:url" content="http://ekoneko.github.io/blog/autotest/try-sentry/index.html">
+<meta property="og:title" content="[笔记]electron 踩到的坑">
+<meta property="og:url" content="http://ekoneko.github.io/blog/electron/try-electron-2/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
-<meta property="og:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
-<meta property="og:updated_time" content="2017-12-05T03:46:39.000Z">
+<meta property="og:description" content="file 协议缺失 content-type通过 electron.protocol.registerFileProtocol 或 electron.protocol.interceptFileProtocol 产生的协议, Response Header 中是不包含 content-type 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等. 解决方法是使用">
+<meta property="og:updated_time" content="2018-08-01T01:58:57.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[笔记]使用 sentry">
-<meta name="twitter:description" content="sentry 介绍sentry 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录. 除了官方提供的 sentry.io 外, 也支持自己部署 (Sentry 简易搭建指南), 适用于安全性有所要求的项目. sentry 的界面看起来十分高大上. Issues 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免">
+<meta name="twitter:title" content="[笔记]electron 踩到的坑">
+<meta name="twitter:description" content="file 协议缺失 content-type通过 electron.protocol.registerFileProtocol 或 electron.protocol.interceptFileProtocol 产生的协议, Response Header 中是不包含 content-type 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等. 解决方法是使用">
   
     <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
   
@@ -64,14 +64,14 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-try-sentry" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-try-electron-2" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/blog/autotest/try-sentry/" class="article-date">
-  <time datetime="2017-10-18T10:02:04.000Z" itemprop="datePublished">2017-10-18</time>
+    <a href="/blog/electron/try-electron-2/" class="article-date">
+  <time datetime="2018-08-01T01:39:34.000Z" itemprop="datePublished">2018-08-01</time>
 </a>
     
   <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/autotest/">autotest</a>
+    <a class="article-category-link" href="/blog/categories/electron/">electron</a>
   </div>
 
   </div>
@@ -82,7 +82,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      [笔记]使用 sentry
+      [笔记]electron 踩到的坑
     </h1>
   
 
@@ -90,39 +90,31 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="sentry-介绍"><a href="#sentry-介绍" class="headerlink" title="sentry 介绍"></a>sentry 介绍</h2><p><a href="https://sentry.io/" target="_blank" rel="external">sentry</a> 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录.</p>
-<p>除了官方提供的 sentry.io 外, 也支持自己部署 (<a href="https://zhuanlan.zhihu.com/p/24445449" target="_blank" rel="external">Sentry 简易搭建指南</a>), 适用于安全性有所要求的项目.</p>
-<p>sentry 的界面看起来十分高大上. <code>Issues</code> 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免被某一个问题刷屏的情况. 也可以像 GitHub 的 issue 一样 assign 给相应的开发者处理. 并且 sentry 也支持邮寄和各种 IM 的 robot, 十分好用.</p>
-<h3 id="release"><a href="#release" class="headerlink" title="release"></a>release</h3><p>代码的不同版本, 会对应不同的 bug, sentry 中用 <code>release</code> 来标识一个代码包的当前版本. 理论上不同代码包应该对应一个唯一性的 release version</p>
-<h3 id="价格"><a href="#价格" class="headerlink" title="价格"></a>价格</h3><p>自搭不谈, sentry.io 的服务我觉得还是很亲民的, 免费用户也提供了每月 10,000 次的 events 记录, 不过免费用户不提供多人共享一个项目, 并且events 的保存时间也比较有限.</p>
-<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 <a href="https://sentry.io/" target="_blank" rel="external">sentry.io</a> (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://abcdefghijklmn@sentry.io/12345</div></pre></td></tr></table></figure>
-<p>用来作为监控的来源识别</p>
-<p>参考<a href="https://docs.sentry.io/clients/javascript/install/" target="_blank" rel="external">官方文档</a>, 使用 sentry 需要引入其 sdk 脚本文件 ravenjs.</p>
-<p>可以通过静态脚本引入</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.ravenjs.com/3.19.1/raven.min.js"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
-<p>也可以用 npm 等包管理软件引入 <code>npm install raven-js</code></p>
-<p>加载 raven 后, 配置和之前注册项目的关联</p>
-<a id="more"></a>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Raven</div><div class="line">    .config(<span class="string">'https://abcdefghijklmn@sentry.io/12345'</span>, &#123;</div><div class="line">      <span class="attr">release</span>: <span class="string">'your release'</span>,</div><div class="line">      <span class="comment">// and more config</span></div><div class="line">    &#125;)</div><div class="line">    .install();</div></pre></td></tr></table></figure>
-<p>这里的 release 可以是任意字符串, 用于识别当前的代码的构建版本. 建议 webpack 每次打包时生成一个唯一的 release 号, 如使用项目 hash, git commit 或者简单的时间字符串等.</p>
-<h2 id="解决-sourcemap"><a href="#解决-sourcemap" class="headerlink" title="解决 sourcemap"></a>解决 sourcemap</h2><p>处于保密考虑, 一般生产环境不会提供 sourcemap. 这样 js 抛出的错误信息对开发人员很不友好. 我们可以将 sourcemap 传到 sentry 上来解决这个问题.</p>
-<p>官方提供了<a href="https://docs.sentry.io/api/" target="_blank" rel="external">一套 API 接口</a> 可以向指定的 release 上传文件. 这里推荐一个更简单的实现:</p>
-<p>通过 <a href="https://github.com/40thieves/webpack-sentry-plugin" target="_blank" rel="external">webpack-sentry-plugin</a> 插件在 webpack 构建时完成阶段直接将制定规则的文件同步到 sentry 上:</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">plugins.push(<span class="keyword">new</span> SentryPlugin(&#123;                                                                  </div><div class="line">    <span class="attr">organization</span>: <span class="string">'ekoneko'</span>,                                                                     </div><div class="line">    <span class="attr">project</span>: <span class="string">'test'</span>,                                                                             </div><div class="line">    <span class="attr">apiKey</span>: <span class="string">'......'</span>,                  </div><div class="line">    <span class="attr">release</span>: <span class="string">''</span>,                                                                                     </div><div class="line">&#125;))</div></pre></td></tr></table></figure>
-<p>配置前, 还需要前往 <a href="https://sentry.io/api/" target="_blank" rel="external">sentry.io/api/</a> 生成一个 apiKey</p>
-<h2 id="自动向-github-添加-issue"><a href="#自动向-github-添加-issue" class="headerlink" title="自动向 github 添加 issue"></a>自动向 github 添加 issue</h2><p>首先, 需要在 sentry 上关联 github 的 sso 登录.</p>
-<p>完成后在项目页面 -&gt; Project Settings -&gt; All Integrations 中找到 Github, 点击下方 <code>Configure plugin</code> 链接配置 repo 地址后点击 Enable Plugin 按钮即可.</p>
+        <h2 id="file-协议缺失-content-type"><a href="#file-协议缺失-content-type" class="headerlink" title="file 协议缺失 content-type"></a>file 协议缺失 content-type</h2><p>通过 <code>electron.protocol.registerFileProtocol</code> 或 <code>electron.protocol.interceptFileProtocol</code> 产生的协议, Response Header 中是不包含 <code>content-type</code> 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等.</p>
+<p>解决方法是使用 <code>registerBufferProtocol</code> 代替 <code>registerFileProtocol</code> 协议.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">interceptBufferProtocol(<span class="string">'file'</span>, <span class="function">(<span class="params">request, callback</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> filePath = getFilePathFromRequest(request)</div><div class="line">  fs.readFile(filePath, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (err) &#123;</div><div class="line">      <span class="comment">// report error</span></div><div class="line">      callback()</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      callback(&#123;</div><div class="line">        <span class="comment">// 通过开源库 mime-types 获得后缀对应的 mime type</span></div><div class="line">        mimeType: getMimeType(filePath),</div><div class="line">        data</div><div class="line">      &#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<p>上面的例子可以看出来 buffer protocol 完美的替代了 file protocol</p>
+<h2 id="clearStorageData-清理-localStorage-失败"><a href="#clearStorageData-清理-localStorage-失败" class="headerlink" title="clearStorageData 清理 localStorage 失败"></a>clearStorageData 清理 localStorage 失败</h2><p>通过 <code>session.defaultSession.clearStorageData</code> 清理 <code>file://</code> 下的 localStorage 会失败, 必须强制指定一个 origin</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">session.defaultSession.clearStorageData(&#123;</div><div class="line">  origin: process.env.APP_PROTOCOL,</div><div class="line">  storages: [<span class="string">'localstorage'</span>]</div><div class="line">&#125;, callbackFn)</div></pre></td></tr></table></figure>
+<p>给 electron 提了一个 issue, 有开发者答复说是 chromium 的 bug, 会在升级到 chromium66的内核后修复. 所以理论上 electron 3+ 的版本不再会有这个问题, 待验证</p>
+<h2 id="设置-Cookie-后快速退出应用导致-Cookie-丢失"><a href="#设置-Cookie-后快速退出应用导致-Cookie-丢失" class="headerlink" title="设置 Cookie 后快速退出应用导致 Cookie 丢失"></a>设置 Cookie 后快速退出应用导致 Cookie 丢失</h2><p>Electron 对 io 操作有一定的优化, setCookie 并不是立即作用于磁盘上.</p>
+<p>推荐在 <code>before-quit</code> 的时候调用一次 <code>cookies.flushStore</code></p>
+<h2 id="代理导致-electron-应用崩溃"><a href="#代理导致-electron-应用崩溃" class="headerlink" title="代理导致 electron 应用崩溃"></a>代理导致 electron 应用崩溃</h2><p>我所遇到过 Electron 的问题中最费解的一个, 至今不理解这个问题原理是什么. 只知道当系统中设置了 pac 方式的代理时, 网络状态的切换会导致程序崩溃.</p>
+<p>我的解决方案是, 在 electron 中通过 <code>session.setProxy</code> 的方式强制设置一个代理(比如设置所有请求走 DIRECT). 就可以防止程序崩溃.</p>
+<h2 id="文件关联"><a href="#文件关联" class="headerlink" title="文件关联"></a>文件关联</h2><p><code>electron-builder</code> 提供了 <code>fileAssociations</code> 配置项可以在安装时注册文件的启动方式.</p>
+<p>在 mac 系统中, 我们可以通过 electron.app.on(‘open-file’) 事件监听打开文件的行为. </p>
+<p>由于打开文件的行为可以触发客户端的启动, open-file 事件的注册必须尽可能的早(在 app.ready 之前), 并在 app.ready 后触发对应的操作.</p>
+<p>windows 与 linux 下, 可以在 process.env.argv 中获得打开的文件</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjkahgjt90014yom4q33hi6ia" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjkahgjt70011yom4c9d7m0gu" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Comments</a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/sentry/">sentry</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
 
     </footer>
   </div>
@@ -130,19 +122,10 @@
     
 <nav id="article-nav">
   
-    <a href="/blog/refactor/js-to-ts/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          [笔记]js-to-ts
-        
-      </div>
-    </a>
   
-  
-    <a href="/blog/electron/try-electron/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/blog/autotest/jest-note/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">[笔记]electron 实践笔记</div>
+      <div class="article-nav-title">[笔记]jest 使用体验</div>
     </a>
   
 </nav>
@@ -254,7 +237,7 @@
 <script>
   var disqus_shortname = 'ekoneko';
   
-  var disqus_url = 'http://ekoneko.github.io/blog/autotest/try-sentry/';
+  var disqus_url = 'http://ekoneko.github.io/blog/electron/try-electron-2/';
   
   (function(){
     var dsq = document.createElement('script');
