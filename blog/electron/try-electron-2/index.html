@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/electron/try-electron-2/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="file 协议缺失 content-type通过 electron.protocol.registerFileProtocol 或 electron.protocol.interceptFileProtocol 产生的协议, Response Header 中是不包含 content-type 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等. 解决方法是使用">
-<meta property="og:updated_time" content="2018-08-01T01:58:57.000Z">
+<meta property="og:updated_time" content="2018-11-11T14:38:00.393Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[笔记]electron 踩到的坑">
 <meta name="twitter:description" content="file 协议缺失 content-type通过 electron.protocol.registerFileProtocol 或 electron.protocol.interceptFileProtocol 产生的协议, Response Header 中是不包含 content-type 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等. 解决方法是使用">
@@ -53,9 +53,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -105,13 +105,25 @@
 <p>在 mac 系统中, 我们可以通过 electron.app.on(‘open-file’) 事件监听打开文件的行为. </p>
 <p>由于打开文件的行为可以触发客户端的启动, open-file 事件的注册必须尽可能的早(在 app.ready 之前), 并在 app.ready 后触发对应的操作.</p>
 <p>windows 与 linux 下, 可以在 process.env.argv 中获得打开的文件</p>
+<h2 id="在-electron-中使用-Chrome-扩展"><a href="#在-electron-中使用-Chrome-扩展" class="headerlink" title="在 electron 中使用 Chrome 扩展"></a>在 electron 中使用 Chrome 扩展</h2><p>官方文档里有一篇指南: <a href="https://electronjs.org/docs/tutorial/devtools-extension" target="_blank" rel="external">https://electronjs.org/docs/tutorial/devtools-extension</a> 但比较不易被人发现.</p>
+<p>以 <code>react-dev-tool</code> 举例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">BrowserWindow.addDevToolsExtension(&apos;/Users/whoami/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.3.1_0/&apos;)</div></pre></td></tr></table></figure>
+<p>扩展的版本名会随着 Chrome 扩展升级变化.</p>
+<h2 id="Electron-2-gt-3-的坑"><a href="#Electron-2-gt-3-的坑" class="headerlink" title="Electron 2 -&gt; 3 的坑"></a>Electron 2 -&gt; 3 的坑</h2><p>抛开官方弃用的 Api 外, 还有不少由于 chromium 升级造成的问题:</p>
+<h3 id="1-webview-tag-的-html-事件不再对外冒泡"><a href="#1-webview-tag-的-html-事件不再对外冒泡" class="headerlink" title="1. webview-tag 的 html 事件不再对外冒泡"></a>1. webview-tag 的 html 事件不再对外冒泡</h3><p>解决方法是通过 ipc 手动触发一个外部的对应事件</p>
+<p><a href="https://github.com/electron/electron/issues/14258#issuecomment-416794070" target="_blank" rel="external">https://github.com/electron/electron/issues/14258#issuecomment-416794070</a></p>
+<h3 id="2-webview-tag-中通过菜单项的复制粘贴很多场合不正常"><a href="#2-webview-tag-中通过菜单项的复制粘贴很多场合不正常" class="headerlink" title="2. webview-tag 中通过菜单项的复制粘贴很多场合不正常"></a>2. webview-tag 中通过菜单项的复制粘贴很多场合不正常</h3><p>主要是 windows 的场合, 部分菜单功能在 windows, macos 下均不可用 (比如 copyWithStyle)</p>
+<p>解决方法是不要用菜单的 role 属性, 而是通过菜单项手动触发 webcontent 的对应指令</p>
+<p><a href="https://github.com/electron/electron/issues/15219" target="_blank" rel="external">https://github.com/electron/electron/issues/15219</a></p>
+<h3 id="3-clearStorageData-在-file-下无法删除-indexdb"><a href="#3-clearStorageData-在-file-下无法删除-indexdb" class="headerlink" title="3. clearStorageData 在 file:// 下无法删除 indexdb"></a>3. clearStorageData 在 <code>file://</code> 下无法删除 indexdb</h3><p>甚至在 chrome-dev-tool 下清除也是无效的.</p>
+<p>目前尚未找到完美的替代方法, 只能通过渲染进程中 indexedDB.deleteDatabase 逐个删除.</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjkahgjt70011yom4c9d7m0gu" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjkahgjt70011yom4c9d7m0gu" class="article-share-link">Partager</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Comments</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Commentaires</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -124,7 +136,7 @@
   
   
     <a href="/blog/autotest/jest-note/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
+      <strong class="article-nav-caption">Ancien</strong>
       <div class="article-nav-title">[笔记]jest 使用体验</div>
     </a>
   
@@ -145,7 +157,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">Catégories</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
@@ -155,7 +167,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">Mot-clés</h3>
     <div class="widget">
       <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
@@ -165,7 +177,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">Nuage de mot-clés</h3>
     <div class="widget tagcloud">
       <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
@@ -184,7 +196,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">Articles récents</h3>
     <div class="widget">
       <ul>
         
@@ -221,7 +233,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
