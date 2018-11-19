@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>[译]如何更好的组织 React 应用 | ekoneko.github.io</title>
@@ -12,6 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="原文 Url: https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1  最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织 注1: 我的例子中都使用了 redux, 如果你不了解, 参考 redux文档 注2: 所有的例">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-05-06T16:35:31.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]如何更好的组织 React 应用">
@@ -29,7 +30,7 @@
   
 
 </head>
-
+</html>
 <body>
   <div id="container">
     <div id="wrap">
@@ -53,9 +54,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -64,7 +65,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-how-to-better-organize-your-react-app" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-how-to-better-organize-your-react-app" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/react/how-to-better-organize-your-react-app/" class="article-date">
   <time datetime="2017-05-06T14:58:53.000Z" itemprop="datePublished">2017-05-06</time>
@@ -90,10 +91,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>原文 Url: <a href="https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1" target="_blank" rel="external">https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1</a></p>
+        <p>原文 Url: <a href="https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1" target="_blank" rel="noopener">https://medium.com/@alexmngn/how-to-better-organize-your-react-applications-2fd3ea1920f1</a></p>
 <hr>
 <p>最近几年我和十余个同伴一起致力于大型项目从零开始的开发和维护. 有时候,没有一个良好的架构很难维持代码组织</p>
-<p>注1: 我的例子中都使用了 redux, 如果你不了解, 参考 <a href="http://redux.js.org/" target="_blank" rel="external">redux文档</a></p>
+<p>注1: 我的例子中都使用了 redux, 如果你不了解, 参考 <a href="http://redux.js.org/" target="_blank" rel="noopener">redux文档</a></p>
 <p>注2: 所有的例子都基于 react, 但在 react native 中可以保持相同的结构</p>
 <h2 id="创建一个应用有哪些挑战"><a href="#创建一个应用有哪些挑战" class="headerlink" title="创建一个应用有哪些挑战?"></a>创建一个应用有哪些挑战?</h2><p>这是一个发生或将发生在所有开发者项目中的事情:</p>
 <ol>
@@ -113,13 +114,13 @@
 <hr>
 <p>自从我开始学习 react 时, 我读了许多文章关于如何创建一个 todo list或者之类的小玩意. 这些文章对理解 react 很有帮助. 但很快的我发现自己很难找到一些文章关于如何开发好一个有十几个页面, 几百个组件的应用.</p>
 <p>一段时间搜索后, 我发现 react 的样板项目差不多都有相同的结构, 所有文件按类型划分, 例如这样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /actions</div><div class="line">    /notifications.js</div><div class="line"></div><div class="line"> /components</div><div class="line">    /Header</div><div class="line">    /Footer</div><div class="line">    /Notifications</div><div class="line">      /index.js</div><div class="line">  /containers</div><div class="line">    /Home</div><div class="line">    /Login</div><div class="line">    /Notifications</div><div class="line">      /index.js</div><div class="line">  /images</div><div class="line">    /logo.png</div><div class="line">  /reducers</div><div class="line">    /login.js</div><div class="line">    /notifications.js</div><div class="line">  /styles</div><div class="line">    /app.scss</div><div class="line">    /header.scss</div><div class="line">    /home.scss</div><div class="line">    /footer.scss</div><div class="line">    /notifications.scss</div><div class="line">  /utils</div><div class="line">  index.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">/src</span><br><span class="line">  /actions</span><br><span class="line">    /notifications.js</span><br><span class="line"></span><br><span class="line"> /components</span><br><span class="line">    /Header</span><br><span class="line">    /Footer</span><br><span class="line">    /Notifications</span><br><span class="line">      /index.js</span><br><span class="line">  /containers</span><br><span class="line">    /Home</span><br><span class="line">    /Login</span><br><span class="line">    /Notifications</span><br><span class="line">      /index.js</span><br><span class="line">  /images</span><br><span class="line">    /logo.png</span><br><span class="line">  /reducers</span><br><span class="line">    /login.js</span><br><span class="line">    /notifications.js</span><br><span class="line">  /styles</span><br><span class="line">    /app.scss</span><br><span class="line">    /header.scss</span><br><span class="line">    /home.scss</span><br><span class="line">    /footer.scss</span><br><span class="line">    /notifications.scss</span><br><span class="line">  /utils</span><br><span class="line">  index.js</span><br></pre></td></tr></table></figure>
 <p>这种架构或许可行, 但我认为并不是最好的.</p>
 <p>这种按类型划分结构的代码规模增长后, 往往会变得难以维护. 而认识这一点时往往已经太迟了. 你需要花费大量的时间和金钱才能改善, 或者在接下来几年将就着维护.</p>
 <p>然而好的一方面, 你可以按照任何一种你喜欢的方法去组织 react 项目, react 只是一个js类库.</p>
 <h2 id="什么样的组织方法更好呢"><a href="#什么样的组织方法更好呢" class="headerlink" title="什么样的组织方法更好呢"></a>什么样的组织方法更好呢</h2><p>许多年前我在金融公司用 <code>Ember</code> 做应用. 这种 Ember 应用有趣的一点是, 项目目录是按照功能划分的, 而非类型. 这改变了一切.</p>
 <p><code>Pods</code> 在 Ember 中很强大, 但仍有限制, 我想要更加灵活的东西. 随着经验积累, 我试着使用一种更好的结构, 按照功能划分结构, 并按需嵌套. 现在的结构如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /components</div><div class="line">    /Button</div><div class="line">    /Notifications</div><div class="line">      /components</div><div class="line">        /ButtonDismiss  </div><div class="line">          /images</div><div class="line">          /locales</div><div class="line">          /specs</div><div class="line">          /index.js</div><div class="line">          /styles.scss</div><div class="line">      /index.js</div><div class="line">      /styles.scss</div><div class="line">  /data</div><div class="line">    /users</div><div class="line">      /actions.js</div><div class="line">      /api.js</div><div class="line">      /reducer.js</div><div class="line">  /scenes</div><div class="line">    /Home</div><div class="line">      /components</div><div class="line">        /ButtonLike</div><div class="line">      /services</div><div class="line">        /processData</div><div class="line">      /index.js</div><div class="line">      /styles.scss</div><div class="line">    /Sign</div><div class="line">      /components</div><div class="line">        /FormField</div><div class="line">      /scenes</div><div class="line">        /Login</div><div class="line">        /Register</div><div class="line">          /locales</div><div class="line">          /specs</div><div class="line">          /index.js</div><div class="line">          /styles.scss</div><div class="line">  /services</div><div class="line">    /api</div><div class="line">    /geolocation</div><div class="line">    /session</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div><div class="line">  index.js</div><div class="line">  store.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">/src</span><br><span class="line">  /components</span><br><span class="line">    /Button</span><br><span class="line">    /Notifications</span><br><span class="line">      /components</span><br><span class="line">        /ButtonDismiss  </span><br><span class="line">          /images</span><br><span class="line">          /locales</span><br><span class="line">          /specs</span><br><span class="line">          /index.js</span><br><span class="line">          /styles.scss</span><br><span class="line">      /index.js</span><br><span class="line">      /styles.scss</span><br><span class="line">  /data</span><br><span class="line">    /users</span><br><span class="line">      /actions.js</span><br><span class="line">      /api.js</span><br><span class="line">      /reducer.js</span><br><span class="line">  /scenes</span><br><span class="line">    /Home</span><br><span class="line">      /components</span><br><span class="line">        /ButtonLike</span><br><span class="line">      /services</span><br><span class="line">        /processData</span><br><span class="line">      /index.js</span><br><span class="line">      /styles.scss</span><br><span class="line">    /Sign</span><br><span class="line">      /components</span><br><span class="line">        /FormField</span><br><span class="line">      /scenes</span><br><span class="line">        /Login</span><br><span class="line">        /Register</span><br><span class="line">          /locales</span><br><span class="line">          /specs</span><br><span class="line">          /index.js</span><br><span class="line">          /styles.scss</span><br><span class="line">  /services</span><br><span class="line">    /api</span><br><span class="line">    /geolocation</span><br><span class="line">    /session</span><br><span class="line">      /actions.js</span><br><span class="line">      /index.js</span><br><span class="line">      /reducer.js</span><br><span class="line">  index.js</span><br><span class="line">  store.js</span><br></pre></td></tr></table></figure>
 <p>所有的组件, 场景, 服务(一个需求)都可以独立运作, 包含了自身需要的图片, 样式, 翻译, action 和单元测试. 每一个功能都可以单独被项目应用(有一点像 node 的 modules).</p>
 <p>为了保证可以运作, 必须遵守如下规则:</p>
 <ol>
@@ -139,7 +140,7 @@
 <h4 id="为什么要这样呢"><a href="#为什么要这样呢" class="headerlink" title="为什么要这样呢"></a>为什么要这样呢</h4><p>当开发一个大型应用时, 经常会遇到你需要创建一个肯定不会复用的组件. 如果这个组件放在组件的根目录上, 它将迷失在上百个组件之中. 你可以将之分类, 但等到清理的时候你可能已经不记得哪些组件在哪里用到了.</p>
 <p>但如果组件的根目录上只有主要的组件, 比如各种按钮, 表单项, 缩略图, 以及一些复杂的拥有子组件的, 像是评论列表, 混合表单等, 读起来就会轻松许多.</p>
 <p>例如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /components</div><div class="line">    /Button</div><div class="line">      /index.js</div><div class="line">    /Notifications</div><div class="line">      /components</div><div class="line">        /ButtonDismiss</div><div class="line">          /index.js</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">/src</span><br><span class="line">  /components</span><br><span class="line">    /Button</span><br><span class="line">      /index.js</span><br><span class="line">    /Notifications</span><br><span class="line">      /components</span><br><span class="line">        /ButtonDismiss</span><br><span class="line">          /index.js</span><br><span class="line">      /actions.js</span><br><span class="line">      /index.js</span><br><span class="line">      /reducer.js</span><br></pre></td></tr></table></figure>
 <ol>
 <li><p><code>Buttons</code> 可以在任何地方被调用</p>
 </li>
@@ -152,7 +153,7 @@
 <p>如果你使用了 react-router, 你可以将所有场景在 index.js 中引入并设置路由表.</p>
 <p>和组件一样, 场景也可以嵌套场景, 并且可以在场景中定义组件和服务. 必须记得一点: 在场景中定义的组件和服务只能在这个场景中使用</p>
 <p>例子:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /scenes</div><div class="line">    /Home</div><div class="line">      /components</div><div class="line">        /ButtonShare</div><div class="line">          /index.js</div><div class="line">      /index.js</div><div class="line">    /Sign</div><div class="line">      /components</div><div class="line">        /ButtonHelp</div><div class="line">          /index.js</div><div class="line">      /scenes</div><div class="line">        /Login</div><div class="line">          /components</div><div class="line">            /Form</div><div class="line">              /index.js</div><div class="line">            /ButtonFacebookLogin</div><div class="line">              /index.js</div><div class="line">          /index.js</div><div class="line"></div><div class="line">        /Register</div><div class="line">          /index.js</div><div class="line">      /index.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">/src</span><br><span class="line">  /scenes</span><br><span class="line">    /Home</span><br><span class="line">      /components</span><br><span class="line">        /ButtonShare</span><br><span class="line">          /index.js</span><br><span class="line">      /index.js</span><br><span class="line">    /Sign</span><br><span class="line">      /components</span><br><span class="line">        /ButtonHelp</span><br><span class="line">          /index.js</span><br><span class="line">      /scenes</span><br><span class="line">        /Login</span><br><span class="line">          /components</span><br><span class="line">            /Form</span><br><span class="line">              /index.js</span><br><span class="line">            /ButtonFacebookLogin</span><br><span class="line">              /index.js</span><br><span class="line">          /index.js</span><br><span class="line"></span><br><span class="line">        /Register</span><br><span class="line">          /index.js</span><br><span class="line">      /index.js</span><br></pre></td></tr></table></figure>
 <ol>
 <li><p><code>Home</code> 中定义了组件 <code>ButtonShare</code>, 它只能在 <code>Home</code> 场景下使用</p>
 </li>
@@ -165,23 +166,23 @@
 </ol>
 <h3 id="服务-Service"><a href="#服务-Service" class="headerlink" title="服务(Service)"></a>服务(Service)</h3><p>不是所有东西都能组件化, 你需要创建一个独立模块来支持组件和场景.</p>
 <p>你可以让一个自用的服务(self-contained module), 或应用内任何地方重用. 这取决于具体项目的复杂度.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">/src</div><div class="line">  /services</div><div class="line">    /api</div><div class="line">      /services</div><div class="line">        /handleError</div><div class="line">          /index.js</div><div class="line">      /index.js</div><div class="line">    /geolocation</div><div class="line">    /session</div><div class="line">      /actions.js</div><div class="line">      /index.js</div><div class="line">      /reducer.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/src</span><br><span class="line">  /services</span><br><span class="line">    /api</span><br><span class="line">      /services</span><br><span class="line">        /handleError</span><br><span class="line">          /index.js</span><br><span class="line">      /index.js</span><br><span class="line">    /geolocation</span><br><span class="line">    /session</span><br><span class="line">      /actions.js</span><br><span class="line">      /index.js</span><br><span class="line">      /reducer.js</span><br></pre></td></tr></table></figure>
 <h3 id="数据-Data"><a href="#数据-Data" class="headerlink" title="数据(Data)"></a>数据(Data)</h3><p>data 实体和 service 很相似. 这是服务端 API与客户端之间的桥梁(bridge) 或 适配器(adapter). 当然没有 server Api 的话就不需要 data.</p>
 <p>data 负责大部分的网络通讯, 读写内容, 传输数据或存储数据(比如 redux). 通常 data 能被任何组件或场景调用.</p>
 <h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>如果你有兴趣看看具体项目, 作者 GitHub 上有两个参考</p>
 <ol>
-<li><p><a href="https://github.com/alexmngn/react-rock-paper-scissors" target="_blank" rel="external">https://github.com/alexmngn/react-rock-paper-scissors</a> (ReactJS)</p>
+<li><p><a href="https://github.com/alexmngn/react-rock-paper-scissors" target="_blank" rel="noopener">https://github.com/alexmngn/react-rock-paper-scissors</a> (ReactJS)</p>
 </li>
-<li><p><a href="https://github.com/alexmngn/react-native-authentication" target="_blank" rel="external">https://github.com/alexmngn/react-native-authentication</a> (React-Native)</p>
+<li><p><a href="https://github.com/alexmngn/react-native-authentication" target="_blank" rel="noopener">https://github.com/alexmngn/react-native-authentication</a> (React-Native)</p>
 </li>
 </ol>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjkahgjsu000ayom4gvuo59il" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjooedpbc0006vjm4xo25i84h" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -193,7 +194,7 @@
 <nav id="article-nav">
   
     <a href="/blog/engineering/a-unified-styling-language/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           [译]统一样式语言
@@ -203,7 +204,7 @@
   
   
     <a href="/blog/tools/diy-develop-tools-by-ast/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">开发基于 AST 的前端工具</div>
     </a>
   
@@ -224,9 +225,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -234,9 +235,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -244,9 +245,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -255,7 +256,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -263,9 +264,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
         
           <li>
             <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
@@ -283,10 +288,6 @@
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
-          <li>
-            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -300,7 +301,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

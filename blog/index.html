@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>ekoneko.github.io</title>
@@ -9,6 +9,7 @@
 <meta property="og:title" content="ekoneko.github.io">
 <meta property="og:url" content="http://ekoneko.github.io/blog/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:locale" content="en">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ekoneko.github.io">
   
@@ -24,7 +25,7 @@
   
 
 </head>
-
+</html>
 <body>
   <div id="container">
     <div id="wrap">
@@ -48,9 +49,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -61,7 +62,83 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-try-electron-2" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-redux-cluster" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/redux/redux-cluster/" class="article-date">
+  <time datetime="2018-11-11T15:34:36.000Z" itemprop="datePublished">2018-11-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/redux/">redux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在 Redux 上实现主从听起来是一件很奇怪的事情, 事实上我也只有最近折腾 Electron 项目时才用上了这么奇怪的技巧.</p>
+<p>先描述下项目的业务场景: 我们的项目简单的说是一个基于 Electron 的文件管理系统, 类似于 Google Driver, 主要功能有如下几点:</p>
+<ol>
+<li>支持树形目录结构的文件系统</li>
+<li>多标签页同时打开</li>
+<li>本地的数据存储与异步同步</li>
+</ol>
+<p>由于 Electron 的版本是在 web 的基础上增强了本地数据存储的特性, 很自然的, 我们的页面复用了 web 版 React + Redux 的架构. 并在 Redux 的 Action 层封装了从本地获取数据同时更新远程资源的逻辑, 并以中间件的形式实现了本地数据到服务端的增量同步.</p>
+<p>对 web 而言, 每打开一个页面就意味一个 Redux 实例被创建, 对应在 Electron 上也就是每一个 Webcontent 对应了一个 Redux. 这带来了许多问题</p>
+<ol>
+<li><p>不同的 Redux 数据内容可能不相同</p>
+<p>比如在 A 进程编辑了文件名, B 进程看到的也应该是编辑后的文件名, 无论是否联网</p>
+</li>
+<li><p>数据同步存在竞争关系</p>
+<p>这里的同步是双向的, 可能一个文件创建的动作被两个不同的进程推送给了服务端, 也可能是两个不同的进程同时操作了同一个本地数据, 导致本地出现了预期外的结果.</p>
+</li>
+<li><p>存在一定的网络请求浪费</p>
+<p>服务端到本地的同步是通过 socket 实现的, 这意味着每一个进程都需要建立一个 socket 连接.<br>并且当一个新的进程被创建时, 所有初始化的请求都会被触发一遍</p>
+</li>
+</ol>
+<p>根据上面的问题, 解答的方法几乎是不言而喻的. 如果可以有一个 ReduxMaster 来负责内容同步与网络请求, 在所有需要用到 Redux 的进程创建一个 ReduxClient, 只用来同步 ReduxMaster 的状态, 所有的问题就都迎刃而解了.</p>
+<p>(PS: 其实一开始我是叫 Master / Slaver 的, 这样的命名更加传统, 不过有一点点不符合现代人的政治正确标准)</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>先抽象出一个简单的例子, 文件重命名. 在 Redux 中, 我们需要 <code>dispatch</code> 一个 updateFileName 的 <code>Action</code>, 经过 file 的 <code>reducer</code>, 将最终的状态存入 <code>store</code>.</p>
+<p>现在, 这个事件由某一个 ReduxClient 触发, 我们希望由 ReduxMaster 来实现这个 Action, 再将状态更新至每一个 ReduxClient 中.</p>
+<p>在 ReduxClient 中, 我们需要一个 <code>Redux 中间件</code> 将需要由 ReduxMaster 执行的 action 拦截并将 action 的名称与参数通知给 ReduxMaster 所在的进程. 再由 ReduxMaster 将执行完的结果广播给出去. 最后由 ReduxClient 将结果转化为 state.</p>
+<p>当然在现实中, Action 是会承载 sideEffect 的. 以上面的例子而言 updateFileName 内部可能包含了一个网络请求, 这样的 Action 无法直接在进程间传递. 因此我们需要在各个进程间做出一个约定, 将 Action 映射为一个字符串 <code>ActionName</code>. 这样, 进程通信的过程中, 我们只需要传递 ActionName 和参数, 就可以由 ReduxMaster 完成一模一样的请求.</p>
+<p>这里涉及到的不同的进程之间的通信, 在 Electron 中, 用 ipc 可以很容易的达成. 在我们的例子里, ReduxMaster 运行在一个 renderer 进程中, ReduxClient 通过获取 Master 所在的 <code>Webcontents</code>.<code>send</code> 发起通知, ReduxMaster 与 ReduxClient 均通过 <code>ipcrenderer</code>.<code>on</code> 接收通知. <code>ReduxMaster</code> 通过遍历所有 webContents 的 <code>send</code> 方法进行广播.</p>
+<p>如果想在主进程里运行 ReduxMaster, 把 <code>Webcontents</code>.<code>send</code> 替换为 <code>ipcrenderer</code>.<code>send</code>, 接收替换为 <code>ipcMain</code>.<code>on</code> 即可.</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/redux/redux-cluster/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/redux/redux-cluster/" data-id="cjooedpbj000gvjm4psw11qsg" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/redux/redux-cluster/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/redux/">redux</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-try-electron-2" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/electron/try-electron-2/" class="article-date">
   <time datetime="2018-08-01T01:39:34.000Z" itemprop="datePublished">2018-08-01</time>
@@ -89,10 +166,10 @@
       
         <h2 id="file-协议缺失-content-type"><a href="#file-协议缺失-content-type" class="headerlink" title="file 协议缺失 content-type"></a>file 协议缺失 content-type</h2><p>通过 <code>electron.protocol.registerFileProtocol</code> 或 <code>electron.protocol.interceptFileProtocol</code> 产生的协议, Response Header 中是不包含 <code>content-type</code> 的. 这会导致在某些奇怪的问题, 比如注册的 serviceworker 无法被识别等.</p>
 <p>解决方法是使用 <code>registerBufferProtocol</code> 代替 <code>registerFileProtocol</code> 协议.</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">interceptBufferProtocol(<span class="string">'file'</span>, <span class="function">(<span class="params">request, callback</span>) =&gt;</span> &#123;</div><div class="line">  <span class="keyword">const</span> filePath = getFilePathFromRequest(request)</div><div class="line">  fs.readFile(filePath, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</div><div class="line">    <span class="keyword">if</span> (err) &#123;</div><div class="line">      <span class="comment">// report error</span></div><div class="line">      callback()</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">      callback(&#123;</div><div class="line">        <span class="comment">// 通过开源库 mime-types 获得后缀对应的 mime type</span></div><div class="line">        mimeType: getMimeType(filePath),</div><div class="line">        data</div><div class="line">      &#125;)</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">interceptBufferProtocol(<span class="string">'file'</span>, <span class="function">(<span class="params">request, callback</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> filePath = getFilePathFromRequest(request)</span><br><span class="line">  fs.readFile(filePath, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">      <span class="comment">// report error</span></span><br><span class="line">      callback()</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      callback(&#123;</span><br><span class="line">        <span class="comment">// 通过开源库 mime-types 获得后缀对应的 mime type</span></span><br><span class="line">        mimeType: getMimeType(filePath),</span><br><span class="line">        data</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>上面的例子可以看出来 buffer protocol 完美的替代了 file protocol</p>
 <h2 id="clearStorageData-清理-localStorage-失败"><a href="#clearStorageData-清理-localStorage-失败" class="headerlink" title="clearStorageData 清理 localStorage 失败"></a>clearStorageData 清理 localStorage 失败</h2><p>通过 <code>session.defaultSession.clearStorageData</code> 清理 <code>file://</code> 下的 localStorage 会失败, 必须强制指定一个 origin</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">session.defaultSession.clearStorageData(&#123;</div><div class="line">  origin: process.env.APP_PROTOCOL,</div><div class="line">  storages: [<span class="string">'localstorage'</span>]</div><div class="line">&#125;, callbackFn)</div></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">session.defaultSession.clearStorageData(&#123;</span><br><span class="line">  origin: process.env.APP_PROTOCOL,</span><br><span class="line">  storages: [<span class="string">'localstorage'</span>]</span><br><span class="line">&#125;, callbackFn)</span><br></pre></td></tr></table></figure>
 <p>给 electron 提了一个 issue, 有开发者答复说是 chromium 的 bug, 会在升级到 chromium66的内核后修复. 所以理论上 electron 3+ 的版本不再会有这个问题, 待验证</p>
 <h2 id="设置-Cookie-后快速退出应用导致-Cookie-丢失"><a href="#设置-Cookie-后快速退出应用导致-Cookie-丢失" class="headerlink" title="设置 Cookie 后快速退出应用导致 Cookie 丢失"></a>设置 Cookie 后快速退出应用导致 Cookie 丢失</h2><p>Electron 对 io 操作有一定的优化, setCookie 并不是立即作用于磁盘上.</p>
 <p>推荐在 <code>before-quit</code> 的时候调用一次 <code>cookies.flushStore</code></p>
@@ -102,25 +179,25 @@
 <p>在 mac 系统中, 我们可以通过 electron.app.on(‘open-file’) 事件监听打开文件的行为. </p>
 <p>由于打开文件的行为可以触发客户端的启动, open-file 事件的注册必须尽可能的早(在 app.ready 之前), 并在 app.ready 后触发对应的操作.</p>
 <p>windows 与 linux 下, 可以在 process.env.argv 中获得打开的文件</p>
-<h2 id="在-electron-中使用-Chrome-扩展"><a href="#在-electron-中使用-Chrome-扩展" class="headerlink" title="在 electron 中使用 Chrome 扩展"></a>在 electron 中使用 Chrome 扩展</h2><p>官方文档里有一篇指南: <a href="https://electronjs.org/docs/tutorial/devtools-extension" target="_blank" rel="external">https://electronjs.org/docs/tutorial/devtools-extension</a> 但比较不易被人发现.</p>
+<h2 id="在-electron-中使用-Chrome-扩展"><a href="#在-electron-中使用-Chrome-扩展" class="headerlink" title="在 electron 中使用 Chrome 扩展"></a>在 electron 中使用 Chrome 扩展</h2><p>官方文档里有一篇指南: <a href="https://electronjs.org/docs/tutorial/devtools-extension" target="_blank" rel="noopener">https://electronjs.org/docs/tutorial/devtools-extension</a> 但比较不易被人发现.</p>
 <p>以 <code>react-dev-tool</code> 举例</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">BrowserWindow.addDevToolsExtension(&apos;/Users/whoami/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.3.1_0/&apos;)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BrowserWindow.addDevToolsExtension(&apos;/Users/whoami/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/3.3.1_0/&apos;)</span><br></pre></td></tr></table></figure>
 <p>扩展的版本名会随着 Chrome 扩展升级变化.</p>
 <h2 id="Electron-2-gt-3-的坑"><a href="#Electron-2-gt-3-的坑" class="headerlink" title="Electron 2 -&gt; 3 的坑"></a>Electron 2 -&gt; 3 的坑</h2><p>抛开官方弃用的 Api 外, 还有不少由于 chromium 升级造成的问题:</p>
 <h3 id="1-webview-tag-的-html-事件不再对外冒泡"><a href="#1-webview-tag-的-html-事件不再对外冒泡" class="headerlink" title="1. webview-tag 的 html 事件不再对外冒泡"></a>1. webview-tag 的 html 事件不再对外冒泡</h3><p>解决方法是通过 ipc 手动触发一个外部的对应事件</p>
-<p><a href="https://github.com/electron/electron/issues/14258#issuecomment-416794070" target="_blank" rel="external">https://github.com/electron/electron/issues/14258#issuecomment-416794070</a></p>
+<p><a href="https://github.com/electron/electron/issues/14258#issuecomment-416794070" target="_blank" rel="noopener">https://github.com/electron/electron/issues/14258#issuecomment-416794070</a></p>
 <h3 id="2-webview-tag-中通过菜单项的复制粘贴很多场合不正常"><a href="#2-webview-tag-中通过菜单项的复制粘贴很多场合不正常" class="headerlink" title="2. webview-tag 中通过菜单项的复制粘贴很多场合不正常"></a>2. webview-tag 中通过菜单项的复制粘贴很多场合不正常</h3><p>主要是 windows 的场合, 部分菜单功能在 windows, macos 下均不可用 (比如 copyWithStyle)</p>
 <p>解决方法是不要用菜单的 role 属性, 而是通过菜单项手动触发 webcontent 的对应指令</p>
-<p><a href="https://github.com/electron/electron/issues/15219" target="_blank" rel="external">https://github.com/electron/electron/issues/15219</a></p>
+<p><a href="https://github.com/electron/electron/issues/15219" target="_blank" rel="noopener">https://github.com/electron/electron/issues/15219</a></p>
 <h3 id="3-clearStorageData-在-file-下无法删除-indexdb"><a href="#3-clearStorageData-在-file-下无法删除-indexdb" class="headerlink" title="3. clearStorageData 在 file:// 下无法删除 indexdb"></a>3. clearStorageData 在 <code>file://</code> 下无法删除 indexdb</h3><p>甚至在 chrome-dev-tool 下清除也是无效的.</p>
 <p>目前尚未找到完美的替代方法, 只能通过渲染进程中 indexedDB.deleteDatabase 逐个删除.</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjkahgjt70011yom4c9d7m0gu" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron-2/" data-id="cjooedpbr000mvjm4ctec4ktv" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron-2/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -132,7 +209,7 @@
 
 
   
-    <article id="post-jest-note" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-jest-note" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/autotest/jest-note/" class="article-date">
   <time datetime="2017-12-30T02:39:29.000Z" itemprop="datePublished">2017-12-30</time>
@@ -162,9 +239,9 @@
 <h2 id="snapshot"><a href="#snapshot" class="headerlink" title="snapshot"></a>snapshot</h2><p>对于大多数组件, jest 提供的 snapshot 都是一种很便利的工具. 只要能确定生成快照时的状态时正确的, 那么就可以比较轻易的发现修改扩大了影响范围的场景.</p>
 <p>因此, 我们想要的结果自然是当一个组件没有被改变, 对应的 snapshot 每次生成也不会改变. 然而有一些因素可能会导致每次生成的snapshot 都不一样, 我们就遇到了两种情形:</p>
 <h3 id="相对时间"><a href="#相对时间" class="headerlink" title="相对时间"></a>相对时间</h3><p>组件中可能会有与当前时间相关的逻辑, 比如今天生成的 snapshot 里, 时间的描述是 “1天前”, 那等到明天重新生成快照时, 时间就会变成了 “两天前”.</p>
-<p>为此, 我们引入了 <a href="https://github.com/boblauer/MockDate" target="_blank" rel="external">mockdate</a> 的模块, 它会复写 window.Date, 使当前时间固定在某一时刻.</p>
+<p>为此, 我们引入了 <a href="https://github.com/boblauer/MockDate" target="_blank" rel="noopener">mockdate</a> 的模块, 它会复写 window.Date, 使当前时间固定在某一时刻.</p>
 <h3 id="styled-components"><a href="#styled-components" class="headerlink" title="styled-components"></a>styled-components</h3><p>styled-components 生成的元素, 在生成快照时会出现一个随机字符串的 className, 这个 className 会随着样式改变而变化. 然而我们是没有办法区分随机字符串的变化是否是我们期待的.</p>
-<p>所幸 styled-components 提供了 <a href="https://github.com/styled-components/jest-styled-components" target="_blank" rel="external">jest-styled-components</a> 来解决这个问题. 它会把生成的 css 也放在快照里, 这样是否是期待的变化就一目了然了.</p>
+<p>所幸 styled-components 提供了 <a href="https://github.com/styled-components/jest-styled-components" target="_blank" rel="noopener">jest-styled-components</a> 来解决这个问题. 它会把生成的 css 也放在快照里, 这样是否是期待的变化就一目了然了.</p>
         
           <p class="article-more-link">
             <a href="/blog/autotest/jest-note/#more">Read More</a>
@@ -173,9 +250,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/jest-note/" data-id="cjkahgjsy000iyom4z8qxnu37" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/jest-note/" data-id="cjooedpbe0007vjm4nq46q6el" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/autotest/jest-note/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/autotest/jest-note/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/jest/">jest</a></li></ul>
@@ -187,7 +264,7 @@
 
 
   
-    <article id="post-js-to-ts" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-js-to-ts" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/refactor/js-to-ts/" class="article-date">
   <time datetime="2017-11-23T17:17:06.000Z" itemprop="datePublished">2017-11-24</time>
@@ -214,23 +291,23 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在把公司的一个 React + Webpack 的项目从 js 迁移到 typescript 上. 这里记录下迁移的过程以及遇到的一些问题.</p>
-<p>在开始之前, 先安利一下 Typescript 官方文档提供的<a href="https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html" target="_blank" rel="external">从 JavaScript 迁移</a>, 以及其中提到的 <a href="https://github.com/Microsoft/TypeScript-React-Conversion-Guide#typescript-react-conversion-guide" target="_blank" rel="external">React 项目转换指南</a>. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容.</p>
+<p>在开始之前, 先安利一下 Typescript 官方文档提供的<a href="https://www.typescriptlang.org/docs/handbook/migrating-from-javascript.html" target="_blank" rel="noopener">从 JavaScript 迁移</a>, 以及其中提到的 <a href="https://github.com/Microsoft/TypeScript-React-Conversion-Guide#typescript-react-conversion-guide" target="_blank" rel="noopener">React 项目转换指南</a>. 这两篇文章也涵盖了我们迁移过程中相当大一部分内容.</p>
 <h2 id="配置文件相关"><a href="#配置文件相关" class="headerlink" title="配置文件相关"></a>配置文件相关</h2><h3 id="引用方式"><a href="#引用方式" class="headerlink" title="引用方式"></a>引用方式</h3><p>tsc 默认对于 commonjs 的模块是这样加载的</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> * <span class="keyword">as</span> React <span class="keyword">from</span> <span class="string">'react'</span></div></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> React <span class="keyword">from</span> <span class="string">'react'</span></span><br></pre></td></tr></table></figure>
 <p>我们不想改变原先的写法: <code>import React from &#39;react&#39;</code>. 幸好, ts 提供了一个编译参数 <code>allowSyntheticDefaultImports</code>.</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"allowSyntheticDefaultImports"</span>: <span class="literal">true</span>,</div><div class="line">  <span class="attr">"module"</span>: <span class="string">"esnext"</span>,</div><div class="line">  <span class="attr">"moduleResolution"</span>: <span class="string">"node"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"allowSyntheticDefaultImports"</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">"module"</span>: <span class="string">"esnext"</span>,</span><br><span class="line">  <span class="attr">"moduleResolution"</span>: <span class="string">"node"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="相对路径"><a href="#相对路径" class="headerlink" title="相对路径"></a>相对路径</h3><p>我们项目的 webpack 配置将 src 目录配置在了 resolve 中</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">resolve</span>: &#123;</div><div class="line">    <span class="attr">modules</span>: [<span class="string">'node_modules'</span>, <span class="string">'src'</span>]</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  resolve: &#123;</span><br><span class="line">    modules: [<span class="string">'node_modules'</span>, <span class="string">'src'</span>]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>代码中, 可以通过 `import ‘App’ from ‘components/App’ 的方式引用 src/components/App.jsx 文件</p>
 <p>在 typescript 中, 需要配置 <code>baseUrl</code> 或 <code>paths</code> 来告诉 tsc 寻找文件的路径.</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">"baseUrl"</span>: <span class="string">"./src"</span>,</div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"baseUrl"</span>: <span class="string">"./src"</span>,</span><br></pre></td></tr></table></figure>
 <p>或者</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">compilerOptions</span>: &#123;</div><div class="line">    <span class="string">"baseUrl"</span>: <span class="string">"."</span>,</div><div class="line">    <span class="string">"paths"</span>: &#123;</div><div class="line">      <span class="string">"*"</span>: [</div><div class="line">        <span class="string">"src/*"</span>,</div><div class="line">        <span class="string">"node_modules/*"</span></div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>二者略有<a href="https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url" target="_blank" rel="external">不同</a>. 从结论上看 paths 的方式会检测加载模块关联的声明, 对于声明缺失的模块编译时会抛出一个错误.</p>
-<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>对于项目中用到的全局变量, 以及 <code>WebpackDefinePlugin</code> 之类输出的东西, 我们可以建一个 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="external">global.d.ts</a> 文件来声明进行声明, 比如:</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">const</span> global: <span class="built_in">any</span></div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  compilerOptions: &#123;</span><br><span class="line">    <span class="string">"baseUrl"</span>: <span class="string">"."</span>,</span><br><span class="line">    <span class="string">"paths"</span>: &#123;</span><br><span class="line">      <span class="string">"*"</span>: [</span><br><span class="line">        <span class="string">"src/*"</span>,</span><br><span class="line">        <span class="string">"node_modules/*"</span></span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>二者略有<a href="https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url" target="_blank" rel="noopener">不同</a>. 从结论上看 paths 的方式会检测加载模块关联的声明, 对于声明缺失的模块编译时会抛出一个错误.</p>
+<h2 id="全局参数"><a href="#全局参数" class="headerlink" title="全局参数"></a>全局参数</h2><p>对于项目中用到的全局变量, 以及 <code>WebpackDefinePlugin</code> 之类输出的东西, 我们可以建一个 src/<a href="https://www.typescriptlang.org/docs/handbook/declaration-files/templates/global-d-ts.html" target="_blank" rel="noopener">global.d.ts</a> 文件来声明进行声明, 比如:</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">declare</span> <span class="keyword">const</span> global: <span class="built_in">any</span></span><br></pre></td></tr></table></figure>
 <p>另一方面, webpack 通过X-loader 加载 js 之外的文件加载. 这些东西 tsc 看不懂, 就会报错. 我们希望 tsc 在 type checking 时能跳过这些模块, 也可以在 <code>global.d.ts</code> 里加上模块的声明:</p>
-<figure class="highlight ts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">declare</span> <span class="keyword">module</span> '*.png'</div><div class="line">declare <span class="keyword">module</span> '*.jpg'</div><div class="line">declare <span class="keyword">module</span> '*.svg'</div><div class="line">declare <span class="keyword">module</span> '*.mp4'</div><div class="line">// ...</div></pre></td></tr></table></figure>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">declare</span> <span class="keyword">module</span> '*.png'</span><br><span class="line">declare <span class="keyword">module</span> '*.jpg'</span><br><span class="line">declare <span class="keyword">module</span> '*.svg'</span><br><span class="line">declare <span class="keyword">module</span> '*.mp4'</span><br><span class="line">// ...</span><br></pre></td></tr></table></figure>
 <p>顺带一提, 我们的 <code>WebpackDefinePlugin</code> 会输出一个 process 变量来同步一部分配置文件到前端. 一开始我是拒绝在面向 browser 的项目引用 @types/node , 而是通过 global.d.ts 引入的. 然而很多第三方的模块会带入 @types/node 造成重复声明的异常,  最后只好直接显式的引入 <code>@types/node</code> 了.</p>
 <h2 id="从-js-到-ts-x"><a href="#从-js-到-ts-x" class="headerlink" title="从 js 到 ts(x)"></a>从 js 到 ts(x)</h2><p>tsc 的 allowJS 参数支持对 js 的解析. 但是当将 js 后缀改为 ts(x)时, 通常会出现大量的问题, 这里总结下在我们项目中比例较大的一部分情况.</p>
 <h3 id="是否包含-jsx"><a href="#是否包含-jsx" class="headerlink" title="是否包含 jsx"></a>是否包含 jsx</h3><p>过去, 我们并没有使用 .jsx 的后缀, 无论是否包含 JSX 格式的数据均保存为 .js 文件. 然而在 .ts 的文件中使用 JSX 会导致一个错误.</p>
@@ -243,9 +320,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjkahgjsv000cyom4bpq66jh6" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/refactor/js-to-ts/" data-id="cjooedpcg0026vjm4p92ltp8q" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/refactor/js-to-ts/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li></ul>
@@ -257,7 +334,7 @@
 
 
   
-    <article id="post-try-sentry" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-try-sentry" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/autotest/try-sentry/" class="article-date">
   <time datetime="2017-10-18T10:02:04.000Z" itemprop="datePublished">2017-10-18</time>
@@ -283,17 +360,17 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="sentry-介绍"><a href="#sentry-介绍" class="headerlink" title="sentry 介绍"></a>sentry 介绍</h2><p><a href="https://sentry.io/" target="_blank" rel="external">sentry</a> 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录.</p>
-<p>除了官方提供的 sentry.io 外, 也支持自己部署 (<a href="https://zhuanlan.zhihu.com/p/24445449" target="_blank" rel="external">Sentry 简易搭建指南</a>), 适用于安全性有所要求的项目.</p>
+        <h2 id="sentry-介绍"><a href="#sentry-介绍" class="headerlink" title="sentry 介绍"></a>sentry 介绍</h2><p><a href="https://sentry.io/" target="_blank" rel="noopener">sentry</a> 是一个很流行的错误监控工具. 它能很好的监听线上异常以及开发者手动抛出的错误并记录.</p>
+<p>除了官方提供的 sentry.io 外, 也支持自己部署 (<a href="https://zhuanlan.zhihu.com/p/24445449" target="_blank" rel="noopener">Sentry 简易搭建指南</a>), 适用于安全性有所要求的项目.</p>
 <p>sentry 的界面看起来十分高大上. <code>Issues</code> 界面可以看到所有网站中抛出的异常(及开发者想记录的信息) 相同内容的记录会合并在一起并记录触发次数, 避免被某一个问题刷屏的情况. 也可以像 GitHub 的 issue 一样 assign 给相应的开发者处理. 并且 sentry 也支持邮寄和各种 IM 的 robot, 十分好用.</p>
 <h3 id="release"><a href="#release" class="headerlink" title="release"></a>release</h3><p>代码的不同版本, 会对应不同的 bug, sentry 中用 <code>release</code> 来标识一个代码包的当前版本. 理论上不同代码包应该对应一个唯一性的 release version</p>
 <h3 id="价格"><a href="#价格" class="headerlink" title="价格"></a>价格</h3><p>自搭不谈, sentry.io 的服务我觉得还是很亲民的, 免费用户也提供了每月 10,000 次的 events 记录, 不过免费用户不提供多人共享一个项目, 并且events 的保存时间也比较有限.</p>
-<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 <a href="https://sentry.io/" target="_blank" rel="external">sentry.io</a> (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://abcdefghijklmn@sentry.io/12345</div></pre></td></tr></table></figure>
+<h2 id="sentry-配置"><a href="#sentry-配置" class="headerlink" title="sentry 配置"></a>sentry 配置</h2><p>想使用 sentry 首先要在 <a href="https://sentry.io/" target="_blank" rel="noopener">sentry.io</a> (或是自建服务)上注册一个项目. 项目注册后会得到一个类似下面这样的 url</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://abcdefghijklmn@sentry.io/12345</span><br></pre></td></tr></table></figure>
 <p>用来作为监控的来源识别</p>
-<p>参考<a href="https://docs.sentry.io/clients/javascript/install/" target="_blank" rel="external">官方文档</a>, 使用 sentry 需要引入其 sdk 脚本文件 ravenjs.</p>
+<p>参考<a href="https://docs.sentry.io/clients/javascript/install/" target="_blank" rel="noopener">官方文档</a>, 使用 sentry 需要引入其 sdk 脚本文件 ravenjs.</p>
 <p>可以通过静态脚本引入</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.ravenjs.com/3.19.1/raven.min.js"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"https://cdn.ravenjs.com/3.19.1/raven.min.js"</span> <span class="attr">crossorigin</span>=<span class="string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>也可以用 npm 等包管理软件引入 <code>npm install raven-js</code></p>
 <p>加载 raven 后, 配置和之前注册项目的关联</p>
         
@@ -304,9 +381,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjkahgjt90014yom4q33hi6ia" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/autotest/try-sentry/" data-id="cjooedpbw000rvjm4yjtzyhvd" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/autotest/try-sentry/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/sentry/">sentry</a></li></ul>
@@ -318,7 +395,7 @@
 
 
   
-    <article id="post-try-electron" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-try-electron" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/electron/try-electron/" class="article-date">
   <time datetime="2017-09-20T16:57:34.000Z" itemprop="datePublished">2017-09-21</time>
@@ -347,12 +424,12 @@
         <p>最近工作上需要把 web 上的内容打包成一个客户端, 以便于提供一些更好用户体验的功能. 我们的前端是目前比较标准的 webpack + react. 因此, 首先想到的是把 <code>webpack</code> 生成的文件丢进 <code>electron</code> 里运行.</p>
 <p>看似很简单, 但实践还是踩了蛮多坑的. 当然一定程度上也是由于我个人对 electron 并不太熟悉, 各种实践也是一边摸索一边进行的…</p>
 <h2 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h2><p>electron 启动时会执行一个 js 脚本创建一个 node 进程.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">electron ./main.js</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">electron ./main.js</span><br></pre></td></tr></table></figure>
 <p>这个进程可以用于初始化 electron 应用. 并且控制窗口的打开与事件监听. 在官方文档里, 这个进程被称作 <code>Main Process</code></p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> electron = <span class="built_in">require</span>(<span class="string">'electron'</span>)</div><div class="line"></div><div class="line"><span class="keyword">const</span> &#123; BrowserWindow &#125; = electron</div><div class="line"></div><div class="line">mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">1280</span>, <span class="attr">height</span>: <span class="number">720</span>&#125;)</div><div class="line"></div><div class="line"><span class="comment">// Load code/index.html page</span></div><div class="line">mainWindow.loadURL(<span class="string">'file://index.html'</span>)</div><div class="line"></div><div class="line"><span class="comment">// ...</span></div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> electron = <span class="built_in">require</span>(<span class="string">'electron'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> &#123; BrowserWindow &#125; = electron</span><br><span class="line"></span><br><span class="line">mainWindow = <span class="keyword">new</span> BrowserWindow(&#123;<span class="attr">width</span>: <span class="number">1280</span>, <span class="attr">height</span>: <span class="number">720</span>&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Load code/index.html page</span></span><br><span class="line">mainWindow.loadURL(<span class="string">'file://index.html'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
 <p>通过 <code>loadURL</code> 打开的窗口, 基本上就是一个内嵌 chrome 内核的浏览器, 只不过 <code>electron</code> 还贴心的注入了一些 nodejs 的模块, 比如 <code>commonjs</code> 的 require/modules, <code>fs</code>, <code>path</code> 之类的. </p>
 <p>这个浏览器窗口的进程在官方文档里, 被称作 <code>Renderer Process</code>.</p>
-<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="external"><code>remote</code></a> 的模块可以用来执行主模块里的东西.</p>
+<p>主进程和渲染进程可以调用的 API 各不相同, 渲染进程里提供了一个 <a href="https://electron.atom.io/docs/api/remote/" target="_blank" rel="noopener"><code>remote</code></a> 的模块可以用来执行主模块里的东西.</p>
 <p>通过这些接口, 我们可以做到许多浏览器做不到的事情, 比如本地文件的读写, 代理, cors, 设备驱动, 等等等等…</p>
         
           <p class="article-more-link">
@@ -362,9 +439,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cjkahgjta0017yom4fi7cpmad" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/electron/try-electron/" data-id="cjooedpbu000nvjm464ksjncp" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/electron/try-electron/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/note/">note</a></li></ul>
@@ -376,7 +453,7 @@
 
 
   
-    <article id="post-learn-webrtc-faq" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-learn-webrtc-faq" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/webrtc/learn-webrtc-faq/" class="article-date">
   <time datetime="2017-08-10T16:21:33.000Z" itemprop="datePublished">2017-08-11</time>
@@ -403,21 +480,21 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Q: WebRTC 是什么, 能做什么, 社区评价?</p>
-<p><a href="https://www.zhihu.com/question/22301898" target="_blank" rel="external">https://www.zhihu.com/question/22301898</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">WebRTC 全称 Web Real-Time Communication。它并不是单一的协议， 包含了媒体、加密、传输层等在内的多个协议标准以及一套基于 JavaScript 的 API。通过简单易用的 JavaScript API ，在不安装任何插件的情况下，让浏览器拥有了 P2P音视频和数据分享的能力。</div></pre></td></tr></table></figure>
+<p><a href="https://www.zhihu.com/question/22301898" target="_blank" rel="noopener">https://www.zhihu.com/question/22301898</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WebRTC 全称 Web Real-Time Communication。它并不是单一的协议， 包含了媒体、加密、传输层等在内的多个协议标准以及一套基于 JavaScript 的 API。通过简单易用的 JavaScript API ，在不安装任何插件的情况下，让浏览器拥有了 P2P音视频和数据分享的能力。</span><br></pre></td></tr></table></figure>
 <p>Q: WebRTC 技术栈</p>
 <p><img src="https://upaiyun.kf5.com/attachments/download/3778945/0015971b5681d322f5e5212cb38cd7f/"></p>
 <p>Q: 如何搭建一个 WebRTC sample?</p>
-<p><a href="https://webrtc.github.io/samples/" target="_blank" rel="external">https://webrtc.github.io/samples/</a></p>
+<p><a href="https://webrtc.github.io/samples/" target="_blank" rel="noopener">https://webrtc.github.io/samples/</a></p>
 <p>Q: WebRTC有哪些实现?</p>
-<p><a href="https://github.com/rainzhaojy/blogs/issues/3" target="_blank" rel="external">https://github.com/rainzhaojy/blogs/issues/3</a></p>
+<p><a href="https://github.com/rainzhaojy/blogs/issues/3" target="_blank" rel="noopener">https://github.com/rainzhaojy/blogs/issues/3</a></p>
 <ol>
 <li>Browser Support</li>
-<li>WebRTC native code (<a href="https://webrtc.org/native-code/" target="_blank" rel="external">https://webrtc.org/native-code/</a>)</li>
+<li>WebRTC native code (<a href="https://webrtc.org/native-code/" target="_blank" rel="noopener">https://webrtc.org/native-code/</a>)</li>
 </ol>
 <p>Q: WebRTC 如何进行网络请求?</p>
 <p>通过 P2P 协议</p>
-<p><a href="https://bloggeek.me/4-p2p-webrtc-facts/" target="_blank" rel="external">https://bloggeek.me/4-p2p-webrtc-facts/</a></p>
+<p><a href="https://bloggeek.me/4-p2p-webrtc-facts/" target="_blank" rel="noopener">https://bloggeek.me/4-p2p-webrtc-facts/</a></p>
 <ol>
 <li>WebRTC 在 p2p 上和 voIp 一样<br> 这意味着从一端到另外一端是 “best effort” 的机制</li>
 <li>WebRTC 是唯一的浏览器 p2p 方案</li>
@@ -432,9 +509,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjkahgjt0000lyom4891ljo19" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/" data-id="cjooedpbi000cvjm40o4axhgh" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/webrtc/learn-webrtc-faq/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
@@ -446,7 +523,7 @@
 
 
   
-    <article id="post-learn-about-apollo" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-learn-about-apollo" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/framework/learn-about-apollo/" class="article-date">
   <time datetime="2017-07-31T14:31:06.000Z" itemprop="datePublished">2017-07-31</time>
@@ -484,9 +561,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjkahgjsx000gyom43sly0yu3" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/framework/learn-about-apollo/" data-id="cjooedpbg000bvjm4wbwyacj0" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/framework/learn-about-apollo/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/apollo/">apollo</a></li></ul>
@@ -498,7 +575,7 @@
 
 
   
-    <article id="post-some-about-webpack" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-some-about-webpack" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/webpack/some-about-webpack/" class="article-date">
   <time datetime="2017-07-22T16:10:48.000Z" itemprop="datePublished">2017-07-23</time>
@@ -527,12 +604,12 @@
         <h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
 <p>社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 <code>AMD</code>, <code>CommonJs</code> 以及 ES6 规范的 <code>import</code></p>
 <p>由于浏览器加载 script 异步的天性, 最先(也是最自然)诞生的模块是 <code>异步模块定义(Asynchronous Module Definition)</code>, 简称 <code>AMD</code>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</span><br></pre></td></tr></table></figure>
 <p><code>AMD</code> 通过一个数组声明自己所依赖的文件,当所有依赖加载完毕后, 作为参数传递给回调函数. <code>RequireJs</code> 是一个 <code>AMD</code> 比较常见的实现. 类似的还有国人玉伯写的 <code>Sea.js</code>(虽然 Sea.js 提出了 <code>CMD</code> 的概念, 但本质还是 AMD 的变形).</p>
 <p><code>AMD</code> 允许以 runtime 的形式运行, 动态的加载依赖文件, 也可以一次性将依赖构建在一个或多个文件中运行, 后者在生产环境下使用较为普遍, 可以有效的优化页面加载速度, 例如 <code>Require.js</code> 提供的 <code>r.js</code>, 在 CLI 中执行可以将源码构建并优化成生产环境运行的目标代码, 写入指定目录, 这一点已经和 webpack 比较相似了.</p>
 <p>另外值得一提的是 <code>Require.js</code> 并不仅仅可以处理 js 模块, 还可以用于引入 css, 文本资源等等. 通过一些 <code>Require.js</code> 的插件来实现, 在代码中也需要显示的声明文件类型 (eg: <code>require(&#39;css!style.css&#39;)</code>). 相比日后 webpack 要繁琐些.</p>
 <p>CommonJs 是 nodejs 默认的加载方式:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const $ = require(‘jQuery’);</div><div class="line">console.log($.version);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const $ = require(‘jQuery’);</span><br><span class="line">console.log($.version);</span><br></pre></td></tr></table></figure>
 <p>这种同步的写法在浏览器中显然无法直接运行. 但我们可以在构建阶段将 js 文本解析成<code>抽象语法树(Abstract Syntax Tree)</code>, 然后将所有 require 的内容合并在一个文件中. 这样的解析工具有 <code>Browserify</code> 以及后来的 <code>Webpack</code>.</p>
 <p><code>Webpack</code> 在 <code>Browserify</code> 基础上做了一些优化, 比如可以将构建的文件拆分成多个 <code>chunk</code>, 不用刷新页面就可以’热替换’模块等.</p>
 <p>ES6 的 import 实际上和 CommonJs 比较相似, 不单独赘述.</p>
@@ -545,9 +622,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjkahgjt3000syom4jz398jhz" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjooedpcn002dvjm4p8e237bt" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
@@ -559,7 +636,7 @@
 
 
   
-    <article id="post-stop-using-css-in-js" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-stop-using-css-in-js" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/engineering/stop-using-css-in-js/" class="article-date">
   <time datetime="2017-06-18T14:52:27.000Z" itemprop="datePublished">2017-06-18</time>
@@ -585,14 +662,14 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="external">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
+        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="noopener">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
 <p>原文发表于: 2016-04-27</p>
 <p>最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文<a href="https://ekoneko.github.io/blog/engineering/a-unified-styling-language/">统一样式语言</a> 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳了一些(作者认为上的) CSS-in-JS 误区.</p>
 <h2 id="关于-CSS"><a href="#关于-CSS" class="headerlink" title="关于 CSS"></a>关于 CSS</h2><p><code>styled-components</code> 的文档说</p>
 <pre><code>原始 CSS 是用于文档形式的 web 的. 在1993年, 网页都是一些静态的文档, 那时用 CSS 来解决文档的样式问题. 如今, 我们构建的是更加丰富, 可交互, 面向用户的 APP. CSS 已经不适合构建这样的项目
 </code></pre><p>我不赞同. CSS 也在与时俱进加入了许多新功能. (伪类, 伪元素, CSS 变量, \@media, 帧动画, 组合, 列, flex, 网格, calc, etc…)</p>
 <p>从 UI 的角度上, “组件”就是独立的文档碎片. (比如 &lt;button /&rt;就是一个组件) CSS 用来描述文档, 也就是所有组件的集合, 有何不妥呢. 正所谓物尽其用.</p>
-<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="external">demo</a></p>
+<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="noopener">demo</a></p>
 <p>这成为了 React 中一种新型定义组件样式的趋势.</p>
 <p>先明确一点: styled-components 组件是 CSS 的高阶抽象. 它在 JS 中定义 CSS, 并在 JSX 解析时绑定在对应元素上.</p>
 <p>我不喜欢这种趋势, 它充满了太多误解. 调查了IRC, reddit, discord等地方, 人们用 <code>styled-components</code> 的理由. 我把他们称为”幻想” (myths)</p>
@@ -604,79 +681,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjkahgjt5000zyom4m2v68oak" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjooedpbm000ivjm47uwdxx6g" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-a-unified-styling-language" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/blog/engineering/a-unified-styling-language/" class="article-date">
-  <time datetime="2017-06-05T00:07:30.000Z" itemprop="datePublished">2017-06-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/blog/categories/engineering/">engineering</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/engineering/a-unified-styling-language/">[译]统一样式语言</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>原文: [<a href="https://medium.com/seek-blog/a-unified-styling-language-d0c208de2660" target="_blank" rel="external">https://medium.com/seek-blog/a-unified-styling-language-d0c208de2660</a>]</p>
-<p>原文发表于: 2017-05-23</p>
-<p>近几年里我们看到了很多 <a href="https://github.com/MicheleBertoli/css-in-js" target="_blank" rel="external"><code>css in js</code></a> 的尝试.<br>大多来自 React 社区. 显然这遭到了很多的吐槽, 尤其是那些非常熟练 css 的人, 觉得这种行为难以置信</p>
-<pre><code>&quot;为什么会有人想把 css 写在 js 里?&quot;
-&quot;这绝对是糟糕的主意!&quot;
-&quot;如果他们学过 css 的话!&quot;
-</code></pre><p>如果这是你的第一反应, 那么请读下去. 我们需要继续讨论为什么把 css 写在 js 里并不那么糟糕, 以及为什么我们要着眼于此.</p>
-<p><img src="https://cdn-images-1.medium.com/max/2000/1*Ipu5Grtzr21suPiTfvGXaw.png"></p>
-<h2 id="社区的误解"><a href="#社区的误解" class="headerlink" title="社区的误解"></a>社区的误解</h2><p>我从19岁就开始从事 css 专业, 在那个用表格布局的黑暗年代. 按照 <a href="http://www.csszengarden.com/" target="_blank" rel="external">CSS Zen Garden</a> 中受到启发, 我将过去的代码迁移到语义标签下并使用样式表布局.<br>不久之后，我开始痴迷于分离样式，使用<a href="https://www.w3.org/wiki/The_principles_of_unobtrusive_JavaScript" target="_blank" rel="external">不起眼的JavaScript</a>来装饰服务器渲染的标记与客户端交互. 有一个小但是活跃的社区从事着这样的实践, 我们成为了第一批前端工程师.</p>
-<p>或许你会认为我会反对 React 的 HTML-in-JS, 因为这和我之前的所做完全相反. 在我的经验里, React组件模型及其服务端渲染能力, 最终可以构建一个复杂的单页应用, 从而让我们可以向用户提供快速, 可达, 渐进增强的应用. 我在 <code>Seek</code> 实践了这样的能力, 通过 React 构建了单页面应用, 即使禁用了 js, 搜索依旧可用, 并且通过服务端渲染在旧的浏览器中可以正常工作</p>
-<p>所以让两个社区和平共处的橄榄枝是什么呢, 虽然这种方式并不完美, 没有被你用于生产环境, 甚至不是很有说服力, 但至少可以带给我们思考空间.</p>
-<h2 id="Why-CSS-in-JS"><a href="#Why-CSS-in-JS" class="headerlink" title="Why CSS-in-JS?"></a>Why CSS-in-JS?</h2><p>希望通过范围控制样式的开发者通常喜欢直接使用 CSS 模块, 而非 CSS-in-JS. 我在工作项目也没有使用 CSS-in-JS.</p>
-<p>尽管如此我也实时关注 CSS-in-JS社区, 并且我也认为应当如此.</p>
-<p>但是为什么需要 CSS-in-JS 呢?</p>
-<p>为了清楚这个问题, 我们将讨论这种做法带来的好处:</p>
-<ol>
-<li>范围约束</li>
-<li>关键样式 (Critical CSS)</li>
-<li>更智能的优化</li>
-<li>包管理</li>
-<li>非浏览器平台样式 (Non-browser styling)</li>
-</ol>
-        
-          <p class="article-more-link">
-            <a href="/blog/engineering/a-unified-styling-language/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjkahgjsm0002yom4960zytwr" class="article-share-link">Partager</a>
-      
-        <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -699,9 +706,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -709,9 +716,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -719,9 +726,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -730,7 +737,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -738,9 +745,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
         
           <li>
             <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
@@ -758,10 +769,6 @@
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
-          <li>
-            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -775,7 +782,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

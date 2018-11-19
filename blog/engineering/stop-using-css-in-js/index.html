@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>[译]停止使用 CSS-in-JS 的九个理由 | ekoneko.github.io</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="原文: [https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc] 原文发表于: 2016-04-27 最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文统一样式语言 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳">
-<meta name="keywords" content="react,engineering,css,css-in-js">
+<meta name="keywords" content="react,css,engineering,css-in-js">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[译]停止使用 CSS-in-JS 的九个理由">
 <meta property="og:url" content="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="原文: [https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc] 原文发表于: 2016-04-27 最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文统一样式语言 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-07-31T14:36:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]停止使用 CSS-in-JS 的九个理由">
@@ -29,7 +30,7 @@
   
 
 </head>
-
+</html>
 <body>
   <div id="container">
     <div id="wrap">
@@ -53,9 +54,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -64,7 +65,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-stop-using-css-in-js" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-stop-using-css-in-js" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/engineering/stop-using-css-in-js/" class="article-date">
   <time datetime="2017-06-18T14:52:27.000Z" itemprop="datePublished">2017-06-18</time>
@@ -90,55 +91,55 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="external">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
+        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="noopener">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
 <p>原文发表于: 2016-04-27</p>
 <p>最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文<a href="https://ekoneko.github.io/blog/engineering/a-unified-styling-language/">统一样式语言</a> 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳了一些(作者认为上的) CSS-in-JS 误区.</p>
 <h2 id="关于-CSS"><a href="#关于-CSS" class="headerlink" title="关于 CSS"></a>关于 CSS</h2><p><code>styled-components</code> 的文档说</p>
 <pre><code>原始 CSS 是用于文档形式的 web 的. 在1993年, 网页都是一些静态的文档, 那时用 CSS 来解决文档的样式问题. 如今, 我们构建的是更加丰富, 可交互, 面向用户的 APP. CSS 已经不适合构建这样的项目
 </code></pre><p>我不赞同. CSS 也在与时俱进加入了许多新功能. (伪类, 伪元素, CSS 变量, \@media, 帧动画, 组合, 列, flex, 网格, calc, etc…)</p>
 <p>从 UI 的角度上, “组件”就是独立的文档碎片. (比如 &lt;button /&rt;就是一个组件) CSS 用来描述文档, 也就是所有组件的集合, 有何不妥呢. 正所谓物尽其用.</p>
-<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="external">demo</a></p>
+<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="noopener">demo</a></p>
 <p>这成为了 React 中一种新型定义组件样式的趋势.</p>
 <p>先明确一点: styled-components 组件是 CSS 的高阶抽象. 它在 JS 中定义 CSS, 并在 JSX 解析时绑定在对应元素上.</p>
 <p>我不喜欢这种趋势, 它充满了太多误解. 调查了IRC, reddit, discord等地方, 人们用 <code>styled-components</code> 的理由. 我把他们称为”幻想” (myths)</p>
 <a id="more"></a>
-<h2 id="幻想1-解决了全局命名空间冲突"><a href="#幻想1-解决了全局命名空间冲突" class="headerlink" title="幻想1: 解决了全局命名空间冲突"></a>幻想1: 解决了全局命名空间冲突</h2><p>我称之为幻想(myths) 是因为问题根本就不存在. <a href="https://github.com/css-modules/css-modules" target="_blank" rel="external">CSS Modules</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM" target="_blank" rel="external">Shadow DOM</a>, 以及数不清的命名规范约束(比如 BEM) 很早之前就已经解决了这个问题.</p>
+<h2 id="幻想1-解决了全局命名空间冲突"><a href="#幻想1-解决了全局命名空间冲突" class="headerlink" title="幻想1: 解决了全局命名空间冲突"></a>幻想1: 解决了全局命名空间冲突</h2><p>我称之为幻想(myths) 是因为问题根本就不存在. <a href="https://github.com/css-modules/css-modules" target="_blank" rel="noopener">CSS Modules</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM" target="_blank" rel="noopener">Shadow DOM</a>, 以及数不清的命名规范约束(比如 BEM) 很早之前就已经解决了这个问题.</p>
 <p><code>styled-components</code> 和 CSS modules 一样, 从人类手中拿走了命名 className 的权利. 人会犯错, 程序的错误要少的多.</p>
 <p>总之, 这不是一个用 <code>styled-components</code> 的好理由</p>
 <h2 id="幻想2-styled-components-会让代码更简洁"><a href="#幻想2-styled-components-会让代码更简洁" class="headerlink" title="幻想2: styled-components 会让代码更简洁"></a>幻想2: styled-components 会让代码更简洁</h2><p>一个例子是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;TicketName&gt;&lt;/TicketName&gt;</div><div class="line">&lt;div className=&#123;styles.ticketName&#125;&gt;&lt;/div&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;TicketName&gt;&lt;/TicketName&gt;</span><br><span class="line">&lt;div className=&#123;styles.ticketName&#125;&gt;&lt;/div&gt;</span><br></pre></td></tr></table></figure>
 <p>首先, 这差别几乎微不足道, 这也不完全是正确的.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&lt;TinyBitLongerStyleName&gt;&lt;/TinyBitLongerStyleName&gt;</div><div class="line">&lt;div className=&#123;styles.longerStyleName&#125;&gt;&lt;/div&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;TinyBitLongerStyleName&gt;&lt;/TinyBitLongerStyleName&gt;</span><br><span class="line">&lt;div className=&#123;styles.longerStyleName&#125;&gt;&lt;/div&gt;</span><br></pre></td></tr></table></figure>
 <p>这例子还会在 “幻想5: 有益于样式组件条件化”出现. <code>styled-components</code> 只在一些基础的组件中有优势.</p>
-<h2 id="幻想3-styled-components-能加强语义化"><a href="#幻想3-styled-components-能加强语义化" class="headerlink" title="幻想3: styled-components 能加强语义化"></a>幻想3: styled-components 能加强语义化</h2><p>这个前提是错的. 样式和语义是不同的问题, 需要不同的解决方案. 引用<a href="https://medium.com/@mrmrs_" target="_blank" rel="external">Adam Morse</a>的一段话</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">内容的语义和样式无关. 用乐高时, 我不会想&quot;哦, 这是一个引擎砖块&quot;, 我只会想, &quot;哦, 这是一个1x4的砖块&quot;. 不管我是建造一个水下基地还是飞机, 我都知道怎么用乐高砖块.</div></pre></td></tr></table></figure>
+<h2 id="幻想3-styled-components-能加强语义化"><a href="#幻想3-styled-components-能加强语义化" class="headerlink" title="幻想3: styled-components 能加强语义化"></a>幻想3: styled-components 能加强语义化</h2><p>这个前提是错的. 样式和语义是不同的问题, 需要不同的解决方案. 引用<a href="https://medium.com/@mrmrs_" target="_blank" rel="noopener">Adam Morse</a>的一段话</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">内容的语义和样式无关. 用乐高时, 我不会想&quot;哦, 这是一个引擎砖块&quot;, 我只会想, &quot;哦, 这是一个1x4的砖块&quot;. 不管我是建造一个水下基地还是飞机, 我都知道怎么用乐高砖块.</span><br></pre></td></tr></table></figure>
 <ul>
-<li>[<a href="http://mrmrs.io/writing/2016/03/24/scalable-css/" target="_blank" rel="external">http://mrmrs.io/writing/2016/03/24/scalable-css/</a>]</li>
+<li>[<a href="http://mrmrs.io/writing/2016/03/24/scalable-css/" target="_blank" rel="noopener">http://mrmrs.io/writing/2016/03/24/scalable-css/</a>]</li>
 </ul>
 <p>比如说</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;PersonList&gt;</div><div class="line">  &lt;PersonListItem&gt;</div><div class="line">    &lt;PersonFirstName&gt;Foo&lt;/PersonFirstName&gt;</div><div class="line">    &lt;PersonLastName&gt;Bar&lt;/PersonLastName&gt;</div><div class="line">  &lt;/PersonListItem&gt;</div><div class="line">&lt;/PersonList&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;PersonList&gt;</span><br><span class="line">  &lt;PersonListItem&gt;</span><br><span class="line">    &lt;PersonFirstName&gt;Foo&lt;/PersonFirstName&gt;</span><br><span class="line">    &lt;PersonLastName&gt;Bar&lt;/PersonLastName&gt;</span><br><span class="line">  &lt;/PersonListItem&gt;</span><br><span class="line">&lt;/PersonList&gt;</span><br></pre></td></tr></table></figure>
 <p>这里用的标记更有语义化, 但你知道组成 HTML 的标签是什么么? 当然不.</p>
 <p>编译后是这样</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&lt;ol&gt;</div><div class="line">  &lt;li&gt;</div><div class="line">    &lt;span className=&#123;styles.firstName&#125;&gt;Foo&lt;/span&gt;</div><div class="line">    &lt;span className=&#123;styles.lastName&#125;&gt;Bar&lt;/span&gt;</div><div class="line">  &lt;/li&gt;</div><div class="line">&lt;/ol&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;ol&gt;</span><br><span class="line">  &lt;li&gt;</span><br><span class="line">    &lt;span className=&#123;styles.firstName&#125;&gt;Foo&lt;/span&gt;</span><br><span class="line">    &lt;span className=&#123;styles.lastName&#125;&gt;Bar&lt;/span&gt;</span><br><span class="line">  &lt;/li&gt;</span><br><span class="line">&lt;/ol&gt;</span><br></pre></td></tr></table></figure>
 <h2 id="幻想4-便于样式继承"><a href="#幻想4-便于样式继承" class="headerlink" title="幻想4: 便于样式继承"></a>幻想4: 便于样式继承</h2><p><code>styled-components</code> 在 <code>v1</code> 中继承需要 <code>styled(StyledComponent)</code> <code>v2</code> 则是通过 <code>extend</code> 进行继承.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const Button = styled.button`</div><div class="line">  padding: 10px;</div><div class="line">`;</div><div class="line">const TomatoButton = Button.extend`</div><div class="line">  color: #f00;</div><div class="line">`;</div></pre></td></tr></table></figure>
-<p>这很好啊, 但是用 CSS 也一样可以做到 (用CSS-Module的<a href="https://github.com/css-modules/css-modules#composition" target="_blank" rel="external">组合</a>, 或者 SASS 的 mixin <a href="http://sass-lang.com/guide#topic-7" target="_blank" rel="external">\@extend</a>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">const Button = styled.button`</span><br><span class="line">  padding: 10px;</span><br><span class="line">`;</span><br><span class="line">const TomatoButton = Button.extend`</span><br><span class="line">  color: #f00;</span><br><span class="line">`;</span><br></pre></td></tr></table></figure>
+<p>这很好啊, 但是用 CSS 也一样可以做到 (用CSS-Module的<a href="https://github.com/css-modules/css-modules#composition" target="_blank" rel="noopener">组合</a>, 或者 SASS 的 mixin <a href="http://sass-lang.com/guide#topic-7" target="_blank" rel="noopener">\@extend</a>.</p>
 <h2 id="幻想5-有益于样式组件条件化"><a href="#幻想5-有益于样式组件条件化" class="headerlink" title="幻想5: 有益于样式组件条件化"></a>幻想5: 有益于样式组件条件化</h2><p>基础例子是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">&lt;Button primary /&gt;</div><div class="line">&lt;Button secondary /&gt;</div><div class="line">&lt;Button primary active=&#123;true&#125; /&gt;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;Button primary /&gt;</span><br><span class="line">&lt;Button secondary /&gt;</span><br><span class="line">&lt;Button primary active=&#123;true&#125; /&gt;</span><br></pre></td></tr></table></figure>
 <p>React 中很常见, 通过 props 去定义组件的行为. 这让组件风格更加直观了吗? 或许吧, 但看看组件的定义部分:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">styled.Button`</div><div class="line">  background: $&#123;props =&gt; props.primary ? &apos;#f00&apos; : props.secondary ? &apos;#0f0&apos; : &apos;#00f&apos;&#125;;</div><div class="line">  color: $&#123;props =&gt; props.primary ? &apos;#fff&apos; : props.secondary ? &apos;#fff&apos; : &apos;#000&apos;&#125;;</div><div class="line">  opacity: $&#123;props =&gt; props.active ? 1 : 0&#125;;</div><div class="line">`;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">styled.Button`</span><br><span class="line">  background: $&#123;props =&gt; props.primary ? &apos;#f00&apos; : props.secondary ? &apos;#0f0&apos; : &apos;#00f&apos;&#125;;</span><br><span class="line">  color: $&#123;props =&gt; props.primary ? &apos;#fff&apos; : props.secondary ? &apos;#fff&apos; : &apos;#000&apos;&#125;;</span><br><span class="line">  opacity: $&#123;props =&gt; props.active ? 1 : 0&#125;;</span><br><span class="line">`;</span><br></pre></td></tr></table></figure>
 <p>直接用 CSS 定义要方便的多, 并且这种定义通过解释器会更复杂,对比生成出的 CSS:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">button &#123;</div><div class="line">  background: #00f;</div><div class="line">  opacity: 0;</div><div class="line">  color: #000;</div><div class="line">&#125;</div><div class="line">button.primary,</div><div class="line">button.seconary &#123;</div><div class="line">  color: #fff;</div><div class="line">&#125;</div><div class="line">button.primary &#123;</div><div class="line">  background: #f00;</div><div class="line">&#125;</div><div class="line">button.secondary &#123;</div><div class="line">  background: #0f0;</div><div class="line">&#125;</div><div class="line">button.active &#123;</div><div class="line">  opacity: 1;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">button &#123;</span><br><span class="line">  background: #00f;</span><br><span class="line">  opacity: 0;</span><br><span class="line">  color: #000;</span><br><span class="line">&#125;</span><br><span class="line">button.primary,</span><br><span class="line">button.seconary &#123;</span><br><span class="line">  color: #fff;</span><br><span class="line">&#125;</span><br><span class="line">button.primary &#123;</span><br><span class="line">  background: #f00;</span><br><span class="line">&#125;</span><br><span class="line">button.secondary &#123;</span><br><span class="line">  background: #0f0;</span><br><span class="line">&#125;</span><br><span class="line">button.active &#123;</span><br><span class="line">  opacity: 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>直接写 CSS 有更多的优化空间</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">button &#123;</div><div class="line">  background: #00f;</div><div class="line">  opacity: 0;</div><div class="line">  color: #000;</div><div class="line"></div><div class="line">  &amp;.primary,</div><div class="line">  &amp;.seconary &#123;</div><div class="line">    color: #fff;</div><div class="line">  &#125;</div><div class="line">  &amp;.primary &#123;</div><div class="line">    background: #f00;</div><div class="line">  &#125;</div><div class="line">  &amp;.secondary &#123;</div><div class="line">    background: #0f0;</div><div class="line">  &#125;</div><div class="line">  &amp;.active &#123;</div><div class="line">    opacity: 1;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">button &#123;</span><br><span class="line">  background: #00f;</span><br><span class="line">  opacity: 0;</span><br><span class="line">  color: #000;</span><br><span class="line"></span><br><span class="line">  &amp;.primary,</span><br><span class="line">  &amp;.seconary &#123;</span><br><span class="line">    color: #fff;</span><br><span class="line">  &#125;</span><br><span class="line">  &amp;.primary &#123;</span><br><span class="line">    background: #f00;</span><br><span class="line">  &#125;</span><br><span class="line">  &amp;.secondary &#123;</span><br><span class="line">    background: #0f0;</span><br><span class="line">  &#125;</span><br><span class="line">  &amp;.active &#123;</span><br><span class="line">    opacity: 1;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="幻想6-更适合代码组织"><a href="#幻想6-更适合代码组织" class="headerlink" title="幻想6: 更适合代码组织"></a>幻想6: 更适合代码组织</h2><p>一些人告诉我他们喜欢 CSS 和 JS 在同一文件里.</p>
 <p>可以理解, 一个组件定义放在不同文件里缺失比较无趣. 但是把所有东西都丢在一个文件里相当糟糕. 不但不容易追踪, 而且稍微比一个简单的按钮复杂一些的组件都会出现很长的滚动条.</p>
-<p>如果一定要让 CSS 和 JS 在一起, 也可以用<a href="https://github.com/4Catalyzer/css-literal-loader" target="_blank" rel="external">css-literal-loader</a>. 这个 loader 可以允许你在构建的时候提取出 css.</p>
+<p>如果一定要让 CSS 和 JS 在一起, 也可以用<a href="https://github.com/4Catalyzer/css-literal-loader" target="_blank" rel="noopener">css-literal-loader</a>. 这个 loader 可以允许你在构建的时候提取出 css.</p>
 <h2 id="幻想7-让前端更好了-工具也很给力"><a href="#幻想7-让前端更好了-工具也很给力" class="headerlink" title="幻想7: 让前端更好了, 工具也很给力"></a>幻想7: 让前端更好了, 工具也很给力</h2><p>显然你没用过 <code>styled-components</code></p>
 <ol>
 <li><p>样式中任何一点错误, 都会导致构建失败, 抛出一个很长的错误栈, 并且无法显示组件.</p>
 </li>
-<li><p>没有一个对人类友好的 className, 调试时不能很方便在 React 元素与 DOM 元素之间切换. (v2通过<a href="https://github.com/styled-components/babel-plugin-styled-components" target="_blank" rel="external">babel-plugin-styled-components</a> 有所改善)</p>
+<li><p>没有一个对人类友好的 className, 调试时不能很方便在 React 元素与 DOM 元素之间切换. (v2通过<a href="https://github.com/styled-components/babel-plugin-styled-components" target="_blank" rel="noopener">babel-plugin-styled-components</a> 有所改善)</p>
 </li>
 <li><p>没有 lint工具 (样式有 style lint)</p>
 </li>
@@ -156,14 +157,14 @@
 <p><code>styled-components</code> 并没有对此做什么. 这种情况下最好直接定义组件样式, 以免出错.</p>
 <hr>
 <p>这篇文章也不是说 CSS-in-JS一无是处, 用 <code>styled-components</code> 还是有一个很好的场景的: 跨平台支持.</p>
-<h2 id="所以-现在用什么呢"><a href="#所以-现在用什么呢" class="headerlink" title="所以, 现在用什么呢?"></a>所以, 现在用什么呢?</h2><p>Shadow DOM 太过超前 (51% 浏览器支持). 如果害怕样式冲突, 尝试用 BEM 约束命名. 如果还是担心(或者懒得用 BEM), 可以试试 CSS modules. 如果是在写 React 的 web, 还可以用 <a href="https://github.com/gajus/babel-plugin-react-css-modules" target="_blank" rel="external">babel-plugin-react-css-modules</a>. React-Native 的话, <code>styled-components</code> 还是很好用的</p>
+<h2 id="所以-现在用什么呢"><a href="#所以-现在用什么呢" class="headerlink" title="所以, 现在用什么呢?"></a>所以, 现在用什么呢?</h2><p>Shadow DOM 太过超前 (51% 浏览器支持). 如果害怕样式冲突, 尝试用 BEM 约束命名. 如果还是担心(或者懒得用 BEM), 可以试试 CSS modules. 如果是在写 React 的 web, 还可以用 <a href="https://github.com/gajus/babel-plugin-react-css-modules" target="_blank" rel="noopener">babel-plugin-react-css-modules</a>. React-Native 的话, <code>styled-components</code> 还是很好用的</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjkahgjt5000zyom4m2v68oak" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjooedpbm000ivjm47uwdxx6g" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
@@ -175,7 +176,7 @@
 <nav id="article-nav">
   
     <a href="/blog/webpack/some-about-webpack/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           webpack 介绍
@@ -185,7 +186,7 @@
   
   
     <a href="/blog/engineering/a-unified-styling-language/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">[译]统一样式语言</div>
     </a>
   
@@ -206,9 +207,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -216,9 +217,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -226,9 +227,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -237,7 +238,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -245,9 +246,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
         
           <li>
             <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
@@ -265,10 +270,6 @@
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
-          <li>
-            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -282,7 +283,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

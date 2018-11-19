@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>[Electron]Redux 主从模式 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在 Redux 上实现主从听起来是一件很奇怪的事情, 事实上我也只有最近折腾 Electron 项目时才用上了这么奇怪的技巧. 先描述下项目的业务场景: 我们的项目简单的说是一个基于 Electron 的文件管理系统, 类似于 Google Driver, 主要功能有如下几点:  支持树形目录结构的文件系统 多标签页同时打开 本地的数据存储与异步同步  由于 Electron 的版本是在 web">
+<meta name="keywords" content="electron,redux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Electron]Redux 主从模式">
+<meta property="og:url" content="http://ekoneko.github.io/blog/redux/redux-cluster/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="在 Redux 上实现主从听起来是一件很奇怪的事情, 事实上我也只有最近折腾 Electron 项目时才用上了这么奇怪的技巧. 先描述下项目的业务场景: 我们的项目简单的说是一个基于 Electron 的文件管理系统, 类似于 Google Driver, 主要功能有如下几点:  支持树形目录结构的文件系统 多标签页同时打开 本地的数据存储与异步同步  由于 Electron 的版本是在 web">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-11-19T14:19:43.232Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Electron]Redux 主从模式">
+<meta name="twitter:description" content="在 Redux 上实现主从听起来是一件很奇怪的事情, 事实上我也只有最近折腾 Electron 项目时才用上了这么奇怪的技巧. 先描述下项目的业务场景: 我们的项目简单的说是一个基于 Electron 的文件管理系统, 类似于 Google Driver, 主要功能有如下几点:  支持树形目录结构的文件系统 多标签页同时打开 本地的数据存储与异步同步  由于 Electron 的版本是在 web">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-redux-cluster" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/redux/redux-cluster/" class="article-date">
+  <time datetime="2018-11-11T15:34:36.000Z" itemprop="datePublished">2018-11-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/redux/">redux</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [Electron]Redux 主从模式
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在 Redux 上实现主从听起来是一件很奇怪的事情, 事实上我也只有最近折腾 Electron 项目时才用上了这么奇怪的技巧.</p>
+<p>先描述下项目的业务场景: 我们的项目简单的说是一个基于 Electron 的文件管理系统, 类似于 Google Driver, 主要功能有如下几点:</p>
+<ol>
+<li>支持树形目录结构的文件系统</li>
+<li>多标签页同时打开</li>
+<li>本地的数据存储与异步同步</li>
+</ol>
+<p>由于 Electron 的版本是在 web 的基础上增强了本地数据存储的特性, 很自然的, 我们的页面复用了 web 版 React + Redux 的架构. 并在 Redux 的 Action 层封装了从本地获取数据同时更新远程资源的逻辑, 并以中间件的形式实现了本地数据到服务端的增量同步.</p>
+<p>对 web 而言, 每打开一个页面就意味一个 Redux 实例被创建, 对应在 Electron 上也就是每一个 Webcontent 对应了一个 Redux. 这带来了许多问题</p>
+<ol>
+<li><p>不同的 Redux 数据内容可能不相同</p>
+<p>比如在 A 进程编辑了文件名, B 进程看到的也应该是编辑后的文件名, 无论是否联网</p>
+</li>
+<li><p>数据同步存在竞争关系</p>
+<p>这里的同步是双向的, 可能一个文件创建的动作被两个不同的进程推送给了服务端, 也可能是两个不同的进程同时操作了同一个本地数据, 导致本地出现了预期外的结果.</p>
+</li>
+<li><p>存在一定的网络请求浪费</p>
+<p>服务端到本地的同步是通过 socket 实现的, 这意味着每一个进程都需要建立一个 socket 连接.<br>并且当一个新的进程被创建时, 所有初始化的请求都会被触发一遍</p>
+</li>
+</ol>
+<p>根据上面的问题, 解答的方法几乎是不言而喻的. 如果可以有一个 ReduxMaster 来负责内容同步与网络请求, 在所有需要用到 Redux 的进程创建一个 ReduxClient, 只用来同步 ReduxMaster 的状态, 所有的问题就都迎刃而解了.</p>
+<p>(PS: 其实一开始我是叫 Master / Slaver 的, 这样的命名更加传统, 不过有一点点不符合现代人的政治正确标准)</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>先抽象出一个简单的例子, 文件重命名. 在 Redux 中, 我们需要 <code>dispatch</code> 一个 updateFileName 的 <code>Action</code>, 经过 file 的 <code>reducer</code>, 将最终的状态存入 <code>store</code>.</p>
+<p>现在, 这个事件由某一个 ReduxClient 触发, 我们希望由 ReduxMaster 来实现这个 Action, 再将状态更新至每一个 ReduxClient 中.</p>
+<p>在 ReduxClient 中, 我们需要一个 <code>Redux 中间件</code> 将需要由 ReduxMaster 执行的 action 拦截并将 action 的名称与参数通知给 ReduxMaster 所在的进程. 再由 ReduxMaster 将执行完的结果广播给出去. 最后由 ReduxClient 将结果转化为 state.</p>
+<p>当然在现实中, Action 是会承载 sideEffect 的. 以上面的例子而言 updateFileName 内部可能包含了一个网络请求, 这样的 Action 无法直接在进程间传递. 因此我们需要在各个进程间做出一个约定, 将 Action 映射为一个字符串 <code>ActionName</code>. 这样, 进程通信的过程中, 我们只需要传递 ActionName 和参数, 就可以由 ReduxMaster 完成一模一样的请求.</p>
+<p>这里涉及到的不同的进程之间的通信, 在 Electron 中, 用 ipc 可以很容易的达成. 在我们的例子里, ReduxMaster 运行在一个 renderer 进程中, ReduxClient 通过获取 Master 所在的 <code>Webcontents</code>.<code>send</code> 发起通知, ReduxMaster 与 ReduxClient 均通过 <code>ipcrenderer</code>.<code>on</code> 接收通知. <code>ReduxMaster</code> 通过遍历所有 webContents 的 <code>send</code> 方法进行广播.</p>
+<p>如果想在主进程里运行 ReduxMaster, 把 <code>Webcontents</code>.<code>send</code> 替换为 <code>ipcrenderer</code>.<code>send</code>, 接收替换为 <code>ipcMain</code>.<code>on</code> 即可.</p>
+<a id="more"></a>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>为了便于调用, 将 ipc 封装成 Promise 的形式</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Data&lt;P&gt; &#123;</span><br><span class="line">  args: P</span><br><span class="line">  id: <span class="built_in">string</span></span><br><span class="line">  reply: <span class="built_in">boolean</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> Result&lt;T&gt; &#123;</span><br><span class="line">  data: T</span><br><span class="line">  id: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ReduxClient</span></span><br><span class="line"><span class="keyword">const</span> masterWebContents: Electron.webContents</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">sendMessage</span>&lt;<span class="title">P</span> = </span>&#123;&#125;, T = &#123;&#125;&gt; (channel: <span class="built_in">string</span>, args: P, reply = <span class="literal">true</span>): <span class="built_in">Promise</span>&lt;T&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>&lt;T&gt;<span class="function">(<span class="params">(<span class="params">resolve, reject</span>) =&gt; &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="comment">// 生成一个随机 id, 当复数 ipc 同时存在时可以对应正确的回复</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> id = uuid(<span class="params"></span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    masterWebContents.send(<span class="params">channel, &#123;</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      args: args,</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      id: id,</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      reply: reply,</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">    &#125;</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">if</span> (<span class="params">!reply</span>) &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(<span class="params"></span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    &#125;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> listener = (<span class="params">ev: Electron.Event, result: Result&lt;&gt;</span>) =&gt; &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">if</span> (<span class="params">result.id === id</span>) &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">        clearSetTimeout(<span class="params">clearHandle</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">        resolve(<span class="params">result</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">      &#125;</span></span></span><br><span class="line"><span class="function"><span class="params">    &#125;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="comment">// 超时机制</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> clearHandle = setTimeout(<span class="params">(<span class="params"></span>) =&gt; &#123;</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      ipcRenderer.removeListener(<span class="params">`$&#123;channel&#125;-reply`, listener</span>)</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      reject(<span class="params"></span>)</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">    &#125;, TIMEOUT</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    ipcRenderer.once(<span class="params">`$&#123;channel&#125;-reply`, listener</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">  &#125;</span>)</span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// <span class="params">ReduxMaster</span></span></span><br><span class="line"><span class="function"><span class="params">async</span> <span class="params">function</span> <span class="params">listenMessage</span> (<span class="params">channel: <span class="built_in">string</span>, callback: <span class="built_in">Function</span></span>) &#123;</span></span><br><span class="line"><span class="function">  <span class="params">ipcrenderer</span>.<span class="params">on</span>(<span class="params">channel, (<span class="params">ev: Electron.Event, data: Data</span>) =&gt; &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">const</span> resultData = <span class="keyword">await</span> callback(<span class="params">data</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">    ev.send(<span class="params">`$&#123;channel&#125;-reply`, &#123;</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      id: data.id,</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">      data: resultData,</span></span></span></span><br><span class="line"><span class="function"><span class="params"><span class="params">    &#125;</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">  &#125;</span>)</span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="ReduxClient"><a href="#ReduxClient" class="headerlink" title="ReduxClient"></a>ReduxClient</h3><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; createStore, compose, applyMiddleware &#125; <span class="keyword">from</span> <span class="string">'redux'</span></span><br><span class="line"><span class="keyword">const</span> preloadedState = <span class="keyword">await</span> sendMessage&lt;<span class="built_in">void</span>, State&gt;(<span class="string">'reduxcluster:get-state'</span>)</span><br><span class="line"><span class="keyword">const</span> store = createStore(reducers, preloadedState. compose(</span><br><span class="line">  <span class="comment">// ...other enhancers</span></span><br><span class="line">  applyMiddleware(</span><br><span class="line">    createClientMiddleWare(),</span><br><span class="line">    <span class="comment">// ...other middlewares</span></span><br><span class="line">  )</span><br><span class="line">))</span><br><span class="line"></span><br><span class="line">listenMessage&lt;<span class="built_in">any</span>, <span class="built_in">void</span>&gt;<span class="function">(<span class="params">'reduxcluster:sync', (<span class="params">ev, args</span>) =&gt; &#123;</span></span></span><br><span class="line"><span class="function"><span class="params">  store.dispatch(<span class="params">'sync' args</span>)</span></span></span><br><span class="line"><span class="function"><span class="params">&#125;</span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="params">function</span> <span class="params">createClientMiddleWare</span> <span class="params">()</span> &#123;</span></span><br><span class="line"><span class="function">  <span class="params">return</span> (<span class="params">&#123;dispatch&#125;</span>) =&gt;</span> (next: <span class="built_in">Function</span>) =&gt; <span class="function">(<span class="params">action: Action</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 跳过不需要同步的, 以及广播定义的的 actions</span></span><br><span class="line">    <span class="keyword">if</span> (checkSkip(action)) &#123;</span><br><span class="line">      <span class="keyword">return</span> next(action)</span><br><span class="line">    &#125;</span><br><span class="line">    sendMessage(<span class="string">'reduxcluster:dispatch'</span>, &#123;</span><br><span class="line">      <span class="keyword">type</span>: action.toString(),</span><br><span class="line">      args: action.args,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ReduxMaster"><a href="#ReduxMaster" class="headerlink" title="ReduxMaster"></a>ReduxMaster</h3><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> store = createStore(reducers, preloadedState. compose(</span><br><span class="line">  <span class="comment">// ...other enhancers</span></span><br><span class="line">  applyMiddleware(</span><br><span class="line">    <span class="comment">// ...other middlewares</span></span><br><span class="line">    createMasterMiddleWare(),</span><br><span class="line">  )</span><br><span class="line">))</span><br><span class="line"></span><br><span class="line">listenMessage(<span class="string">'reduxcluster:get-state'</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> store.getState()</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">listenMessage(<span class="string">'reduxcluster:dispatch'</span>, <span class="function">(<span class="params">&#123; <span class="keyword">type</span>, args &#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> action = getActionFromType(<span class="keyword">type</span>)</span><br><span class="line">  store.dispatch(action(...args))</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createMasterMiddleWare</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 这里的 createMasterMiddleWare 是最后一个 middleware, 我们认为这里的 action 已经是纯对象了</span></span><br><span class="line">  <span class="keyword">return</span> <span class="function"><span class="params">()</span> =&gt;</span> (next: <span class="built_in">Function</span>) =&gt; <span class="function">(<span class="params">action: <span class="built_in">Object</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!checkSkip(action)) &#123;</span><br><span class="line">      sendMessage(<span class="string">'reduxcluster:sync'</span>, &#123;action&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    next(action)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/redux/redux-cluster/" data-id="cjooedpbj000gvjm4psw11qsg" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/redux/redux-cluster/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/redux/">redux</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/electron/try-electron-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">[笔记]electron 踩到的坑</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
+        
+          <li>
+            <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
+          </li>
+        
+          <li>
+            <a href="/blog/autotest/jest-note/">[笔记]jest 使用体验</a>
+          </li>
+        
+          <li>
+            <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
+          </li>
+        
+          <li>
+            <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/redux/redux-cluster/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>

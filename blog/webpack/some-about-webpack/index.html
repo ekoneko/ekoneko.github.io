@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>webpack 介绍 | ekoneko.github.io</title>
@@ -12,6 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/webpack/some-about-webpack/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="模块化的前身今世近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承. 社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 AMD, CommonJs 以及 ES6 规范的 import 由于浏览器加载 script 异步的天性, 最先(也是最">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="https://webpack.github.io/assets/what-is-webpack.png">
 <meta property="og:updated_time" content="2017-08-06T16:46:24.000Z">
 <meta name="twitter:card" content="summary">
@@ -31,7 +32,7 @@
   
 
 </head>
-
+</html>
 <body>
   <div id="container">
     <div id="wrap">
@@ -55,9 +56,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -66,7 +67,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-some-about-webpack" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-some-about-webpack" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/webpack/some-about-webpack/" class="article-date">
   <time datetime="2017-07-22T16:10:48.000Z" itemprop="datePublished">2017-07-23</time>
@@ -95,12 +96,12 @@
         <h2 id="模块化的前身今世"><a href="#模块化的前身今世" class="headerlink" title="模块化的前身今世"></a>模块化的前身今世</h2><p>近年随着硬件升级以及网络普及, 互联网应用的重心慢慢向富客户端偏移. 前端开发与构建也开始遇到了和其他语言相似的挑战: 代码复用, 关注分离以及灵活的继承.</p>
 <p>社区的主流趋势是在 JavaScript 中引入模块化的概念以及一个模块加载系统. 目前主流的模块管理有 <code>AMD</code>, <code>CommonJs</code> 以及 ES6 规范的 <code>import</code></p>
 <p>由于浏览器加载 script 异步的天性, 最先(也是最自然)诞生的模块是 <code>异步模块定义(Asynchronous Module Definition)</code>, 简称 <code>AMD</code>.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">define([&apos;myDep&apos;, &apos;jquery&apos;], function(myDep, $) &#123;...&#125;)</span><br></pre></td></tr></table></figure>
 <p><code>AMD</code> 通过一个数组声明自己所依赖的文件,当所有依赖加载完毕后, 作为参数传递给回调函数. <code>RequireJs</code> 是一个 <code>AMD</code> 比较常见的实现. 类似的还有国人玉伯写的 <code>Sea.js</code>(虽然 Sea.js 提出了 <code>CMD</code> 的概念, 但本质还是 AMD 的变形).</p>
 <p><code>AMD</code> 允许以 runtime 的形式运行, 动态的加载依赖文件, 也可以一次性将依赖构建在一个或多个文件中运行, 后者在生产环境下使用较为普遍, 可以有效的优化页面加载速度, 例如 <code>Require.js</code> 提供的 <code>r.js</code>, 在 CLI 中执行可以将源码构建并优化成生产环境运行的目标代码, 写入指定目录, 这一点已经和 webpack 比较相似了.</p>
 <p>另外值得一提的是 <code>Require.js</code> 并不仅仅可以处理 js 模块, 还可以用于引入 css, 文本资源等等. 通过一些 <code>Require.js</code> 的插件来实现, 在代码中也需要显示的声明文件类型 (eg: <code>require(&#39;css!style.css&#39;)</code>). 相比日后 webpack 要繁琐些.</p>
 <p>CommonJs 是 nodejs 默认的加载方式:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">const $ = require(‘jQuery’);</div><div class="line">console.log($.version);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const $ = require(‘jQuery’);</span><br><span class="line">console.log($.version);</span><br></pre></td></tr></table></figure>
 <p>这种同步的写法在浏览器中显然无法直接运行. 但我们可以在构建阶段将 js 文本解析成<code>抽象语法树(Abstract Syntax Tree)</code>, 然后将所有 require 的内容合并在一个文件中. 这样的解析工具有 <code>Browserify</code> 以及后来的 <code>Webpack</code>.</p>
 <p><code>Webpack</code> 在 <code>Browserify</code> 基础上做了一些优化, 比如可以将构建的文件拆分成多个 <code>chunk</code>, 不用刷新页面就可以’热替换’模块等.</p>
 <p>ES6 的 import 实际上和 CommonJs 比较相似, 不单独赘述.</p>
@@ -109,7 +110,7 @@
 <h2 id="Webpack-与-Grunt-Gulp"><a href="#Webpack-与-Grunt-Gulp" class="headerlink" title="Webpack 与 Grunt, Gulp"></a>Webpack 与 Grunt, Gulp</h2><p>其实 Webpack 与 Grunt/Gulp 并不是一类工具.</p>
 <p>Grunt/Gulp 是一种基于项目工程的任务执行工具(task runner). 一般用于对项目中指定目录下的一类文件进行处理或监听. 有点类似于 C 项目的 <code>make</code>. 例如利用 Grunt 可以将 A 目录下的所有 js 文件通过 babel 转译成 es5的格式, 并写入 B 目录中.</p>
 <p>Webpack 则是一种模块打包工具. Webpack 会从定义的入口文件(<code>entry</code>)出发, 将所有被依赖的 js/css/png 等类型文件调用指定的 loader, 并将结果输出到指定位置.</p>
-<p>实际上 Grunt 有对应的插件可以<a href="https://github.com/webpack-contrib/grunt-webpack" target="_blank" rel="external">运行 webpack</a>. 但目前的 webpack 功能已经十分强大, 足以代替 Grunt/Gulp 单独使用. 多引用一个工具就会多一分出错的可能, 并增加学习的成本, 现在的项目我不建议去使用 Grunt/Gulp 这一类型的工具.</p>
+<p>实际上 Grunt 有对应的插件可以<a href="https://github.com/webpack-contrib/grunt-webpack" target="_blank" rel="noopener">运行 webpack</a>. 但目前的 webpack 功能已经十分强大, 足以代替 Grunt/Gulp 单独使用. 多引用一个工具就会多一分出错的可能, 并增加学习的成本, 现在的项目我不建议去使用 Grunt/Gulp 这一类型的工具.</p>
 <p>那么相对于 Grunt / Gulp, Webpack 又有什么优势呢?</p>
 <p>不得不提到, <code>npm</code> 战胜 <code>bower</code> 后统一了JavaScript 的包管理市场. 面对第三方代码的引用, Grunt / Gulp 这种通过<b>描述规则</b>的构建方式很难有效的自动化筛选出需要打包的依赖. 而 Webpack 通过<b>解析程序</b>进行模块化分析, 很轻易的可以挑选出依赖中需要打包的部分. 甚至通过 code splitting 技术可以实现依赖的按需加载. 这一优势很自然的成为了当下最热门的构建工具.</p>
 <h2 id="所以-Webpack-到底可以做什么"><a href="#所以-Webpack-到底可以做什么" class="headerlink" title="所以, Webpack 到底可以做什么"></a>所以, Webpack 到底可以做什么</h2><p>首先 Webpack 像 <code>Browserify</code>一样, 可以对 <code>CommonJs</code>, <code>ES6</code>的模块进行处理, 使之可以正常的运行在浏览器上. 这里说的模块不仅仅是 js, 还有 css, 图片以及其他各种各样的模块</p>
@@ -131,15 +132,15 @@
 <p><code>raw-loader</code> 顾名思义就是以原始内容的方式导入模块. 例如某些(奇怪的)场合我们需要将 js 以字符串变量的形式被读取, 就可以写成 <code>import rawJs from &#39;raw-loader!some.js&#39;</code></p>
 <p><code>imports-loader</code> 用于向依赖中注入全局变量. 在一些需要兼容第三方代码的场合十分有用. 例如某些类库会判断 <code>window.jQuery</code> 是否存在, 就可以用到 <code>imports-loader</code> 注入 jQuery 对象: <code>import &#39;imports-loader?jQuery=jquery!./example.js&#39;</code></p>
 <p>imports-loader 也可以用来阻止 AMD: <code>imports-loader?define=&gt;false</code></p>
-<p>还有一个比较神奇的 loader 是<code>bundle-loader</code>. 这个组件用于异步加载代码模块, 参考 <a href="https://segmentfault.com/a/1190000007938737" target="_blank" rel="external">基于Webpack 2的React组件懒加载</a></p>
+<p>还有一个比较神奇的 loader 是<code>bundle-loader</code>. 这个组件用于异步加载代码模块, 参考 <a href="https://segmentfault.com/a/1190000007938737" target="_blank" rel="noopener">基于Webpack 2的React组件懒加载</a></p>
 <h3 id="插件"><a href="#插件" class="headerlink" title="插件"></a>插件</h3><p>插件和 loader 不同, loader 在构建过程中作用于一个个资源文件. 插件则作用于完整的构建.</p>
 <p>例如将构建后的文件分成多段的 <code>CommonsChunkPlugin</code>, 自动生成 html 文件, 并注入构建后目标文件的 <code>HtmlWebpackPlugin</code>, 以及开发阶段不用刷新浏览器页面就可以热更新修改后模块的 <code>HotModuleReplacementPlugin</code>.</p>
 <h3 id="社区支持"><a href="#社区支持" class="headerlink" title="社区支持"></a>社区支持</h3><p>webpack 广受欢迎很大程度上归功于社区提供了大量 loaders / plugins 以及优化实践的资料. 参考 webpack 的文档, 可以很方便的创建满足自己需求且符合通用标准的 loader 或 plugin, 并提供给更多的人使用. 目前几个流行框架, 如 React, Vue 与 Angular 也提供了 webpack 的构建方案与 boilerplate.</p>
 <h2 id="新特性"><a href="#新特性" class="headerlink" title="新特性"></a>新特性</h2><p>在最近间隔很短的几个月里, webpack 先后发布了 2.0 和 3.0两个版本</p>
 <h3 id="Tree-Shaking"><a href="#Tree-Shaking" class="headerlink" title="Tree Shaking"></a>Tree Shaking</h3><p>tree-shaking 是指借助es6 import export 语法静态性的特点来删掉 export 但是没有 import 过的东西. 最早出现在 <code>rollup.js</code> 中, 后来在 webpack2.0 被引入.</p>
-<h3 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h3><p>webpack 3则是进一步借鉴了 <code>rollup.js</code> 的功能, 新引入了一种提升模块作用域的功能. 优化了 webpack 内部打包 js 模块的数据结构, 轻微缩小了构建体积, 以及降低构建后带来的额外性能损失, 详细可以参考这篇文章: <a href="https://www.zhihu.com/search?type=content&amp;q=webpack3.0" target="_blank" rel="external">webpack3之Scope Hoisting</a></p>
-<h2 id="loader-的工作原理"><a href="#loader-的工作原理" class="headerlink" title="loader 的工作原理"></a>loader 的工作原理</h2><p>Webpack 的 loader 实现非常简单, 我们通过官方较为简单的 <a href="https://github.com/webpack-contrib/file-loader" target="_blank" rel="external">file-loader</a> 看看具体的实现.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">import path from &apos;path&apos;;</div><div class="line">import loaderUtils from &apos;loader-utils&apos;;</div><div class="line"></div><div class="line">export default function fileLoader(content) &#123;</div><div class="line">  if (!this.emitFile) throw new Error(&apos;emitFile is required from module system&apos;);</div><div class="line"></div><div class="line">  const query = loaderUtils.getOptions(this) || &#123;&#125;;</div><div class="line">  const configKey = query.config || &apos;fileLoader&apos;;</div><div class="line">  const options = this.options[configKey] || &#123;&#125;;</div><div class="line"></div><div class="line">  const config = &#123;</div><div class="line">    publicPath: undefined,</div><div class="line">    useRelativePath: false,</div><div class="line">    name: &apos;[hash].[ext]&apos;,</div><div class="line">  &#125;;</div><div class="line"></div><div class="line">  Object.keys(options).forEach((attr) =&gt; &#123;</div><div class="line">    config[attr] = options[attr];</div><div class="line">  &#125;);</div><div class="line"></div><div class="line">  ...</div><div class="line"></div><div class="line">  return `export default $&#123;publicPath&#125;;`;</div><div class="line">&#125;</div><div class="line">export const raw = true;</div></pre></td></tr></table></figure>
+<h3 id="Scope-Hoisting"><a href="#Scope-Hoisting" class="headerlink" title="Scope Hoisting"></a>Scope Hoisting</h3><p>webpack 3则是进一步借鉴了 <code>rollup.js</code> 的功能, 新引入了一种提升模块作用域的功能. 优化了 webpack 内部打包 js 模块的数据结构, 轻微缩小了构建体积, 以及降低构建后带来的额外性能损失, 详细可以参考这篇文章: <a href="https://www.zhihu.com/search?type=content&amp;q=webpack3.0" target="_blank" rel="noopener">webpack3之Scope Hoisting</a></p>
+<h2 id="loader-的工作原理"><a href="#loader-的工作原理" class="headerlink" title="loader 的工作原理"></a>loader 的工作原理</h2><p>Webpack 的 loader 实现非常简单, 我们通过官方较为简单的 <a href="https://github.com/webpack-contrib/file-loader" target="_blank" rel="noopener">file-loader</a> 看看具体的实现.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import path from &apos;path&apos;;</span><br><span class="line">import loaderUtils from &apos;loader-utils&apos;;</span><br><span class="line"></span><br><span class="line">export default function fileLoader(content) &#123;</span><br><span class="line">  if (!this.emitFile) throw new Error(&apos;emitFile is required from module system&apos;);</span><br><span class="line"></span><br><span class="line">  const query = loaderUtils.getOptions(this) || &#123;&#125;;</span><br><span class="line">  const configKey = query.config || &apos;fileLoader&apos;;</span><br><span class="line">  const options = this.options[configKey] || &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  const config = &#123;</span><br><span class="line">    publicPath: undefined,</span><br><span class="line">    useRelativePath: false,</span><br><span class="line">    name: &apos;[hash].[ext]&apos;,</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  Object.keys(options).forEach((attr) =&gt; &#123;</span><br><span class="line">    config[attr] = options[attr];</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  return `export default $&#123;publicPath&#125;;`;</span><br><span class="line">&#125;</span><br><span class="line">export const raw = true;</span><br></pre></td></tr></table></figure>
 <p><code>loader-utils</code> 是 webpack 为 loader 开发准备的辅助工具, 最常见的用法是通过 <code>loaderUtils.getOptions</code> 获取 <code>webpack.config.js</code> 为 loader 配置的 query 参数.</p>
 <p>本质上 loader 就是一个函数, 输入的参数是 webpack 处理资源的内容, 返回值则是处理的结果. <code>file-loader</code> 而言处理的对象一般为图片等格式的附件, 将文件复制到目标目录后, 返回结果则是对应的资源位置.</p>
 <p>顺带注意一下结尾处的 <code>export const raw = true</code>. 默认情况下, loader 传入的参数会被 webpack 转码成 utf8 格式. 如果希望直接处理二进制或其他编码的内容, 需要允许 <code>loader.raw = true</code></p>
@@ -147,9 +148,9 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjkahgjt3000syom4jz398jhz" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/webpack/some-about-webpack/" data-id="cjooedpcn002dvjm4p8e237bt" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/webpack/some-about-webpack/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/webpack/">webpack</a></li></ul>
@@ -161,7 +162,7 @@
 <nav id="article-nav">
   
     <a href="/blog/framework/learn-about-apollo/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           [笔记]Apollo 初体验
@@ -171,7 +172,7 @@
   
   
     <a href="/blog/engineering/stop-using-css-in-js/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">[译]停止使用 CSS-in-JS 的九个理由</div>
     </a>
   
@@ -192,9 +193,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -202,9 +203,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -212,9 +213,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -223,7 +224,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -231,9 +232,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
         
           <li>
             <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
@@ -251,10 +256,6 @@
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
-          <li>
-            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -268,7 +269,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>

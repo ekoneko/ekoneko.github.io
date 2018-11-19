@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="utf-8">
   
   <title>开发基于 AST 的前端工具 | ekoneko.github.io</title>
@@ -12,6 +12,7 @@
 <meta property="og:url" content="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/index.html">
 <meta property="og:site_name" content="ekoneko.github.io">
 <meta property="og:description" content="最近在遇到了两个小需求:  要给一个已开发完的项目进行国际化, 希望可以遍历获取代码中注释之外的中文文本 一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行  这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成抽象语法树再进行处理则要方便的多. 按照维基百科的定义">
+<meta property="og:locale" content="en">
 <meta property="og:updated_time" content="2017-04-16T16:15:06.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="开发基于 AST 的前端工具">
@@ -29,7 +30,7 @@
   
 
 </head>
-
+</html>
 <body>
   <div id="container">
     <div id="wrap">
@@ -53,9 +54,9 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="Flux RSS"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Rechercher"></a>
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
         <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
@@ -64,7 +65,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-diy-develop-tools-by-ast" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-diy-develop-tools-by-ast" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/tools/diy-develop-tools-by-ast/" class="article-date">
   <time datetime="2017-04-12T16:51:40.000Z" itemprop="datePublished">2017-04-13</time>
@@ -96,15 +97,15 @@
 <li>一个较为复杂的项目希望在编译阶段根据代码中的特殊格式语句控制代码执行</li>
 </ol>
 <p>这两个需求本质上比较接近: 都是对代码本身进行分析与处理. 而对于代码这种文本的处理, 用正则就太麻烦了. 不仅要考虑上下文的关系, 还要括号配对的行为. 将代码转换成<code>抽象语法树</code>再进行处理则要方便的多.</p>
-<p>按照<a href="https://zh.wikipedia.org/zh-hans/%E6%8A%BD%E8%B1%A1%E8%AA%9E%E6%B3%95%E6%A8%B9" target="_blank" rel="external">维基百科</a>的定义:</p>
+<p>按照<a href="https://zh.wikipedia.org/zh-hans/%E6%8A%BD%E8%B1%A1%E8%AA%9E%E6%B3%95%E6%A8%B9" target="_blank" rel="noopener">维基百科</a>的定义:</p>
 <pre><code>在计算机科学中，抽象语法树（abstract syntax tree或者缩写为AST），或者语法树（syntax tree），是源代码的抽象语法结构的树状表现形式，这里特指编程语言的源代码。 树上的每个节点都表示源代码中的一种结构。
 </code></pre><p>简单说来 AST 就是将整个代码作为一个根节点, 其中的每一个表达式作为一个子节点, 表达式内部, 又是由若干表达式与字符, 操作符作为子节点, 一点点细分直到所有单独的文本或操作符作为叶子节点… (怀念大学操作系统前几章的介绍<code>状态机</code>解析程序语言的部分)</p>
 <p>生成 AST 的过程我们不需要手工完成, 像是 <code>acorn</code>, <code>babylon</code> 等许多模块都可以实现代码文本向 AST 的转换. 本文就是基于 <code>babylon</code> 实现的. 大部分的 AST 解析器功能和思路都比较接近, 我选择 <code>babylon</code> 的原因是 <code>babylon</code> 直接支持 JSX 语法的转译, 对于我们 React 的项目来说省去了很多麻烦.</p>
-<h2 id="babylon"><a href="#babylon" class="headerlink" title="babylon"></a>babylon</h2><p><a href="https://www.npmjs.com/package/babylon" target="_blank" rel="external"><code>babylon</code></a> 是 <code>babel</code> 内的 JavaScript 语法分析器. 作为一个功能独立的库, 也可以在 <code>babel</code> 之外调用, 例如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">function parse (text, filePath) &#123;</div><div class="line">  try &#123;</div><div class="line">    return babylon.parse(text, &#123;</div><div class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</div><div class="line">    &#125;)</div><div class="line">  &#125; catch (e) &#123;</div><div class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><code>babylon.parse(code, [options])</code> 会将代码字符串转译成 AST. 参数中的 <code>plugins</code> 是 <code>babylon</code> 内置的一些 ECMA 标准外的其他常用语法的支持. 我的工具打算运行在 <code>React</code> 项目上, <code>jsx</code> 插件可以解析 jsx 语法, 以及 <a href="https://babeljs.io/docs/plugins/transform-class-properties/" target="_blank" rel="external">classProperties</a>插件提供一些 ES6 标准之外的语法支持.</p>
-<h3 id="babylon-walk"><a href="#babylon-walk" class="headerlink" title="babylon-walk"></a>babylon-walk</h3><p>babylon 也提供了一个 <a href="https://www.npmjs.com/package/babylon-walk" target="_blank" rel="external"><code>babylon-walk</code></a> 的工具来遍历语法树.</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">const walk = require(&apos;babylon-walk&apos;);</div><div class="line">const visitors = &#123;</div><div class="line">  StringLiteral: func,</div><div class="line">  JSXText: func,</div><div class="line">&#125;</div><div class="line">const state = &#123;&#125;</div><div class="line">walk.simple(node, visitors, state);</div></pre></td></tr></table></figure>
+<h2 id="babylon"><a href="#babylon" class="headerlink" title="babylon"></a>babylon</h2><p><a href="https://www.npmjs.com/package/babylon" target="_blank" rel="noopener"><code>babylon</code></a> 是 <code>babel</code> 内的 JavaScript 语法分析器. 作为一个功能独立的库, 也可以在 <code>babel</code> 之外调用, 例如:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function parse (text, filePath) &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    return babylon.parse(text, &#123;</span><br><span class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>babylon.parse(code, [options])</code> 会将代码字符串转译成 AST. 参数中的 <code>plugins</code> 是 <code>babylon</code> 内置的一些 ECMA 标准外的其他常用语法的支持. 我的工具打算运行在 <code>React</code> 项目上, <code>jsx</code> 插件可以解析 jsx 语法, 以及 <a href="https://babeljs.io/docs/plugins/transform-class-properties/" target="_blank" rel="noopener">classProperties</a>插件提供一些 ES6 标准之外的语法支持.</p>
+<h3 id="babylon-walk"><a href="#babylon-walk" class="headerlink" title="babylon-walk"></a>babylon-walk</h3><p>babylon 也提供了一个 <a href="https://www.npmjs.com/package/babylon-walk" target="_blank" rel="noopener"><code>babylon-walk</code></a> 的工具来遍历语法树.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">const walk = require(&apos;babylon-walk&apos;);</span><br><span class="line">const visitors = &#123;</span><br><span class="line">  StringLiteral: func,</span><br><span class="line">  JSXText: func,</span><br><span class="line">&#125;</span><br><span class="line">const state = &#123;&#125;</span><br><span class="line">walk.simple(node, visitors, state);</span><br></pre></td></tr></table></figure>
 <p><code>node</code>是待遍历的 ast 节点, 如果需要遍历整个代码只需传递根节点就好</p>
 <p><code>visitors</code> 是一个 nodeType 与回调函数的对应表. 遍历时如果一个节点的类型存在对应的 visitors, <code>babylon-walk</code> 就会调用对应的回调函数, 并传递 <code>node</code> 和 <code>state</code></p>
 <p><code>state</code> 是一个普通的 object, 或是其他任何东西. 他的作用是在遍历途中保存一些需要的东西, 而不需要在 walk 的作用域外创建一个变量</p>
@@ -116,24 +117,24 @@
 </ol>
 <a id="more"></a>
 <h2 id="例子-搜索中文字符串"><a href="#例子-搜索中文字符串" class="headerlink" title="例子: 搜索中文字符串"></a>例子: 搜索中文字符串</h2><p>有了 <code>babylon</code> 支持, 从代码中搜索所有中文字符就很简单了.</p>
-<p>首先, 先使用 <a href="https://www.npmjs.com/package/glob" target="_blank" rel="external"><code>glob</code></a> 之类的工具从代码目录遍历出所有 <code>.js</code> 或 <code>.jsx</code> 的文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">glob(&apos;**/*.&#123;js,jsx&#125;&apos;, &#123;</div><div class="line">  cwd: cwd,</div><div class="line">  ignore,</div><div class="line">&#125;, (err, files) =&gt; &#123;</div><div class="line">    //</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>首先, 先使用 <a href="https://www.npmjs.com/package/glob" target="_blank" rel="noopener"><code>glob</code></a> 之类的工具从代码目录遍历出所有 <code>.js</code> 或 <code>.jsx</code> 的文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">glob(&apos;**/*.&#123;js,jsx&#125;&apos;, &#123;</span><br><span class="line">  cwd: cwd,</span><br><span class="line">  ignore,</span><br><span class="line">&#125;, (err, files) =&gt; &#123;</span><br><span class="line">    //</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>读取每一个文件, 进行多字节文本的检测, 由于我们希望知道匹配的内容是出自哪一个文件, 检测的过程还需要保留文件路径</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">function parse (text, filePath) &#123;</div><div class="line">  try &#123;</div><div class="line">    return babylon.parse(text, &#123;</div><div class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</div><div class="line">    &#125;)</div><div class="line">  &#125; catch (e) &#123;</div><div class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">function matchChinese() &#123;</div><div class="line">  return function(node, errors) &#123;</div><div class="line">    if (node.value.match(/[^\x00-\xff]/g)) &#123;</div><div class="line">      errors.push(node);</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">const ast = parse(text, filePath);</div><div class="line">const visitors = &#123;</div><div class="line">  StringLiteral: matchChinese,</div><div class="line">  JSXText: matchChinese,</div><div class="line">&#125;</div><div class="line">const errors = [];</div><div class="line">walk.simple(ast, visitors, errors);</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">function parse (text, filePath) &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    return babylon.parse(text, &#123;</span><br><span class="line">      plugins: [&apos;jsx&apos;, &apos;classProperties&apos;],</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125; catch (e) &#123;</span><br><span class="line">    throw new Error(`Parse error: in $&#123;filePath&#125;`, e)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function matchChinese() &#123;</span><br><span class="line">  return function(node, errors) &#123;</span><br><span class="line">    if (node.value.match(/[^\x00-\xff]/g)) &#123;</span><br><span class="line">      errors.push(node);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const ast = parse(text, filePath);</span><br><span class="line">const visitors = &#123;</span><br><span class="line">  StringLiteral: matchChinese,</span><br><span class="line">  JSXText: matchChinese,</span><br><span class="line">&#125;</span><br><span class="line">const errors = [];</span><br><span class="line">walk.simple(ast, visitors, errors);</span><br></pre></td></tr></table></figure>
 <p>每一个 node 节点的内容如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">Node &#123;</div><div class="line">  type: &apos;JSXText&apos;,</div><div class="line">  start: 1270,</div><div class="line">  end: 1280,</div><div class="line">  loc:</div><div class="line">   SourceLocation &#123;</div><div class="line">     start: Position &#123; line: 33, column: 64 &#125;,</div><div class="line">     end: Position &#123; line: 33, column: 65 &#125; &#125;,</div><div class="line">  value: &apos;something&apos; &#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Node &#123;</span><br><span class="line">  type: &apos;JSXText&apos;,</span><br><span class="line">  start: 1270,</span><br><span class="line">  end: 1280,</span><br><span class="line">  loc:</span><br><span class="line">   SourceLocation &#123;</span><br><span class="line">     start: Position &#123; line: 33, column: 64 &#125;,</span><br><span class="line">     end: Position &#123; line: 33, column: 65 &#125; &#125;,</span><br><span class="line">  value: &apos;something&apos; &#125;</span><br></pre></td></tr></table></figure>
 <p>从中可以取得代码在文本中的位置, 以及源码中对应的行, 列.</p>
 <p>最后只需要格式化输出结果,返回文件地址, 对应的行, 列和值即可.</p>
 <p>另外有了 <code>start</code> 和 <code>end</code>, 我们也可以直接用国际化后的 <code>i18n(&#39;xxx&#39;)</code> 替换掉原文件中对应的中文字符串, 我们期望用靠谱一点的英文作为国际化后的索引名, 所以并没有这么做.</p>
 <p>@TODO: 这里还可以封装成一个 <code>eslint</code> 插件, 避免疏忽提交的汉字.</p>
-<p>完整的代码见: <a href="https://github.com/ekoneko/chinese-seeker" target="_blank" rel="external">https://github.com/ekoneko/chinese-seeker</a></p>
+<p>完整的代码见: <a href="https://github.com/ekoneko/chinese-seeker" target="_blank" rel="noopener">https://github.com/ekoneko/chinese-seeker</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjkahgjsp0005yom4scdwkaha" class="article-share-link">Partager</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjooedpb10001vjm45hyalzer" class="article-share-link">Share</a>
       
-        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Commentaires</a>
+        <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/other/">other</a></li></ul>
@@ -145,7 +146,7 @@
 <nav id="article-nav">
   
     <a href="/blog/react/how-to-better-organize-your-react-app/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Récent</strong>
+      <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
           [译]如何更好的组织 React 应用
@@ -155,7 +156,7 @@
   
   
     <a href="/blog/react/performance-engineering-with-react/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Ancien</strong>
+      <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">[译]React 性能工程</div>
     </a>
   
@@ -176,9 +177,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Catégories</h3>
+    <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -186,9 +187,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Mot-clés</h3>
+    <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -196,9 +197,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Nuage de mot-clés</h3>
+    <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 15px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 15px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 15px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 15px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 15px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -207,7 +208,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -215,9 +216,13 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Articles récents</h3>
+    <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
         
           <li>
             <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
@@ -235,10 +240,6 @@
             <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
           </li>
         
-          <li>
-            <a href="/blog/electron/try-electron/">[笔记]electron 实践笔记</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -252,7 +253,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       &copy; 2018 ekoneko<br>
-      Propulsé by <a href="http://hexo.io/" target="_blank">Hexo</a>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
 </footer>
