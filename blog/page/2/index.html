@@ -62,6 +62,65 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-stop-using-css-in-js" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/engineering/stop-using-css-in-js/" class="article-date">
+  <time datetime="2017-06-18T14:52:27.000Z" itemprop="datePublished">2017-06-18</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/blog/categories/engineering/">engineering</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/engineering/stop-using-css-in-js/">[译]停止使用 CSS-in-JS 的九个理由</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>原文: [<a href="https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc" target="_blank" rel="noopener">https://medium.com/@gajus/stop-using-css-in-javascript-for-web-development-fa32fb873dcc</a>]</p>
+<p>原文发表于: 2016-04-27</p>
+<p>最近社区上 CSS-in-JS 与 CSS-Module 的争论持续不断, 上一篇译文<a href="https://ekoneko.github.io/blog/engineering/a-unified-styling-language/">统一样式语言</a> 介绍了关于 CSS-in-JS 的优点. 本篇则是站在反对者的观点上, 反驳了一些(作者认为上的) CSS-in-JS 误区.</p>
+<h2 id="关于-CSS"><a href="#关于-CSS" class="headerlink" title="关于 CSS"></a>关于 CSS</h2><p><code>styled-components</code> 的文档说</p>
+<pre><code>原始 CSS 是用于文档形式的 web 的. 在1993年, 网页都是一些静态的文档, 那时用 CSS 来解决文档的样式问题. 如今, 我们构建的是更加丰富, 可交互, 面向用户的 APP. CSS 已经不适合构建这样的项目
+</code></pre><p>我不赞同. CSS 也在与时俱进加入了许多新功能. (伪类, 伪元素, CSS 变量, \@media, 帧动画, 组合, 列, flex, 网格, calc, etc…)</p>
+<p>从 UI 的角度上, “组件”就是独立的文档碎片. (比如 &lt;button /&rt;就是一个组件) CSS 用来描述文档, 也就是所有组件的集合, 有何不妥呢. 正所谓物尽其用.</p>
+<h2 id="Styled-components"><a href="#Styled-components" class="headerlink" title="Styled-components"></a>Styled-components</h2><p><code>styled-components</code> 允许使用模板文本的方式在 JS 中定义 CSS. 通过一种底层构建的方法取消了组件与样式组件之间的关系. <a href="https://www.webpackbin.com/bins/-KeeZCr0xKfutOfOujxN" target="_blank" rel="noopener">demo</a></p>
+<p>这成为了 React 中一种新型定义组件样式的趋势.</p>
+<p>先明确一点: styled-components 组件是 CSS 的高阶抽象. 它在 JS 中定义 CSS, 并在 JSX 解析时绑定在对应元素上.</p>
+<p>我不喜欢这种趋势, 它充满了太多误解. 调查了IRC, reddit, discord等地方, 人们用 <code>styled-components</code> 的理由. 我把他们称为”幻想” (myths)</p>
+        
+          <p class="article-more-link">
+            <a href="/blog/engineering/stop-using-css-in-js/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/" data-id="cjxlen1x4000jwqm4bnr0uho9" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/engineering/stop-using-css-in-js/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css/">css</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/react/">react</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-a-unified-styling-language" class="article article-type-post" itemscope="" itemprop="blogPost">
   <div class="article-meta">
     <a href="/blog/engineering/a-unified-styling-language/" class="article-date">
@@ -118,7 +177,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjooedpd5002rvjm43aian6km" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/" data-id="cjxlen1ye002vwqm4ytnv07ak" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/engineering/a-unified-styling-language/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -185,7 +244,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjooedpbc0006vjm4xo25i84h" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/" data-id="cjxlen1wt0005wqm4tcuojbd8" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/how-to-better-organize-your-react-app/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -257,7 +316,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjooedpb10001vjm45hyalzer" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/" data-id="cjxlen1wr0004wqm4mafi6nt9" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/tools/diy-develop-tools-by-ast/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -322,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjooedpcl002avjm4ryauuisl" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/performance-engineering-with-react/" data-id="cjxlen1xx002dwqm48zc8cjf7" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/performance-engineering-with-react/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -457,7 +516,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cjooedpci0028vjm46llsfhzi" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/" data-id="cjxlen1xw002awqm4wm8wryri" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/react/our-best-practices-for-writing-react-components/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -507,7 +566,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cjooedpbb0005vjm4osu915ax" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/node/express-hbs/" data-id="cjxlen1wi0000wqm49qp4unww" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/node/express-hbs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -556,7 +615,7 @@ export default class ProfileContainer extends Component {
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cjooedpb40002vjm4fmnu9xo8" class="article-share-link">Share</a>
+      <a data-url="http://ekoneko.github.io/blog/test/hello-world/" data-id="cjxlen1wn0001wqm445xszxi5" class="article-share-link">Share</a>
       
         <a href="http://ekoneko.github.io/blog/test/hello-world/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -593,7 +652,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/cli/">cli</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
     </div>
   </div>
 
@@ -603,7 +662,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 10px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/cli/" style="font-size: 10px;">cli</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 13.33px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
     </div>
   </div>
 
@@ -612,7 +671,7 @@ export default class ProfileContainer extends Component {
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
     </div>
   </div>
 
@@ -623,6 +682,10 @@ export default class ProfileContainer extends Component {
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/blog/uncategorized/node-in-cmd/">Node 开发命令行工具指南</a>
+          </li>
         
           <li>
             <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
@@ -640,10 +703,6 @@ export default class ProfileContainer extends Component {
             <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
           </li>
         
-          <li>
-            <a href="/blog/autotest/try-sentry/">[笔记]使用 sentry</a>
-          </li>
-        
       </ul>
     </div>
   </div>
@@ -656,7 +715,7 @@ export default class ProfileContainer extends Component {
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2018 ekoneko<br>
+      &copy; 2019 ekoneko<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

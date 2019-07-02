@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  <title>Node 开发命令行工具指南 | ekoneko.github.io</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前段日子为了工作上的方便, 我给自家公司的项目写了一个用于读写数据的 CLI 工具 shimo-cli. 这个项目可以用来方便的批量清理测试数据, 将线上的内容转换到本地开发环境中调试等等. 不同于 web 应用, 基于命令行(CLI)的应用与使用者的交互主要来源于用户终端的输入与输出. 在 nodejs 中主要是依靠 stream 与 readline 模块以及从 process.stdin /">
+<meta name="keywords" content="node,cli">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node 开发命令行工具指南">
+<meta property="og:url" content="http://ekoneko.github.io/blog/uncategorized/node-in-cmd/index.html">
+<meta property="og:site_name" content="ekoneko.github.io">
+<meta property="og:description" content="前段日子为了工作上的方便, 我给自家公司的项目写了一个用于读写数据的 CLI 工具 shimo-cli. 这个项目可以用来方便的批量清理测试数据, 将线上的内容转换到本地开发环境中调试等等. 不同于 web 应用, 基于命令行(CLI)的应用与使用者的交互主要来源于用户终端的输入与输出. 在 nodejs 中主要是依靠 stream 与 readline 模块以及从 process.stdin /">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-07-02T06:01:16.732Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Node 开发命令行工具指南">
+<meta name="twitter:description" content="前段日子为了工作上的方便, 我给自家公司的项目写了一个用于读写数据的 CLI 工具 shimo-cli. 这个项目可以用来方便的批量清理测试数据, 将线上的内容转换到本地开发环境中调试等等. 不同于 web 应用, 基于命令行(CLI)的应用与使用者的交互主要来源于用户终端的输入与输出. 在 nodejs 中主要是依靠 stream 与 readline 模块以及从 process.stdin /">
+  
+    <link rel="alternate" href="/atom.xml" title="ekoneko.github.io" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/blog/css/style.css">
+  
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/blog/" id="logo">ekoneko.github.io</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/blog/">Home</a>
+        
+          <a class="main-nav-link" href="/blog/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://ekoneko.github.io/blog"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-node-in-cmd" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/blog/uncategorized/node-in-cmd/" class="article-date">
+  <time datetime="2019-06-28T09:49:48.000Z" itemprop="datePublished">2019-06-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Node 开发命令行工具指南
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前段日子为了工作上的方便, 我给自家公司的项目写了一个用于读写数据的 CLI 工具 <a href="https://github.com/ekoneko/shimo-cli/" target="_blank" rel="noopener">shimo-cli</a>. 这个项目可以用来方便的批量清理测试数据, 将线上的内容转换到本地开发环境中调试等等.</p>
+<p>不同于 web 应用, 基于命令行(CLI)的应用与使用者的交互主要来源于用户终端的输入与输出. 在 nodejs 中主要是依靠 <code>stream</code> 与 <code>readline</code> 模块以及从 <code>process.stdin</code> / <code>process.stdout</code> 拿到的输入输出流来进行与终端的交互的.</p>
+<h2 id="常用库"><a href="#常用库" class="headerlink" title="常用库"></a>常用库</h2><p>在讨论具体的实现方式前, 我要先介绍一些很常用的好用的库:</p>
+<h3 id="Inquirer-js"><a href="#Inquirer-js" class="headerlink" title="Inquirer.js"></a>Inquirer.js</h3><p><a href="https://github.com/SBoudrias/Inquirer.js" target="_blank" rel="noopener">Inquirer.js</a></p>
+<p>这个库封装了许多常用的 CLI 交互方式, 例如单选多选, 输入等. 基本上可以满足绝大多数 CLI 应用的需要. 然而 <code>shimo-cli</code> 并没有直接用到 <code>Inquirer</code>, 不过参考了很多其中实现.</p>
+<h3 id="meow"><a href="#meow" class="headerlink" title="meow"></a>meow</h3><p><a href="https://www.npmjs.com/package/meow" target="_blank" rel="noopener">meow</a> 也是一个很常用的库. 他定义了一套 CLI 参数声明/解析规范. 并对外提供了 <code>--help</code> 方法.</p>
+<h3 id="chalk"><a href="#chalk" class="headerlink" title="chalk"></a>chalk</h3><p><a href="https://npmjs.com/package/chalk" target="_blank" rel="noopener">chalk</a> 用于对输出流的内容进行样式处理, 例如颜色,背景色,加粗等.</p>
+<h3 id="string-width"><a href="#string-width" class="headerlink" title="string-width"></a>string-width</h3><p><a href="https://www.npmjs.com/package/string-width" target="_blank" rel="noopener">string-width</a>可以获得文字的宽度, 并对 utf-8 字符与 emoji 做了特殊处理.</p>
+<h3 id="cli-width"><a href="#cli-width" class="headerlink" title="cli-width"></a>cli-width</h3><p><a href="https://www.npmjs.com/package/cli-width" target="_blank" rel="noopener">cli-width</a> 用来获得终端的宽度. 通常我们可以通过 <code>process.stdout.columns</code> 拿到终端宽度, 但是 <code>cli-width</code> 库中对许多奇奇怪怪的终端做了兼容性处理.</p>
+<h3 id="ink"><a href="#ink" class="headerlink" title="ink"></a>ink</h3><p><a href="https://www.npmjs.com/package/ink" target="_blank" rel="noopener">ink</a> 是一个用 React 组件编写 cli 应用的库. 类似于 ReactNative, ink 也是基于 <a href="https://github.com/facebook/yoga" target="_blank" rel="noopener">yoga</a> 处理布局的.</p>
+<h2 id="常见问题"><a href="#常见问题" class="headerlink" title="常见问题"></a>常见问题</h2><h3 id="如何接收用户输入"><a href="#如何接收用户输入" class="headerlink" title="如何接收用户输入"></a>如何接收用户输入</h3><p>做 <code>shimo-cli</code> 的第一步就是完成登录鉴权,需要用户输入账号密码.</p>
+<p>通过 <a href="https://nodejs.org/docs/v10.2.0/api/stream.html#stream_readable_resume" target="_blank" rel="noopener">process.stdin.resume</a> 可以用来开启输入流的监听.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">process.stdin.resume().on(<span class="string">"data"</span>, <span class="function"><span class="params">chunk</span> =&gt;</span> &#123;</span><br><span class="line">  process.stdin.pause();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>对于密码的输入, 通常我们不期望回显在屏幕上, 通过 process.stdin.setRawMode(true) 可以避免输入的内容直接显示, 但对输入的接收也变成了原生模式, 需要手动检测用户输入的回车与中断符(Command + C)</p>
+<p><a href="https://github.com/ekoneko/node-cli-interactive-demo/blob/master/src/input.ts" target="_blank" rel="noopener">Demo</a></p>
+<h3 id="按键交互"><a href="#按键交互" class="headerlink" title="按键交互"></a>按键交互</h3><p>上述的 <code>rawMode</code> 可以捕获用户的原始输入(回车,方向键等). 利用这一点, 可以实现基于命令行的”加载更多”效果.</p>
+<p><code>shimo-cli</code> 会从 web 上获取含分页的列表, 我们期望每次显示一页的数据, 当用户输入回车时加载下一页的数据.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">more</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  process.stdout.write(<span class="string">"-- Press Enter --\n"</span>);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>&lt;<span class="built_in">boolean</span>&gt;(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    process.stdin.setRawMode!(<span class="literal">true</span>);</span><br><span class="line">    process.stdin.resume().on(<span class="string">"data"</span>, <span class="function">(<span class="params">result: Buffer</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> char = result.toString(<span class="string">"utf8"</span>);</span><br><span class="line">      <span class="keyword">switch</span> (char) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">"\n"</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">"\r"</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">"\u0004"</span>: &#123;</span><br><span class="line">          process.stdin.setRawMode!(<span class="literal">false</span>);</span><br><span class="line">          process.stdin.pause();</span><br><span class="line">          clearLine();</span><br><span class="line">          resolve(<span class="literal">true</span>);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">"\u0003"</span>: &#123;</span><br><span class="line">          process.stdin.setRawMode!(<span class="literal">false</span>);</span><br><span class="line">          process.stdin.pause();</span><br><span class="line">          process.stdout.write(<span class="string">"\n^C"</span>);</span><br><span class="line">          process.exit();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外, 为了提示用户,每次数据显示完成后会显示 <code>-- Press Enter --\n</code>, 提示用户的交互行为. 出于洁癖的考虑, 当展示下一页的数据时, 希望数据之间可以连续, 因此我们需要将 <code>-- Press Enter --\n</code> 删除.</p>
+<p>nodejs 提供了 <code>readline</code> 模块进行对终端的显示及光标的控制.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> readline = <span class="built_in">require</span>(<span class="string">"readline"</span>);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">clearLine</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  readline.moveCursor(process.stdout, <span class="number">0</span>, <span class="number">-1</span>);</span><br><span class="line">  readline.clearLine(process.stdout, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/ekoneko/node-cli-interactive-demo/blob/master/src/more.ts" target="_blank" rel="noopener">Demo</a></p>
+<h3 id="调用外部编辑器"><a href="#调用外部编辑器" class="headerlink" title="调用外部编辑器"></a>调用外部编辑器</h3><p>调用外部编辑器可以直接使用 <a href="https://www.npmjs.com/package/external-editor" target="_blank" rel="noopener">external-editor</a> 库.</p>
+<p>实现的方式也比较简单, 通过 childProcess 新建一个编辑器进程并在临时目录下创建一个文件用来记录编辑内容, 通过子进程的退出事件判断为输入的结束.</p>
+<p>一般的编辑器可以根据后缀进行不同的高亮提示, 利用这点在创建文件时设置对应的后缀即可实现文本高亮.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">editFile</span>(<span class="params">filePath: <span class="built_in">string</span></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>&lt;<span class="built_in">void</span>&gt;(<span class="function"><span class="params">resolve</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> editor = process.env.EDITOR || <span class="string">"vi"</span>;</span><br><span class="line">    <span class="keyword">const</span> child = spawn(editor, [filePath], &#123;</span><br><span class="line">      stdio: <span class="string">"inherit"</span></span><br><span class="line">    &#125;);</span><br><span class="line">    child.on(<span class="string">"exit"</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      resolve();</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">getContentFromEditor</span>(<span class="params"></span></span></span><br><span class="line">  initContent: string = "",</span><br><span class="line">  suffix: <span class="built_in">string</span> = <span class="string">"js"</span></span><br><span class="line">) &#123;</span><br><span class="line">  <span class="keyword">const</span> editTempFile = getOneTmpFilePath(suffix);</span><br><span class="line">  fs.writeFileSync(editTempFile, initContent);</span><br><span class="line">  <span class="keyword">await</span> editFile(editTempFile);</span><br><span class="line">  <span class="keyword">const</span> content = fs.readFileSync(editTempFile).toString();</span><br><span class="line">  fs.unlinkSync(editTempFile);</span><br><span class="line">  <span class="keyword">return</span> content;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/ekoneko/node-cli-interactive-demo/blob/master/src/editor.ts" target="_blank" rel="noopener">Demo</a></p>
+<h3 id="流式调用"><a href="#流式调用" class="headerlink" title="流式调用"></a>流式调用</h3><p>在 Unix 下多个程序通常以管道的方式配合使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git blame foo | grep bar</span><br></pre></td></tr></table></figure>
+<p>在 node 中管道的输入与用户输入一样, 直接使用 <code>readStream.resume</code> 即可开始监听</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">read</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> clear = setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      process.stdin.pause();</span><br><span class="line">      reject(<span class="string">"timeout"</span>);</span><br><span class="line">    &#125;, <span class="number">500</span>);</span><br><span class="line">    process.stdin.resume();</span><br><span class="line">    <span class="keyword">let</span> data = <span class="string">""</span>;</span><br><span class="line">    process.stdin.on(<span class="string">"data"</span>, <span class="function"><span class="params">chunk</span> =&gt;</span> &#123;</span><br><span class="line">      clearTimeout(clear);</span><br><span class="line">      data += chunk;</span><br><span class="line">    &#125;);</span><br><span class="line">    process.stdin.on(<span class="string">"end"</span>, <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      process.stdin.pause();</span><br><span class="line">      resolve(data.trim());</span><br><span class="line">    &#125;);</span><br><span class="line">    process.stdin.on(<span class="string">"error"</span>, <span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">      reject(err);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><a href="https://github.com/ekoneko/node-cli-interactive-demo/blob/master/src/readStream.ts" target="_blank" rel="noopener">Demo</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://ekoneko.github.io/blog/uncategorized/node-in-cmd/" data-id="cjxlen1xd000vwqm4o8k94cw0" class="article-share-link">Share</a>
+      
+        <a href="http://ekoneko.github.io/blog/uncategorized/node-in-cmd/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/cli/">cli</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/blog/tags/node/">node</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/blog/redux/redux-cluster/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">[Electron]Redux 主从模式</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/blog/categories/autotest/">autotest</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/electron/">electron</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/engineering/">engineering</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/framework/">framework</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/node/">node</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/react/">react</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/redux/">redux</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/refactor/">refactor</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/test/">test</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/tools/">tools</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webpack/">webpack</a></li><li class="category-list-item"><a class="category-list-link" href="/blog/categories/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/apollo/">apollo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/cli/">cli</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css/">css</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/css-in-js/">css-in-js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/electron/">electron</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/engineering/">engineering</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/express/">express</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/jest/">jest</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/js/">js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/node/">node</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/note/">note</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/other/">other</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/react/">react</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/redux/">redux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/sentry/">sentry</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/test/">test</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/typescript-migrate/">typescript migrate</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webpack/">webpack</a></li><li class="tag-list-item"><a class="tag-list-link" href="/blog/tags/webrtc/">webrtc</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/blog/tags/apollo/" style="font-size: 10px;">apollo</a> <a href="/blog/tags/cli/" style="font-size: 10px;">cli</a> <a href="/blog/tags/css/" style="font-size: 13.33px;">css</a> <a href="/blog/tags/css-in-js/" style="font-size: 13.33px;">css-in-js</a> <a href="/blog/tags/electron/" style="font-size: 16.67px;">electron</a> <a href="/blog/tags/engineering/" style="font-size: 13.33px;">engineering</a> <a href="/blog/tags/express/" style="font-size: 10px;">express</a> <a href="/blog/tags/jest/" style="font-size: 10px;">jest</a> <a href="/blog/tags/js/" style="font-size: 10px;">js</a> <a href="/blog/tags/node/" style="font-size: 13.33px;">node</a> <a href="/blog/tags/note/" style="font-size: 13.33px;">note</a> <a href="/blog/tags/other/" style="font-size: 10px;">other</a> <a href="/blog/tags/react/" style="font-size: 20px;">react</a> <a href="/blog/tags/redux/" style="font-size: 10px;">redux</a> <a href="/blog/tags/sentry/" style="font-size: 10px;">sentry</a> <a href="/blog/tags/test/" style="font-size: 10px;">test</a> <a href="/blog/tags/typescript-migrate/" style="font-size: 10px;">typescript migrate</a> <a href="/blog/tags/webpack/" style="font-size: 10px;">webpack</a> <a href="/blog/tags/webrtc/" style="font-size: 10px;">webrtc</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/11/">November 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/12/">December 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/11/">November 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/10/">October 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/09/">September 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/08/">August 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/07/">July 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/06/">June 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/05/">May 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/04/">April 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2017/03/">March 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/blog/archives/2014/01/">January 2014</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/blog/uncategorized/node-in-cmd/">Node 开发命令行工具指南</a>
+          </li>
+        
+          <li>
+            <a href="/blog/redux/redux-cluster/">[Electron]Redux 主从模式</a>
+          </li>
+        
+          <li>
+            <a href="/blog/electron/try-electron-2/">[笔记]electron 踩到的坑</a>
+          </li>
+        
+          <li>
+            <a href="/blog/autotest/jest-note/">[笔记]jest 使用体验</a>
+          </li>
+        
+          <li>
+            <a href="/blog/refactor/js-to-ts/">[笔记]js-to-ts</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 ekoneko<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/blog/" class="mobile-nav-link">Home</a>
+  
+    <a href="/blog/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+<script>
+  var disqus_shortname = 'ekoneko';
+  
+  var disqus_url = 'http://ekoneko.github.io/blog/uncategorized/node-in-cmd/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/blog/fancybox/jquery.fancybox.css">
+  <script src="/blog/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/blog/js/script.js"></script>
+
+  </div>
+</body>
+</html>
